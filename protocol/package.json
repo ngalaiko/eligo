@@ -1,0 +1,13 @@
+{
+  "name": "@picker/protocol",
+  "private": true,
+  "main": "build/index.js",
+  "typings": "build/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "type": "module",
+  "dependencies": {
+    "ts-node": "^10.9.1"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "picker",
+  "private": true,
+  "scripts": {
+    "build": "pnpm recursive run build",
+    "dev": "pnpm recursive run dev"
+  }
+}

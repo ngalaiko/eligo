@@ -1,30 +1,33 @@
 <script lang="ts">
 	import { createSyncMap } from '@logux/client';
 	import { nanoid } from 'nanoid';
-	import { useClient, useFilter } from '$lib/logux';
-	import { Item } from '$lib/stores/item';
+	import { useClient } from '$lib/logux';
+	import { List, useLists } from '$lib/lists';
 
 	const client = useClient();
-	$: items = useFilter($client, Item);
+	$: lists = useLists($client);
 
+	let title: string;
 	const create = () =>
-		createSyncMap($client, Item, {
+		createSyncMap($client, List, {
 			id: nanoid(),
-			text: 'test'
-		});
+			title
+		}).then(() => (title = ''));
 </script>
 
 {#if $client}
-	{#await items.loading}
-		loading...
-	{:then}
-		<button on:click={create}>create item</button>
-		<ul>
-			{#each $items.list as item}
-				<li>{item.text}</li>
-			{/each}
-		</ul>
-	{/await}
+	<form on:submit|preventDefault={create}>
+		<input type="text" name="title" bind:value={title} />
+		<button>new list</button>
+	</form>
+	<ul>
+		{#each $lists.list as list}
+			<li><a href={`/lists/${list.id}`}>{list.title}</a></li>
+		{/each}
+		{#await lists.loading}
+			<li>loading...</li>
+		{/await}
+	</ul>
 {:else}
 	connecting...
 {/if}

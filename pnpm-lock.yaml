@@ -12,6 +12,7 @@ importers:
       '@types/node': ^18.6.3
       '@types/node-fetch': ^2.6.2
       '@types/ws': ^8.5.3
+      prettier: ^2.6.2
       ts-node: ^10.9.1
       typescript: ^4.7.4
     dependencies:
@@ -21,11 +22,13 @@ importers:
       '@types/node': 18.6.3
       '@types/node-fetch': 2.6.2
       '@types/ws': 8.5.3
+      prettier: 2.7.1
       ts-node: 10.9.1_e2tlcjkk7tlngjdlhzx5hjlnv4
       typescript: 4.7.4
 
   frontend:
     specifiers:
+      '@logux/actions': ^0.2.3
       '@logux/client': ^0.17.0
       '@picker/protocol': workspace:*
       '@sveltejs/adapter-static': next
@@ -35,6 +38,7 @@ importers:
       eslint: ^8.16.0
       eslint-config-prettier: ^8.3.0
       eslint-plugin-svelte3: ^4.0.0
+      nanoid: ^4.0.0
       prettier: ^2.6.2
       prettier-plugin-svelte: ^2.7.0
       svelte: ^3.44.0
@@ -46,7 +50,9 @@ importers:
     dependencies:
       '@logux/client': 0.17.0_cdjag4gur464gfepqcn54orpdu
       '@picker/protocol': link:../protocol
+      nanoid: 4.0.0
     devDependencies:
+      '@logux/actions': 0.2.3_@logux+core@0.7.3
       '@sveltejs/adapter-static': 1.0.0-next.38
       '@sveltejs/kit': 1.0.0-next.403_svelte@3.49.0+vite@3.0.4
       '@typescript-eslint/eslint-plugin': 5.32.0_iosr3hrei2tubxveewluhu5lhy
@@ -65,9 +71,14 @@ importers:
 
   protocol:
     specifiers:
+      '@logux/actions': ^0.2.3
+      prettier: ^2.6.2
       ts-node: ^10.9.1
     dependencies:
+      '@logux/actions': 0.2.3_@logux+core@0.7.3
       ts-node: 10.9.1_e2tlcjkk7tlngjdlhzx5hjlnv4
+    devDependencies:
+      prettier: 2.7.1
 
 packages:
 
@@ -149,7 +160,6 @@ packages:
       '@logux/core': ^0.7.0
     dependencies:
       '@logux/core': 0.7.3
-    dev: false
 
   /@logux/client/0.17.0_cdjag4gur464gfepqcn54orpdu:
     resolution: {integrity: sha512-iBUyrdqS1QcvjK1Z6izJI4gLBYK4lz6QucEoFzQn+F9mPgRrRUbPrxIkCiMgvOxLykVkpT/WM4NWUuHKxczS5g==}
@@ -194,7 +204,6 @@ packages:
     engines: {node: ^12.0.0 || ^14.0.0 || >=16.0.0}
     dependencies:
       nanoevents: 6.0.2
-    dev: false
 
   /@logux/server/0.11.0:
     resolution: {integrity: sha512-IGwXkbkV/3QKqC0DMRsQh2VTKmYlYKisvvmMfWAbR6RNIRx/Pb8LnDRUgwgFasSb6y92Yw5PGashVh0pVxNkBg==}
@@ -1427,7 +1436,6 @@ packages:
   /nanoevents/6.0.2:
     resolution: {integrity: sha512-FRS2otuFcPPYDPYViNWQ42+1iZqbXydinkRHTHFxrF4a1CpBfmydR9zkI44WSXAXCyPrkcGtPk5CnpW6Y3lFKQ==}
     engines: {node: ^12.0.0 || ^14.0.0 || >=16.0.0}
-    dev: false
 
   /nanoevents/7.0.1:
     resolution: {integrity: sha512-o6lpKiCxLeijK4hgsqfR6CNToPyRU3keKyyI6uwuHRvpRTbZ0wXw51WRgyldVugZqoJfkGFrjrIenYH3bfEO3Q==}

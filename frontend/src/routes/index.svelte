@@ -1,15 +1,30 @@
 <script lang="ts">
-	import { CrossTabClient } from '@logux/client';
-	import { onMount } from 'svelte';
-	import { SUBPROTOCOL } from '@picker/protocol';
-	onMount(() => {
-		const client = new CrossTabClient({
-			subprotocol: SUBPROTOCOL,
-			server: 'ws://127.0.0.1:31337/',
-			userId: '1',
-			token: 'token'
-		});
+	import { createSyncMap } from '@logux/client';
+	import { nanoid } from 'nanoid';
+	import { useClient, useFilter } from '$lib/logux';
+	import { Item } from '$lib/stores/item';
 
-		client.start();
-	});
+	const client = useClient();
+	$: items = useFilter($client, Item);
+
+	const create = () =>
+		createSyncMap($client, Item, {
+			id: nanoid(),
+			text: 'test'
+		});
 </script>
+
+{#if $client}
+	{#await items.loading}
+		loading...
+	{:then}
+		<button on:click={create}>create item</button>
+		<ul>
+			{#each $items.list as item}
+				<li>{item.text}</li>
+			{/each}
+		</ul>
+	{/await}
+{:else}
+	connecting...
+{/if}

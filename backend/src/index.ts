@@ -1,6 +1,8 @@
 import { SUBPROTOCOL } from "@picker/protocol";
 import { Server } from "@logux/server";
 
+import registerItems from "./modules/items.js";
+
 const server = new Server(
   Server.loadOptions(process, {
     subprotocol: SUBPROTOCOL,
@@ -10,5 +12,5 @@ const server = new Server(
 );
 
 server.auth(() => true);
-
+registerItems(server)
 server.listen();

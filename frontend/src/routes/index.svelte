@@ -2,14 +2,14 @@
 	import { createSyncMap } from '@logux/client';
 	import { nanoid } from 'nanoid';
 	import { useClient } from '$lib/logux';
-	import { List, useLists } from '$lib/lists';
+	import { useLists, store } from '$lib/lists';
 
 	const client = useClient();
 	$: lists = useLists($client);
 
 	let title: string;
 	const create = () =>
-		createSyncMap($client, List, {
+		createSyncMap($client, store, {
 			id: nanoid(),
 			title
 		}).then(() => (title = ''));

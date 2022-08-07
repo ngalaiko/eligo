@@ -1,18 +1,16 @@
-import { SUBPROTOCOL } from '@picker/protocol';
+import { subprotocol } from '@picker/protocol';
 import { Server } from '@logux/server';
-
-import registerItems from './modules/items.js';
-import registerLists from './modules/lists.js';
 
 const server = new Server(
 	Server.loadOptions(process, {
-		subprotocol: SUBPROTOCOL,
-		supports: SUBPROTOCOL,
+		subprotocol,
+		supports: subprotocol,
 		fileUrl: import.meta.url
 	})
 );
 
 server.auth(() => true);
-registerItems(server);
-registerLists(server);
+server.autoloadModules(
+	process.env.NODE_ENV === 'production' ? 'modules/*.js' : ['modules/*.ts', '!modules/*.test.ts']
+);
 server.listen();

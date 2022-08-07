@@ -1,36 +1,45 @@
-import type { BaseServer } from '@logux/server';
+import { addSyncMap, addSyncMapFilter, BaseServer, ChangedAt, SyncMapData } from '@logux/server';
+import { LoguxNotFoundError } from '@logux/actions';
 
-import { ItemValue, createItem, createdItem } from '@picker/protocol';
+import { items } from '../db/index.js';
+import type { Item } from '@picker/protocol';
 
-const ITEMS: Map<string, ItemValue> = new Map();
+const modelName = 'items';
 
-export default (server: BaseServer) => {
-	server.channel('items', {
+export default (server: BaseServer): void => {
+	addSyncMap<Item>(server, modelName, {
 		access: () => true,
-		filter: (ctx) => (otherCtx, otherAction) => {
-			if (createdItem.match(otherAction)) {
-				return true;
-			} else {
-				return otherCtx.userId === ctx.userId;
-			}
+
+		load: async (_, id) => {
+			const item = await items.find({ id });
+			if (!item) throw new LoguxNotFoundError();
+			return {
+				id,
+				text: ChangedAt(item.text, item.textChangeTime)
+			} as SyncMapData<Item>;
 		},
-		load: () => Array.from(ITEMS.values()).map(({ id, ...fields }) => createItem({ id, fields }))
-	});
 
-	server.channel<{ id: string }>('items/:id', {
-		access: () => true
-	});
-
-	server.type(createItem, {
-		access: () => true,
-		process: async (_, { id, fields }) => {
-			ITEMS.set(id, { id, ...fields });
-			await server.process(createdItem({ id, fields }));
+		create: (_, id, fields, time) => {
+			items.create({
+				...fields,
+				id,
+				textChangeTime: time
+			});
 		}
 	});
 
-	server.type(createdItem, {
-		access: () => false,
-		resend: (_, { id }) => ['tasks', `tasks/${id}`]
+	addSyncMapFilter<Item>(server, modelName, {
+		access: () => true,
+		initial: () =>
+			items.list().then((lists) =>
+				lists.map(
+					({ id, text, textChangeTime }) =>
+						({
+							id,
+							text: ChangedAt(text, textChangeTime)
+						} as SyncMapData<Item>)
+				)
+			),
+		actions: (filterCtx) => (actionCtx) => actionCtx.userId === filterCtx.userId
 	});
 };

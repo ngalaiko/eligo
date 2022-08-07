@@ -1,36 +1,45 @@
-import type { BaseServer } from '@logux/server';
+import { addSyncMap, addSyncMapFilter, BaseServer, ChangedAt, SyncMapData } from '@logux/server';
+import { LoguxNotFoundError } from '@logux/actions';
 
-import { ListValue, createList, createdList } from '@picker/protocol';
+import { lists } from '../db/index.js';
+import type { List } from '@picker/protocol';
 
-const LISTS: Map<string, ListValue> = new Map();
+const modelName = 'lists';
 
-export default (server: BaseServer) => {
-	server.channel('lists', {
+export default (server: BaseServer): void => {
+	addSyncMap<List>(server, modelName, {
 		access: () => true,
-		filter: (ctx) => (otherCtx, otherAction) => {
-			if (createdList.match(otherAction)) {
-				return true;
-			} else {
-				return otherCtx.userId === ctx.userId;
-			}
+
+		load: async (_, id) => {
+			const list = await lists.find({ id });
+			if (!list) throw new LoguxNotFoundError();
+			return {
+				id,
+				title: ChangedAt(list.title, list.titleChangeTime)
+			} as SyncMapData<List>;
 		},
-		load: () => Array.from(LISTS.values()).map(({ id, ...fields }) => createdList({ id, fields }))
-	});
 
-	server.channel<{ id: string }>('lists/:id', {
-		access: () => true
-	});
-
-	server.type(createList, {
-		access: () => true,
-		process: async (_, { id, fields }) => {
-			LISTS.set(id, { id, ...fields });
-			await server.process(createdList({ id, fields }));
+		create: (_, id, fields, time) => {
+			lists.create({
+				...fields,
+				id,
+				titleChangeTime: time
+			});
 		}
 	});
 
-	server.type(createdList, {
-		access: () => false,
-		resend: (_, { id }) => ['lists', `lists/${id}`]
+	addSyncMapFilter<List>(server, modelName, {
+		access: () => true,
+		initial: () =>
+			lists.list().then((lists) =>
+				lists.map(
+					({ id, title, titleChangeTime }) =>
+						({
+							id,
+							title: ChangedAt(title, titleChangeTime)
+						} as SyncMapData<List>)
+				)
+			),
+		actions: (filterCtx) => (actionCtx) => actionCtx.userId === filterCtx.userId
 	});
 };

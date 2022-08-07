@@ -1,4 +1,8 @@
+import { useFilter } from '$lib/logux';
 import { syncMapTemplate } from '@logux/client';
-import type { ItemValue } from '@picker/protocol';
+import type { Client } from '@logux/client';
+import type { Item } from '@picker/protocol';
 
-export const Item = syncMapTemplate<ItemValue>('items');
+export const store = syncMapTemplate<Item>('items');
+
+export const useItems = (client: Client) => useFilter(client, store);

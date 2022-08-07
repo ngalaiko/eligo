@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
-	import { CrossTabClient, type Client, log } from '@logux/client';
+	import { Client, log } from '@logux/client';
 	import { subprotocol } from '@picker/protocol';
 	import context from './context';
 
@@ -9,7 +9,7 @@
 	context.set(store);
 
 	onMount(() => {
-		const client = new CrossTabClient({
+		const client = new Client({
 			subprotocol,
 			server: 'ws://127.0.0.1:31337/',
 			userId: 'anonymous',

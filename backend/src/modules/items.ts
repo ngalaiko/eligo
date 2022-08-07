@@ -1,4 +1,11 @@
-import { addSyncMap, addSyncMapFilter, BaseServer, ChangedAt, SyncMapData } from '@logux/server';
+import {
+	addSyncMap,
+	addSyncMapFilter,
+	BaseServer,
+	ChangedAt,
+	NoConflictResolution,
+	SyncMapData
+} from '@logux/server';
 import { LoguxNotFoundError } from '@logux/actions';
 
 import { items } from '../db/index.js';
@@ -15,6 +22,7 @@ export default (server: BaseServer): void => {
 			if (!item) throw new LoguxNotFoundError();
 			return {
 				id,
+				listId: NoConflictResolution(item.listId),
 				text: ChangedAt(item.text, item.textChangeTime)
 			} as SyncMapData<Item>;
 		},
@@ -41,9 +49,10 @@ export default (server: BaseServer): void => {
 		initial: () =>
 			items.list().then((lists) =>
 				lists.map(
-					({ id, text, textChangeTime }) =>
+					({ id, text, listId, textChangeTime }) =>
 						({
 							id,
+							listId: NoConflictResolution(listId),
 							text: ChangedAt(text, textChangeTime)
 						} as SyncMapData<Item>)
 				)

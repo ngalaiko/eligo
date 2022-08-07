@@ -9,24 +9,18 @@
 </script>
 
 <script lang="ts">
-	import { createSyncMap } from '@logux/client';
-	import { nanoid } from 'nanoid';
 	import { useClient } from '$lib/logux';
 	import { useList } from '$lib/lists';
-	import { store, useItems } from '$lib/items';
+	import { createItem, useItems } from '$lib/items';
 
 	export let listId: string;
 
 	const client = useClient();
-	$: items = useItems($client);
+	$: items = useItems($client, { listId });
 	$: list = useList($client, { id: listId });
 
 	let text: string;
-	const create = () =>
-		createSyncMap($client, store, {
-			id: nanoid(),
-			text
-		}).then(() => (text = ''));
+	const create = () => createItem($client, { listId, text }).then(() => (text = ''));
 </script>
 
 {#if !$client}
@@ -42,10 +36,8 @@
 		<button>new item</button>
 	</form>
 	<ul>
-		{#each $items.list as list}
-			<li><a href={`/lists/${list.id}`}>{list.text}</a></li>
-		{:else}
-			empty
+		{#each $items.list as item}
+			<li>{item.text}</li>
 		{/each}
 		{#if $items.isLoading}
 			<li>loading...</li>

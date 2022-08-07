@@ -15,9 +15,4 @@ export const useFilter = <Value extends SyncMapValues>(
 	filter?: Filter<Value>,
 	opts?: FilterOptions
 ) =>
-	client
-		? createFilter(client, Template, filter, opts)
-		: {
-				...readable(null),
-				loading: new Promise<void>(() => {})
-		  };
+	client ? createFilter(client, Template, filter, opts) : readable({ isLoading: true, list: [] });

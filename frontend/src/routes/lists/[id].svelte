@@ -29,24 +29,26 @@
 		}).then(() => (text = ''));
 </script>
 
-{#if $client}
-	{#if $list}
-		<h1>{$list.title}</h1>
-		<form on:submit|preventDefault={create}>
-			<input type="text" name="title" bind:value={text} />
-			<button>new item</button>
-		</form>
-		<ul>
-			{#each $items.list as list}
-				<li><a href={`/lists/${list.id}`}>{list.title}</a></li>
-			{/each}
-			{#await items.loading}
-				<li>loading...</li>
-			{/await}
-		</ul>
-	{:else}
-		Not found
-	{/if}
-{:else}
+{#if !$client}
 	connecting...
+{:else if $list.isEmpty}
+	not found
+{:else if $list.isLoading}
+	loading...
+{:else}
+	<h1>{$list.title}</h1>
+	<form on:submit|preventDefault={create}>
+		<input type="text" name="title" bind:value={text} />
+		<button>new item</button>
+	</form>
+	<ul>
+		{#each $items.list as list}
+			<li><a href={`/lists/${list.id}`}>{list.text}</a></li>
+		{:else}
+			empty
+		{/each}
+		{#if $items.isLoading}
+			<li>loading...</li>
+		{/if}
+	</ul>
 {/if}

@@ -25,7 +25,15 @@ export default (server: BaseServer): void => {
 				id,
 				textChangeTime: time
 			});
-		}
+		},
+
+		change: async (_, id, fields) => {
+			const item = await items.find({ id });
+			if (!item) throw new LoguxNotFoundError();
+			await items.change(id, fields);
+		},
+
+		delete: (_, id) => items.delete(id)
 	});
 
 	addSyncMapFilter<Item>(server, modelName, {

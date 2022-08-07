@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
-	import { CrossTabClient, type Client } from '@logux/client';
+	import { CrossTabClient, type Client, log } from '@logux/client';
 	import { subprotocol } from '@picker/protocol';
 	import context from './context';
 
@@ -16,7 +16,9 @@
 			token: 'token'
 		});
 		store.set(client);
+		log(client);
 		client.start();
+		return () => client.destroy();
 	});
 </script>
 

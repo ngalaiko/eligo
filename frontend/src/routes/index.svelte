@@ -2,7 +2,7 @@
 	import { createSyncMap } from '@logux/client';
 	import { nanoid } from 'nanoid';
 	import { useClient } from '$lib/logux';
-	import { useLists, store } from '$lib/lists';
+	import { store, useLists } from '$lib/lists';
 
 	const client = useClient();
 	$: lists = useLists($client);
@@ -23,10 +23,12 @@
 	<ul>
 		{#each $lists.list as list}
 			<li><a href={`/lists/${list.id}`}>{list.title}</a></li>
+		{:else}
+			empty
 		{/each}
-		{#await lists.loading}
+		{#if $lists.isLoading}
 			<li>loading...</li>
-		{/await}
+		{/if}
 	</ul>
 {:else}
 	connecting...

@@ -10,5 +10,5 @@ const server = new Server(
 );
 
 server.auth(() => true);
-server.autoloadModules([`modules/*.${process.env.NODE_ENV === 'production' ? 'ts' : 'js'}`]);
+server.autoloadModules([`modules/*.${process.env.NODE_ENV === 'production' ? 'js' : 'ts'}`]);
 server.listen();

@@ -14,10 +14,11 @@ export const createItem = (client: Client, fields: Omit<Item, 'id'>) =>
 	});
 
 export const useItems = (client: Client, { listId }: { listId: string }) =>
-	derived(useFilter(client, store), (lists) => {
-		if (!lists || lists.isLoading) return { isLoading: true, list: [] };
-		return {
-			...lists,
-			list: lists.list.filter((list) => list.listId === listId)
-		};
-	});
+	derived(useFilter(client, store), (items) =>
+		items
+			? {
+					...items,
+					list: items.list.filter((list) => list.listId === listId)
+			  }
+			: { isLoading: true, list: [] }
+	);

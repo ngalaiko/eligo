@@ -31,7 +31,10 @@ export default (server: BaseServer): void => {
 		create: (_, id, fields) => {
 			items
 				.list({ listId: fields.listId })
-				.then((items) => random(items).id)
+				.then((items) => {
+					if (items.length > 0) return random(items).id;
+					throw new LoguxNotFoundError();
+				})
 				.then((randomItemId) =>
 					rolls.create({
 						...fields,

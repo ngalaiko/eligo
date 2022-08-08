@@ -7,8 +7,13 @@ export type ItemRecord = {
 let items: ItemRecord[] = [];
 
 export default {
-	list: (filter: Pick<Item, 'listId'>): Promise<ItemRecord[]> =>
-		Promise.resolve(items.filter(({ listId }) => listId === filter.listId)),
+	list: (filter: { listId?: string } = {}): Promise<ItemRecord[]> =>
+		Promise.resolve(
+			items.filter(({ listId }) => {
+				if (filter.listId) return listId === filter.listId;
+				return true;
+			})
+		),
 	find: ({ id }: { id: string }) => Promise.resolve(items.find((item) => item.id === id)),
 	create: (item: ItemRecord): Promise<ItemRecord> => {
 		items.push(item);

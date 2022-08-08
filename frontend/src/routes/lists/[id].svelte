@@ -12,15 +12,18 @@
 	import { useClient } from '$lib/logux';
 	import { useList } from '$lib/lists';
 	import { createItem, useItems } from '$lib/items';
+	import { createRoll, useRolls } from '$lib/rolls';
 
 	export let listId: string;
 
 	const client = useClient();
 	$: items = useItems($client, { listId });
 	$: list = useList($client, { id: listId });
+	$: rolls = useRolls($client, { listId });
 
 	let text: string;
 	const create = () => createItem($client, { listId, text }).then(() => (text = ''));
+	const roll = () => createRoll($client, { listId });
 </script>
 
 {#if !$client}
@@ -40,6 +43,18 @@
 			<li>{item.text}</li>
 		{/each}
 		{#if $items.isLoading}
+			<li>loading...</li>
+		{/if}
+	</ul>
+
+	<hr />
+	<h2>rolls</h2>
+	<button on:click={roll}>roll</button>
+	<ul>
+		{#each $rolls.list as roll}
+			<li>{roll.itemId}</li>
+		{/each}
+		{#if $rolls.isLoading}
 			<li>loading...</li>
 		{/if}
 	</ul>

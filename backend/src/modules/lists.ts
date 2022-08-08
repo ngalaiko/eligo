@@ -38,9 +38,8 @@ export default (server: BaseServer): void => {
 
 	addSyncMapFilter<List>(server, modelName, {
 		access: () => true,
-		initial: async (_, filter) => {
-			console.log(filter);
-			return lists.list().then((lists) =>
+		initial: async (_, filter) =>
+			lists.list().then((lists) =>
 				lists
 					.filter(({ id }) => {
 						if (filter?.id) return id === filter.id;
@@ -53,8 +52,7 @@ export default (server: BaseServer): void => {
 								title: ChangedAt(title, titleChangeTime)
 							} as SyncMapData<List>)
 					)
-			);
-		},
+			),
 		actions: (filterCtx) => (actionCtx) => actionCtx.userId === filterCtx.userId
 	});
 };

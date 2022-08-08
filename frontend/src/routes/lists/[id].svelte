@@ -9,31 +9,30 @@
 </script>
 
 <script lang="ts">
-	import { useClient } from '$lib/logux';
-	import { useList } from '$lib/lists';
 	import { createItem, useItems } from '$lib/items';
 	import { createRoll, useRolls } from '$lib/rolls';
+	import { useLists } from '$lib/lists';
+	import { useClient } from '$lib/logux';
 
 	export let listId: string;
 
 	const client = useClient();
-	$: items = useItems($client, { listId });
-	$: list = useList($client, { id: listId });
-	$: rolls = useRolls($client, { listId });
+	const lists = useLists();
+	$: list = $lists.list.find((list) => list.id === listId);
+	const items = useItems({ listId });
+	const rolls = useRolls({ listId });
 
 	let text: string;
-	const create = () => createItem($client, { listId, text }).then(() => (text = ''));
-	const roll = () => createRoll($client, { listId });
+	const create = () => createItem(client, { listId, text }).then(() => (text = ''));
+	const roll = () => createRoll(client, { listId });
 </script>
 
-{#if !$client}
-	connecting...
-{:else if $list.isEmpty}
-	not found
-{:else if $list.isLoading}
+{#if $lists.isLoading}
 	loading...
+{:else if !list}
+	not found
 {:else}
-	<h1>{$list.title}</h1>
+	<h1>{list.title}</h1>
 	<form on:submit|preventDefault={create}>
 		<input type="text" name="title" bind:value={text} />
 		<button>new item</button>
@@ -52,10 +51,12 @@
 	<button on:click={roll}>roll</button>
 	<ul>
 		{#each $rolls.list as roll}
-			<li>{roll.itemId}</li>
+			{@const rolledItem = $items.list.find((list) => list.id === roll.itemId)}
+			{#if rolledItem}
+				<li>{rolledItem.text}</li>
+			{:else}
+				<li>rolling...</li>
+			{/if}
 		{/each}
-		{#if $rolls.isLoading}
-			<li>loading...</li>
-		{/if}
 	</ul>
 {/if}

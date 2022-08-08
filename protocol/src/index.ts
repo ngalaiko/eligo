@@ -13,6 +13,6 @@ export type Item = {
 
 export type Roll = {
 	id: string;
-	itemId: string;
 	listId: string;
+	itemId?: string;
 };

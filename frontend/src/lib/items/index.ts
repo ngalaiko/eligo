@@ -1,8 +1,7 @@
 import { useFilter } from '$lib/logux';
 import { createSyncMap, syncMapTemplate } from '@logux/client';
-import type { Client } from '@logux/client';
+import type { Filter, FilterOptions, Client } from '@logux/client';
 import type { Item } from '@picker/protocol';
-import { derived } from 'svelte/store';
 import { nanoid } from 'nanoid';
 
 const store = syncMapTemplate<Item>('items');
@@ -13,12 +12,5 @@ export const createItem = (client: Client, fields: Omit<Item, 'id'>) =>
 		id: nanoid()
 	});
 
-export const useItems = (client: Client, { listId }: { listId: string }) =>
-	derived(useFilter(client, store), (items) =>
-		items
-			? {
-					...items,
-					list: items.list.filter((list) => list.listId === listId)
-			  }
-			: { isLoading: true, list: [] }
-	);
+export const useItems = (filter?: Filter<Item>, opts?: FilterOptions) =>
+	useFilter<Item>(store, filter, opts);

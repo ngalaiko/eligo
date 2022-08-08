@@ -1,12 +1,17 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { writable } from 'svelte/store';
 	import { Client, log } from '@logux/client';
 	import { subprotocol } from '@picker/protocol';
 	import context from './context';
+	import { writable } from 'svelte/store';
 
-	const store = writable<Client | null>(undefined);
-	context.set(store);
+	const ctx = writable<Client | undefined>(undefined);
+	context.set(ctx);
+
+	let markReady: () => void;
+	const ready = new Promise<void>((resolve) => {
+		markReady = resolve;
+	});
 
 	onMount(() => {
 		const client = new Client({
@@ -15,11 +20,16 @@
 			userId: 'anonymous',
 			token: 'token'
 		});
-		store.set(client);
+
+		ctx.set(client);
+		markReady();
+
 		log(client);
 		client.start();
 		return () => client.destroy();
 	});
 </script>
 
-<slot />
+{#await ready then}
+	<slot />
+{/await}

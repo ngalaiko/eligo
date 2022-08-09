@@ -9,6 +9,6 @@ const server = new Server(
 	})
 );
 
-server.auth(() => true);
-server.autoloadModules(['modules/*.js', 'modules/*.ts', '!modules/*.d.ts']);
-server.listen();
+server
+	.autoloadModules(['modules/*.js', 'modules/*.ts', '!modules/*.d.ts'])
+	.then(() => server.listen());

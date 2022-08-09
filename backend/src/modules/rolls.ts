@@ -8,11 +8,35 @@ import {
 import { defineChangedSyncMap, LoguxNotFoundError } from '@logux/actions';
 
 import { rolls, items } from '../db/index.js';
-import type { Roll } from '@picker/protocol';
+import type { Roll, Item } from '@picker/protocol';
 
 const modelName = 'rolls';
 
-const random = <T>(list: T[]) => list[Math.floor(Math.random() * list.length)];
+const nextRoll = (items: Item[], rolls: Roll[]): string => {
+	const itemIds = items.map((item) => item.id);
+	let itemIdsHistory = rolls.filter(({ itemId }) => itemId).map(({ itemId }) => itemId!);
+	itemIdsHistory = itemIdsHistory.slice(Math.max(itemIdsHistory.length - itemIds.length, 0));
+	const weights = itemIds.map((itemId) => {
+		const rolledAgo = itemIdsHistory.length - itemIdsHistory.lastIndexOf(itemId);
+		const wasRolled = rolledAgo !== -1;
+		if (!wasRolled) return itemIds.length;
+		return rolledAgo;
+	});
+	return itemIds[weightedRandom(weights)];
+};
+
+const weightedRandom = (weights: number[]) => {
+	const sum = weights.reduce((a, b) => a + b, 0);
+	const r = Math.random() * sum;
+	let acc = 0;
+	for (let i = 0; i < weights.length; i++) {
+		acc += weights[i];
+		if (r < acc) {
+			return i;
+		}
+	}
+	return weights.length - 1;
+};
 
 const changedAction = defineChangedSyncMap<Roll>(modelName);
 
@@ -36,10 +60,14 @@ export default (server: BaseServer): void => {
 			const roll = await rolls.create({ ...fields, id });
 
 			// actually roll
-			const listItems = await items.list({ listId: fields.listId });
-			if (listItems.length === 0) throw new LoguxNotFoundError();
-			const randomItem = random(listItems);
-			const patch = { itemId: randomItem.id };
+			const randomItemId = await Promise.all([
+				items.list({ listId: fields.listId }),
+				rolls.list({ listId: fields.listId })
+			]).then(([items, rolls]) => {
+				if (items.length === 0) throw new LoguxNotFoundError();
+				return nextRoll(items, rolls);
+			});
+			const patch = { itemId: randomItemId };
 			await rolls.change(roll.id, patch);
 
 			// send back rolled item

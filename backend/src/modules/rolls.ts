@@ -88,6 +88,5 @@ export default (server: BaseServer): void => {
 						} as SyncMapData<Roll>)
 				)
 			),
-		actions: (filterCtx) => (actionCtx) => actionCtx.userId === filterCtx.userId
 	});
 };

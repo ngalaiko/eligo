@@ -19,7 +19,7 @@ export default (server: BaseServer): void => {
 			} as SyncMapData<List>;
 		},
 
-		create: (_, id, fields, time) => {
+		create: (_ctx, id, fields, time) => {
 			lists.create({
 				...fields,
 				id,
@@ -52,7 +52,6 @@ export default (server: BaseServer): void => {
 								title: ChangedAt(title, titleChangeTime)
 							} as SyncMapData<List>)
 					)
-			),
-		actions: (filterCtx) => (actionCtx) => actionCtx.userId === filterCtx.userId
+			)
 	});
 };

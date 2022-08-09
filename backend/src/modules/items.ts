@@ -27,7 +27,7 @@ export default (server: BaseServer): void => {
 			} as SyncMapData<Item>;
 		},
 
-		create: (_, id, fields, time) => {
+		create: (_ctx, id, fields, time) => {
 			items.create({
 				...fields,
 				id,
@@ -56,7 +56,6 @@ export default (server: BaseServer): void => {
 							text: ChangedAt(text, textChangeTime)
 						} as SyncMapData<Item>)
 				)
-			),
-		actions: (filterCtx) => (actionCtx) => actionCtx.userId === filterCtx.userId
+			)
 	});
 };

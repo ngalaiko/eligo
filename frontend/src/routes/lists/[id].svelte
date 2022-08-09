@@ -22,7 +22,7 @@
 	const items = useItems({ listId });
 	const rolls = useRolls({ listId });
 
-	let text: string;
+	let text: string = '';
 	const create = () => createItem(client, { listId, text }).then(() => (text = ''));
 	const roll = () => createRoll(client, { listId });
 </script>
@@ -35,7 +35,7 @@
 	<h1>{list.title}</h1>
 	<form on:submit|preventDefault={create}>
 		<input type="text" name="title" bind:value={text} />
-		<button>new item</button>
+		<button disabled={text === ''}>new item</button>
 	</form>
 	<ul>
 		{#each $items.list as item}
@@ -48,7 +48,7 @@
 
 	<hr />
 	<h2>rolls</h2>
-	<button on:click={roll}>roll</button>
+	<button disabled={$items.list.length === 0} on:click={roll}>roll</button>
 	<ul>
 		{#each $rolls.list as roll}
 			{@const rolledItem = $items.list.find((list) => list.id === roll.itemId)}

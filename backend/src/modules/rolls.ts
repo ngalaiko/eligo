@@ -87,6 +87,6 @@ export default (server: BaseServer): void => {
 							itemId: NoConflictResolution(itemId)
 						} as SyncMapData<Roll>)
 				)
-			),
+			)
 	});
 };

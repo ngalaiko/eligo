@@ -2,7 +2,7 @@
 	"name": "@picker/backend",
 	"private": true,
 	"scripts": {
-		"dev": "ts-node-esm ./src/index.ts",
+		"dev": "tsc-watch -p ./tsconfig.json --onSuccess \"node build/index.js\"",
 		"preview": "NODE_ENV=production node ./build/index.js",
 		"build": "rm -rf ./build && tsc"
 	},

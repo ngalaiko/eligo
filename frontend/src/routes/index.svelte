@@ -5,7 +5,7 @@
 	const client = useClient();
 	const lists = useLists();
 
-	let title: string;
+	let title: string = '';
 	const create = () => createList(client, { title }).then(() => (title = ''));
 </script>
 
@@ -13,7 +13,7 @@
 	<h1>lists:</h1>
 	<form on:submit|preventDefault={create}>
 		<input type="text" name="title" bind:value={title} />
-		<button>new list</button>
+		<button disabled={!title}>new list</button>
 	</form>
 	<ul>
 		{#each $lists.list as { id, title }}

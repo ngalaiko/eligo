@@ -4,6 +4,7 @@
 	import { subprotocol } from '@picker/protocol';
 	import context from './context';
 	import { writable } from 'svelte/store';
+	import { session } from '$app/stores';
 
 	const ctx = writable<Client | undefined>(undefined);
 	context.set(ctx);
@@ -15,10 +16,10 @@
 
 	onMount(() => {
 		const client = new Client({
-			subprotocol,
 			server: 'ws://127.0.0.1:31337/',
-			userId: 'anonymous',
-			token: 'token'
+			subprotocol,
+			userId: $session.user?.id ?? 'anonymous',
+			token: $session.token
 		});
 
 		ctx.set(client);

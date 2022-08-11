@@ -50,7 +50,7 @@ export default async (server: BaseServer): Promise<void> => {
 		req.on('data', (chunk) => {
 			data += chunk;
 		});
-		return new Promise((resolve) => {
+		return new Promise((resolve, reject) => {
 			req.on('end', () => {
 				parseJSON(data)
 					.then(async ({ name, password }) => {
@@ -65,7 +65,8 @@ export default async (server: BaseServer): Promise<void> => {
 							return user;
 						});
 					})
-					.then(resolve);
+					.then(resolve)
+					.catch(reject);
 			});
 		});
 	};
@@ -112,21 +113,15 @@ export default async (server: BaseServer): Promise<void> => {
 		);
 	};
 
-	const deleteAuthCookie = (res: ServerResponse) => {
-		const date = new Date();
-		// Set it expire in -1 days
-		date.setTime(date.getTime() + -1 * 24 * 60 * 60 * 1000);
-		res.setHeader('Set-Cookie', [`${authCookieName}=; Expires=${date.toUTCString()}; Path=/`]);
-	};
-
 	server.http((req, res) => {
-		if (req.url === '/user') {
+		if (req.url === '/users') {
 			if (req.method === 'POST') {
 				signUp(req)
 					.then(async (user) => {
-						setAuthCookie(res, await newToken(user));
+						const token = await newToken(user);
+						setAuthCookie(res, token);
 						res.setHeader('Content-Type', 'application/json');
-						res.end(JSON.stringify({ id: user.id, name: user.name }));
+						res.end(JSON.stringify({ id: user.id, name: user.name, token }));
 					})
 					.catch((err) => {
 						if (err instanceof HTTPError) {
@@ -146,9 +141,10 @@ export default async (server: BaseServer): Promise<void> => {
 			if (req.method === 'POST') {
 				signIn(req)
 					.then(async (user) => {
-						setAuthCookie(res, await newToken(user));
+						const token = await newToken(user);
+						setAuthCookie(res, token);
 						res.setHeader('Content-Type', 'application/json');
-						res.end(JSON.stringify({ id: user.id, name: user.name }));
+						res.end(JSON.stringify({ id: user.id, name: user.name, token }));
 					})
 					.catch((err) => {
 						if (err instanceof HTTPError) {
@@ -160,9 +156,6 @@ export default async (server: BaseServer): Promise<void> => {
 							res.end('Internal server error');
 						}
 					});
-			} else if (req.method === 'DELETE') {
-				deleteAuthCookie(res);
-				res.end();
 			} else {
 				res.statusCode = 405;
 				res.end();

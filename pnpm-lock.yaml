@@ -45,10 +45,12 @@ importers:
       '@logux/actions': ^0.2.3
       '@logux/client': ^0.17.0
       '@picker/protocol': workspace:*
-      '@sveltejs/adapter-static': next
+      '@sveltejs/adapter-node': 1.0.0-next.86
       '@sveltejs/kit': next
+      '@types/cookie': ^0.5.1
       '@typescript-eslint/eslint-plugin': ^5.27.0
       '@typescript-eslint/parser': ^5.27.0
+      cookie: ^0.5.0
       eslint: ^8.16.0
       eslint-config-prettier: ^8.3.0
       eslint-plugin-svelte3: ^4.0.0
@@ -64,11 +66,13 @@ importers:
     dependencies:
       '@logux/client': 0.17.0_cdjag4gur464gfepqcn54orpdu
       '@picker/protocol': link:../protocol
+      cookie: 0.5.0
       nanoid: 4.0.0
     devDependencies:
       '@logux/actions': 0.2.3_@logux+core@0.7.3
-      '@sveltejs/adapter-static': 1.0.0-next.39
+      '@sveltejs/adapter-node': 1.0.0-next.86
       '@sveltejs/kit': 1.0.0-next.405_svelte@3.49.0+vite@3.0.4
+      '@types/cookie': 0.5.1
       '@typescript-eslint/eslint-plugin': 5.32.0_iosr3hrei2tubxveewluhu5lhy
       '@typescript-eslint/parser': 5.32.0_qugx7qdu5zevzvxaiqyxfiwquq
       eslint: 8.21.0
@@ -291,8 +295,8 @@ packages:
       picomatch: 2.3.1
     dev: true
 
-  /@sveltejs/adapter-static/1.0.0-next.39:
-    resolution: {integrity: sha512-EeD39H6iEe0UEKnKxLFTZFZpi/FcX5xfbAvsMQ+B09aDZccpQmkJBSIo+4kq1JsQGSjwi/+J3aE9bR67R6CIyQ==}
+  /@sveltejs/adapter-node/1.0.0-next.86:
+    resolution: {integrity: sha512-VfKcFukVEPoAdm8tVGkFLyDDMZe+9HLFW7X/9Ch/UrSCHo3/HyOfYt/slmh+sjGXYjIBAtTjacrIfcMdYh744g==}
     dev: true
 
   /@sveltejs/kit/1.0.0-next.405_svelte@3.49.0+vite@3.0.4:
@@ -358,6 +362,10 @@ packages:
     resolution: {integrity: sha512-agtcFKaruL8TmcvqbndlqHPSJgsolhf/qPWchFlgnW1gECTN/nKbFcoFnvKAQRFfKbh+BO6A3SWdJu9t+xF3Lw==}
     dependencies:
       '@types/node': 18.6.3
+    dev: true
+
+  /@types/cookie/0.5.1:
+    resolution: {integrity: sha512-COUnqfB2+ckwXXSFInsFdOAWQzCCx+a5hq2ruyj+Vjund94RJQd4LG2u9hnvJrTgunKAaax7ancBYlDrNYxA0g==}
     dev: true
 
   /@types/json-schema/7.0.11:

@@ -4,7 +4,7 @@ import { SignJWT, generateKeyPair, jwtVerify } from 'jose';
 import { compare, hash } from 'bcrypt';
 import { nanoid } from 'nanoid';
 import { IncomingMessage } from 'http';
-import { User } from '@picker/protocol';
+import { User } from '@velit/protocol';
 
 export default async (server: BaseServer): Promise<void> => {
 	const { keyId, privateKey, keyAlg } = await generateKeyPair('ES256').then(
@@ -39,7 +39,7 @@ export default async (server: BaseServer): Promise<void> => {
 		new SignJWT({})
 			.setSubject(id)
 			.setProtectedHeader({ kid: keyId, alg: keyAlg })
-			.setExpirationTime('2h')
+			.setExpirationTime('30d')
 			.setIssuedAt()
 			.sign(privateKey);
 

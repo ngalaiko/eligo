@@ -1,7 +1,7 @@
 import { useFilter } from '$lib/logux';
 import { Client, createSyncMap, syncMapTemplate } from '@logux/client';
 import type { Filter, FilterOptions } from '@logux/client';
-import type { List } from '@picker/protocol';
+import type { List } from '@velit/protocol';
 import { nanoid } from 'nanoid';
 
 const store = syncMapTemplate<List>('lists');

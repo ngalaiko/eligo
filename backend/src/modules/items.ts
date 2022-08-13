@@ -7,7 +7,7 @@ import {
 	SyncMapData
 } from '@logux/server';
 import { defineSyncMapActions, LoguxNotFoundError } from '@logux/actions';
-import type { Item } from '@picker/protocol';
+import type { Item } from '@velit/protocol';
 
 import { items, lists } from '../db/index.js';
 

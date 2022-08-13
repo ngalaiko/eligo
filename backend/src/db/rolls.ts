@@ -1,4 +1,4 @@
-import type { Roll } from '@picker/protocol';
+import type { Roll } from '@velit/protocol';
 
 export type RollRecord = Roll;
 

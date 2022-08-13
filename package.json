@@ -1,5 +1,5 @@
 {
-  "name": "picker",
+  "name": "velit",
   "private": true,
   "scripts": {
     "build": "pnpm recursive run build",

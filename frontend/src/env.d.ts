@@ -1,10 +1,10 @@
 declare namespace App {
 	interface Session {
-		user?: import('@picker/protocol').User;
+		user?: import('@velit/protocol').User;
 		token?: string;
 	}
 	interface Locals {
-		user?: import('@picker/protocol').User;
+		user?: import('@velit/protocol').User;
 		token?: string;
 	}
 }

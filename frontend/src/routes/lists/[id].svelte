@@ -24,13 +24,13 @@
 	let text: string;
 	const create = async () => {
 		if (!text) return;
-		if (!$session.userId) return;
-		await createItem(client, { listId, text, userId: $session.userId }).then(() => (text = ''));
+		if (!$session.user?.id) return;
+		await createItem(client, { listId, text, userId: $session.user.id }).then(() => (text = ''));
 	};
 	const roll = async () => {
-		if (!$session.userId) return;
+		if (!$session.user?.id) return;
 		if ($items.isEmpty) return;
-		await createRoll(client, { listId, userId: $session.userId });
+		await createRoll(client, { listId, userId: $session.user.id });
 	};
 </script>
 
@@ -42,7 +42,7 @@
 	<h1>{list.title}</h1>
 	<form on:submit|preventDefault={create}>
 		<input type="text" name="title" bind:value={text} />
-		<button disabled={!text || !$session.userId}>new item</button>
+		<button disabled={!text || !$session.user}>new item</button>
 	</form>
 	<ul>
 		{#each $items.list as item}
@@ -55,7 +55,7 @@
 
 	<hr />
 	<h2>rolls</h2>
-	<button disabled={$items.isEmpty || !$session.userId} on:click={roll}>roll</button>
+	<button disabled={$items.isEmpty || !$session.user} on:click={roll}>roll</button>
 	<ul>
 		{#each $rolls.list as roll}
 			{@const rolledItem = $items.list.find((list) => list.id === roll.itemId)}

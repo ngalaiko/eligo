@@ -1,4 +1,4 @@
-import { subprotocol } from '@picker/protocol';
+import { subprotocol } from '@velit/protocol';
 import { Server } from '@logux/server';
 
 const server = new Server(

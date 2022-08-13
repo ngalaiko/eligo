@@ -1,4 +1,4 @@
-import type { List } from '@picker/protocol';
+import type { List } from '@velit/protocol';
 
 export type ListRecord = {
 	titleChangeTime: number;

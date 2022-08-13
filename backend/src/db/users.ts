@@ -1,4 +1,4 @@
-import type { User } from '@picker/protocol';
+import type { User } from '@velit/protocol';
 
 export type UserRecord = User & {
 	hash: string;

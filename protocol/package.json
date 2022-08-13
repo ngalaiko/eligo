@@ -1,5 +1,5 @@
 {
-	"name": "@picker/protocol",
+	"name": "@velit/protocol",
 	"private": true,
 	"main": "build/index.js",
 	"typings": "build/index.d.ts",

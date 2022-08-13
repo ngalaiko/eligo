@@ -1,6 +1,6 @@
 import { addSyncMap, addSyncMapFilter, BaseServer, ChangedAt, SyncMapData } from '@logux/server';
 import { defineSyncMapActions, LoguxNotFoundError } from '@logux/actions';
-import type { List } from '@picker/protocol';
+import type { List } from '@velit/protocol';
 
 import { lists } from '../db/index.js';
 

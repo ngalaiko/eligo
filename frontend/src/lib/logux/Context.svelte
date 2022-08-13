@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { Client, log } from '@logux/client';
-	import { subprotocol } from '@picker/protocol';
+	import { subprotocol } from '@velit/protocol';
 	import context from './context';
 	import { writable } from 'svelte/store';
 	import { session } from '$app/stores';

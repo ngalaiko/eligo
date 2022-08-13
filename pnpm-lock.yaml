@@ -9,11 +9,11 @@ importers:
     specifiers:
       '@logux/actions': ^0.2.3
       '@logux/server': ^0.11.0
-      '@picker/protocol': workspace:*
       '@types/bcrypt': ^5.0.0
       '@types/node': ^18.6.3
       '@types/node-fetch': ^2.6.2
       '@types/ws': ^8.5.3
+      '@velit/protocol': workspace:*
       bcrypt: ^5.0.1
       jose: ^4.8.3
       nanoid: ^4.0.0
@@ -24,7 +24,7 @@ importers:
       typescript: ^4.7.4
     dependencies:
       '@logux/server': 0.11.0
-      '@picker/protocol': link:../protocol
+      '@velit/protocol': link:../protocol
       bcrypt: 5.0.1
       jose: 4.8.3
       nanoid: 4.0.0
@@ -44,12 +44,12 @@ importers:
     specifiers:
       '@logux/actions': ^0.2.3
       '@logux/client': ^0.17.0
-      '@picker/protocol': workspace:*
       '@sveltejs/adapter-node': 1.0.0-next.86
       '@sveltejs/kit': next
       '@types/cookie': ^0.5.1
       '@typescript-eslint/eslint-plugin': ^5.27.0
       '@typescript-eslint/parser': ^5.27.0
+      '@velit/protocol': workspace:*
       cookie: ^0.5.0
       eslint: ^8.16.0
       eslint-config-prettier: ^8.3.0
@@ -65,7 +65,7 @@ importers:
       vite: ^3.0.0
     dependencies:
       '@logux/client': 0.17.0_cdjag4gur464gfepqcn54orpdu
-      '@picker/protocol': link:../protocol
+      '@velit/protocol': link:../protocol
       cookie: 0.5.0
       nanoid: 4.0.0
     devDependencies:

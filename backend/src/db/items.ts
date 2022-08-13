@@ -1,4 +1,4 @@
-import type { Item } from '@picker/protocol';
+import type { Item } from '@velit/protocol';
 
 export type ItemRecord = {
 	textChangeTime: number;

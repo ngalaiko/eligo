@@ -9,8 +9,8 @@
 	let title: string = '';
 	const create = async () => {
 		if (!title) return;
-		if (!$session.userId) return;
-		await createList(client, { title, userId: $session.userId }).then(() => (title = ''));
+		if (!$session.user) return;
+		await createList(client, { title, userId: $session.user.id }).then(() => (title = ''));
 	};
 </script>
 
@@ -18,7 +18,7 @@
 	<h1>lists:</h1>
 	<form on:submit|preventDefault={create}>
 		<input type="text" name="title" bind:value={title} />
-		<button disabled={!title || !$session.userId}>new list</button>
+		<button disabled={!title || !$session.user}>new list</button>
 	</form>
 	<ul>
 		{#each $lists.list as { id, title }}

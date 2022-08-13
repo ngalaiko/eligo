@@ -2,9 +2,7 @@
 	import type { Load } from '@sveltejs/kit';
 
 	export const load: Load = ({ params: { id } }) => ({
-		props: {
-			listId: id
-		}
+		props: { listId: id }
 	});
 </script>
 
@@ -13,6 +11,7 @@
 	import { createRoll, useRolls } from '$lib/rolls';
 	import { useLists } from '$lib/lists';
 	import { useClient } from '$lib/logux';
+	import { session } from '$app/stores';
 
 	export let listId: string;
 
@@ -23,8 +22,16 @@
 	const rolls = useRolls({ listId });
 
 	let text: string;
-	const create = () => createItem(client, { listId, text }).then(() => (text = ''));
-	const roll = () => createRoll(client, { listId });
+	const create = async () => {
+		if (!text) return;
+		if (!$session.userId) return;
+		await createItem(client, { listId, text, userId: $session.userId }).then(() => (text = ''));
+	};
+	const roll = async () => {
+		if (!$session.userId) return;
+		if ($items.isEmpty) return;
+		await createRoll(client, { listId, userId: $session.userId });
+	};
 </script>
 
 {#if $lists.isLoading}
@@ -35,7 +42,7 @@
 	<h1>{list.title}</h1>
 	<form on:submit|preventDefault={create}>
 		<input type="text" name="title" bind:value={text} />
-		<button disabled={!text}>new item</button>
+		<button disabled={!text || !$session.userId}>new item</button>
 	</form>
 	<ul>
 		{#each $items.list as item}
@@ -48,7 +55,7 @@
 
 	<hr />
 	<h2>rolls</h2>
-	<button disabled={$items.list.length === 0} on:click={roll}>roll</button>
+	<button disabled={$items.isEmpty || !$session.userId} on:click={roll}>roll</button>
 	<ul>
 		{#each $rolls.list as roll}
 			{@const rolledItem = $items.list.find((list) => list.id === roll.itemId)}

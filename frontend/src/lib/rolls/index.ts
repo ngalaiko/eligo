@@ -6,7 +6,7 @@ import { nanoid } from 'nanoid';
 
 const store = syncMapTemplate<Roll>('rolls');
 
-export const createRoll = (client: Client, fields: { listId: string }) =>
+export const createRoll = (client: Client, fields: Omit<Roll, 'id'>) =>
 	createSyncMap(client, store, {
 		...fields,
 		id: nanoid()

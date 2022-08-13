@@ -1,14 +1,32 @@
 import { addSyncMap, addSyncMapFilter, BaseServer, ChangedAt, SyncMapData } from '@logux/server';
-import { LoguxNotFoundError } from '@logux/actions';
+import { defineSyncMapActions, LoguxNotFoundError } from '@logux/actions';
+import type { List } from '@picker/protocol';
 
 import { lists } from '../db/index.js';
-import type { List } from '@picker/protocol';
 
 const modelName = 'lists';
 
+const [createAction, changeAction, deleteAction, _createdAction, _changedAction, _deletedAction] =
+	defineSyncMapActions<List>(modelName);
+
 export default (server: BaseServer): void => {
 	addSyncMap<List>(server, modelName, {
-		access: () => true,
+		access: async (ctx, id, action) => {
+			if (createAction.match(action)) {
+                // can't impersonate another user
+				return ctx.userId === action.fields.userId;
+			} else if (changeAction.match(action)) {
+				const list = await lists.find({ id });
+                // can change own lists
+				return ctx.userId === list?.userId;
+			} else if (deleteAction.match(action)) {
+				const list = await lists.find({ id });
+                // can delete own lists
+				return ctx.userId === list?.userId;
+			} else {
+				return false;
+			}
+		},
 
 		load: async (_, id) => {
 			const list = await lists.find({ id });

@@ -6,16 +6,42 @@ import {
 	NoConflictResolution,
 	SyncMapData
 } from '@logux/server';
-import { LoguxNotFoundError } from '@logux/actions';
-
-import { items } from '../db/index.js';
+import { defineSyncMapActions, LoguxNotFoundError } from '@logux/actions';
 import type { Item } from '@picker/protocol';
+
+import { items, lists } from '../db/index.js';
 
 const modelName = 'items';
 
+const [createAction, changeAction, deleteAction, _createdAction, _changedAction, _deletedAction] =
+	defineSyncMapActions<Item>(modelName);
+
 export default (server: BaseServer): void => {
 	addSyncMap<Item>(server, modelName, {
-		access: () => true,
+		access: async (ctx, id, action) => {
+			if (createAction.match(action)) {
+                // can't impersonate another user
+				return ctx.userId === action.fields.userId;
+			} else if (changeAction.match(action)) {
+				const item = await items.find({ id });
+				if (!item) throw new LoguxNotFoundError();
+                // can change own items
+				if (ctx.userId === item?.userId) return true;
+				const list = await lists.find({ id: item.listId });
+                // can change items in own lists
+				return ctx.userId === list?.userId;
+			} else if (deleteAction.match(action)) {
+				const item = await items.find({ id });
+				if (!item) throw new LoguxNotFoundError();
+                // can delete own items
+				if (ctx.userId === item?.userId) return true;
+				const list = await lists.find({ id: item.listId });
+                // can delete items in own lists
+				return ctx.userId === list?.userId;
+			} else {
+				return false;
+			}
+		},
 
 		load: async (_, id) => {
 			const item = await items.find({ id });

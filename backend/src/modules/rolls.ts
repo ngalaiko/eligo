@@ -5,10 +5,10 @@ import {
 	NoConflictResolution,
 	SyncMapData
 } from '@logux/server';
-import { defineChangedSyncMap, LoguxNotFoundError } from '@logux/actions';
+import { defineSyncMapActions, LoguxNotFoundError } from '@logux/actions';
+import type { Roll, Item } from '@picker/protocol';
 
 import { rolls, items } from '../db/index.js';
-import type { Roll, Item } from '@picker/protocol';
 
 const modelName = 'rolls';
 
@@ -38,14 +38,20 @@ const weightedRandom = (weights: number[]) => {
 	return weights.length - 1;
 };
 
-const changedAction = defineChangedSyncMap<Roll>(modelName);
+const [createAction, _changeAction, _deleteAction, _createdAction, changedAction, _deletedAction] =
+	defineSyncMapActions<Roll>(modelName);
 
 export default (server: BaseServer): void => {
 	addSyncMap<Roll>(server, modelName, {
-		access: () => true,
-
+		access: async (ctx, _id, action) => {
+			if (createAction.match(action)) {
+				// can't impersonate another user
+				return ctx.userId === action.fields.userId;
+			} else {
+				return false;
+			}
+		},
 		load: async (_, id) => {
-			// todo: await roll creation
 			const roll = await rolls.find({ id });
 			if (!roll) throw new LoguxNotFoundError();
 			return {

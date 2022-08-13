@@ -38,7 +38,7 @@ const weightedRandom = (weights: number[]) => {
 	return weights.length - 1;
 };
 
-const [createAction, _changeAction, _deleteAction, _createdAction, changedAction, _deletedAction] =
+const [createAction, changeAction, deleteAction, _createdAction, changedAction, _deletedAction] =
 	defineSyncMapActions<Roll>(modelName);
 
 export default (server: BaseServer): void => {
@@ -47,8 +47,14 @@ export default (server: BaseServer): void => {
 			if (createAction.match(action)) {
 				// can't impersonate another user
 				return ctx.userId === action.fields.userId;
+            } else if (changeAction.match(action)) {
+                // rolls are immutable
+                return false
+            } else if (deleteAction.match(action)) {
+                // rolls are immutable
+                return false
 			} else {
-				return false;
+				return true;
 			}
 		},
 		load: async (_, id) => {

@@ -3,10 +3,8 @@ import { keys, users } from '../db/index.js';
 import { SignJWT, generateKeyPair, jwtVerify } from 'jose';
 import { compare, hash } from 'bcrypt';
 import { nanoid } from 'nanoid';
-import { IncomingMessage, ServerResponse } from 'http';
+import { IncomingMessage } from 'http';
 import { User } from '@picker/protocol';
-
-const authCookieName = 'token';
 
 export default async (server: BaseServer): Promise<void> => {
 	const { keyId, privateKey, keyAlg } = await generateKeyPair('ES256').then(
@@ -103,23 +101,12 @@ export default async (server: BaseServer): Promise<void> => {
 		});
 	};
 
-	const setAuthCookie = (res: ServerResponse, token: string) => {
-		const expires = new Date();
-		const oneMonth = 30 * 24 * 60 * 60 * 1000;
-		expires.setTime(expires.getTime() + oneMonth);
-		res.setHeader(
-			'Set-Cookie',
-			`${authCookieName}=${token}; Path=/; HttpOnly; Expires=${expires.toUTCString()}`
-		);
-	};
-
 	server.http((req, res) => {
 		if (req.url === '/users') {
 			if (req.method === 'POST') {
 				signUp(req)
 					.then(async (user) => {
 						const token = await newToken(user);
-						setAuthCookie(res, token);
 						res.setHeader('Content-Type', 'application/json');
 						res.end(JSON.stringify({ id: user.id, name: user.name, token }));
 					})
@@ -142,7 +129,6 @@ export default async (server: BaseServer): Promise<void> => {
 				signIn(req)
 					.then(async (user) => {
 						const token = await newToken(user);
-						setAuthCookie(res, token);
 						res.setHeader('Content-Type', 'application/json');
 						res.end(JSON.stringify({ id: user.id, name: user.name, token }));
 					})
@@ -156,6 +142,29 @@ export default async (server: BaseServer): Promise<void> => {
 							res.end('Internal server error');
 						}
 					});
+			} else if (req.method === 'GET') {
+				const [type, token] = req.headers.authorization?.split(' ') || [];
+				if (type.toLowerCase() !== 'bearer') {
+					res.statusCode = 401;
+					res.end();
+					return;
+				}
+				verifyJWT(token)
+					.then(({ payload }) => users.find({ id: payload.sub }))
+					.then((user) => {
+						if (!user) {
+							res.statusCode = 401;
+							res.end();
+							return;
+						}
+						res.setHeader('Content-Type', 'application/json');
+						res.end(JSON.stringify({ id: user.id, name: user.name, token: token }));
+					})
+					.catch((err) => {
+						console.error(err);
+						res.statusCode = 500;
+						res.end('Internal server error');
+					});
 			} else {
 				res.statusCode = 405;
 				res.end();
@@ -167,9 +176,9 @@ export default async (server: BaseServer): Promise<void> => {
 	});
 
 	server.auth(
-		({ userId, cookie }) =>
+		({ userId, token }) =>
 			userId === 'anonymous' ||
-			verifyJWT(cookie[authCookieName])
+			verifyJWT(token)
 				.then(({ payload }) => payload.sub === userId)
 				.catch(() => false)
 	);

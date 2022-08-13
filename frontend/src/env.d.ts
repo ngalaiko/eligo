@@ -1,10 +1,10 @@
 declare namespace App {
 	interface Session {
-		userId?: string;
+		user?: import('@picker/protocol').User;
 		token?: string;
 	}
 	interface Locals {
-		userId: string;
+		user?: import('@picker/protocol').User;
 		token?: string;
 	}
 }

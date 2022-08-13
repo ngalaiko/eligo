@@ -39,7 +39,7 @@ export default (server: BaseServer): void => {
                 // can delete items in own lists
 				return ctx.userId === list?.userId;
 			} else {
-				return false;
+				return true;
 			}
 		},
 

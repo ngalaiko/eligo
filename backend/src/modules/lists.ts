@@ -24,7 +24,7 @@ export default (server: BaseServer): void => {
                 // can delete own lists
 				return ctx.userId === list?.userId;
 			} else {
-				return false;
+				return true;
 			}
 		},
 

@@ -19,7 +19,7 @@
 		client = new Client({
 			server: 'ws://127.0.0.1:31337/',
 			subprotocol,
-			userId: $session.userId ?? 'anonymous',
+			userId: $session.user?.id ?? 'anonymous',
 			token: $session.token
 		});
 
@@ -31,7 +31,7 @@
 		return () => client.destroy();
 	});
 	session.subscribe((session) => {
-		client?.changeUser(session.userId ?? 'anonymous', session.token);
+		client?.changeUser(session.user?.id ?? 'anonymous', session.token);
 	});
 </script>
 

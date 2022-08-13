@@ -1,26 +1,23 @@
 import type { GetSession, Handle } from '@sveltejs/kit';
 import { parse } from 'cookie';
-
-const extractJWTSubject = (token: string) => {
-	const [_headers, payload, _signature] = token.split('.');
-	try {
-		const { sub } = JSON.parse(payload);
-		return sub;
-	} catch {
-		return undefined;
-	}
-};
+import { host as apiHost } from '$lib/api';
 
 export const handle: Handle = async ({ event, resolve }) => {
 	const { token } = parse(event.request.headers.get('cookie') ?? '');
-	if (token) {
-		const sub = extractJWTSubject(token);
-		event.locals.token = token;
-		event.locals.userId = sub;
-	}
+	if (!token) return await resolve(event);
+
+	const res = await fetch(new URL('/auth', apiHost), {
+		headers: { authorization: `Bearer ${token}` }
+	});
+	if (res.status !== 200) return await resolve(event);
+
+	const { id, name } = await res.json();
+	event.locals.token = token;
+	event.locals.user = { id, name };
+
 	return await resolve(event);
 };
 
 export const getSession: GetSession = async (event) => {
-	return { userId: event.locals.userId, token: event.locals.token };
+	return { user: event.locals.user, token: event.locals.token };
 };

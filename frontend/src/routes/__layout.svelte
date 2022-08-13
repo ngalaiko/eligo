@@ -2,7 +2,7 @@
 	import { Context } from '$lib/logux';
 	import { session } from '$app/stores';
 
-	let name = '';
+	let username = '';
 	let password = '';
 	let error: string | null = null;
 
@@ -25,15 +25,15 @@
 		error = null;
 		await fetch('/api/users', {
 			method: 'POST',
-			body: JSON.stringify({ name, password }),
+			body: JSON.stringify({ name: username, password }),
 			credentials: 'include'
 		}).then((res) =>
 			res.status === 200
-				? res.json().then(({ id, token }) => {
-						name = '';
+				? res.json().then(({ id, name, token }) => {
+						username = '';
 						password = '';
 						$session = {
-							userId: id,
+							user: { id, name },
 							token
 						};
 				  })
@@ -48,15 +48,15 @@
 		error = null;
 		await fetch('/api/auth', {
 			method: 'POST',
-			body: JSON.stringify({ name, password }),
+			body: JSON.stringify({ name: username, password }),
 			credentials: 'include'
 		}).then((res) =>
 			res.status === 200
-				? res.json().then(({ id, token }) => {
-						name = '';
+				? res.json().then(({ id, name, token }) => {
+						username = '';
 						password = '';
 						$session = {
-							userId: id,
+							user: { id, name },
 							token
 						};
 				  })
@@ -71,13 +71,16 @@
 <Context>
 	<header>
 		{#if $session.token}
-			<button on:click|preventDefault={logout}>logout</button>
+			<div>
+				{$session.user.name}
+				<button on:click|preventDefault={logout}>logout</button>
+			</div>
 		{:else}
 			<form>
-				<input name="username" type="text" placeholder="username" bind:value={name} />
+				<input name="username" type="text" placeholder="username" bind:value={username} />
 				<input id="password" type="password" placeholder="password" bind:value={password} />
-				<button on:click|preventDefault={login} disabled={!name || !password}>login</button>
-				<button on:click|preventDefault={signup} disabled={!name || !password}>signup</button>
+				<button on:click|preventDefault={login} disabled={!username || !password}>login</button>
+				<button on:click|preventDefault={signup} disabled={!username || !password}>signup</button>
 			</form>
 		{/if}
 		{#if error}

@@ -1,7 +1,6 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { serialize } from 'cookie';
-
-const apiHost = 'http://127.0.0.1:31337/';
+import { host as apiHost } from '$lib/api';
 
 export const DELETE: RequestHandler = () => ({
 	status: 204,

@@ -47,12 +47,12 @@ export default (server: BaseServer): void => {
 			if (createAction.match(action)) {
 				// can't impersonate another user
 				return ctx.userId === action.fields.userId;
-            } else if (changeAction.match(action)) {
-                // rolls are immutable
-                return false
-            } else if (deleteAction.match(action)) {
-                // rolls are immutable
-                return false
+			} else if (changeAction.match(action)) {
+				// rolls are immutable
+				return false;
+			} else if (deleteAction.match(action)) {
+				// rolls are immutable
+				return false;
 			} else {
 				return true;
 			}
@@ -73,14 +73,14 @@ export default (server: BaseServer): void => {
 
 			// actually roll
 			const randomItemId = await Promise.all([
-				items.list({ listId: fields.listId }),
-				rolls.list({ listId: fields.listId })
+				items.filter({ listId: fields.listId }),
+				rolls.filter({ listId: fields.listId })
 			]).then(([items, rolls]) => {
 				if (items.length === 0) throw new LoguxNotFoundError();
 				return nextRoll(items, rolls);
 			});
 			const patch = { itemId: randomItemId };
-			await rolls.change(roll.id, patch);
+			await rolls.update(roll.id, patch);
 
 			// send back rolled item
 			await server.process(changedAction({ id: roll.id, fields: patch }));
@@ -90,7 +90,7 @@ export default (server: BaseServer): void => {
 	addSyncMapFilter<Roll>(server, modelName, {
 		access: () => true,
 		initial: (_, filter) =>
-			rolls.list(filter).then((rolls) =>
+			rolls.filter(filter).then((rolls) =>
 				rolls.map(
 					({ id, listId, itemId }) =>
 						({

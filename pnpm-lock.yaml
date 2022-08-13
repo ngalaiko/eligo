@@ -16,6 +16,7 @@ importers:
       '@velit/protocol': workspace:*
       bcrypt: ^5.0.1
       jose: ^4.8.3
+      lowdb: ^3.0.0
       nanoid: ^4.0.0
       node-dev: ^7.4.3
       prettier: ^2.6.2
@@ -27,6 +28,7 @@ importers:
       '@velit/protocol': link:../protocol
       bcrypt: 5.0.1
       jose: 4.8.3
+      lowdb: 3.0.0
       nanoid: 4.0.0
     devDependencies:
       '@logux/actions': 0.2.3_@logux+core@0.7.3
@@ -1569,6 +1571,13 @@ packages:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
     dev: true
 
+  /lowdb/3.0.0:
+    resolution: {integrity: sha512-9KZRulmIcU8fZuWiaM0d5e2/nPnrFyXkeXVpqT+MJS+vgbgOf1EbtvgQmba8HwUFgDl1oeZR6XqEJnkJmQdKmg==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+    dependencies:
+      steno: 2.1.0
+    dev: false
+
   /lru-cache/6.0.0:
     resolution: {integrity: sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==}
     engines: {node: '>=10'}
@@ -2113,6 +2122,11 @@ packages:
   /split2/4.1.0:
     resolution: {integrity: sha512-VBiJxFkxiXRlUIeyMQi8s4hgvKCSjtknJv/LVYbrgALPwf5zSKmEwV9Lst25AkvMDnvxODugjdl6KZgwKM1WYQ==}
     engines: {node: '>= 10.x'}
+    dev: false
+
+  /steno/2.1.0:
+    resolution: {integrity: sha512-mauOsiaqTNGFkWqIfwcm3y/fq+qKKaIWf1vf3ocOuTdco9XoHCO2AGF1gFYXuZFSWuP38Q8LBHBGJv2KnJSXyA==}
+    engines: {node: ^14.13.1 || >=16.0.0}
     dev: false
 
   /stream-combiner/0.0.4:

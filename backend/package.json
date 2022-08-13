@@ -12,6 +12,7 @@
 		"@velit/protocol": "workspace:*",
 		"bcrypt": "^5.0.1",
 		"jose": "^4.8.3",
+		"lowdb": "^3.0.0",
 		"nanoid": "^4.0.0"
 	},
 	"devDependencies": {

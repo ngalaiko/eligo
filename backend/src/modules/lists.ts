@@ -13,15 +13,15 @@ export default (server: BaseServer): void => {
 	addSyncMap<List>(server, modelName, {
 		access: async (ctx, id, action) => {
 			if (createAction.match(action)) {
-                // can't impersonate another user
+				// can't impersonate another user
 				return ctx.userId === action.fields.userId;
 			} else if (changeAction.match(action)) {
 				const list = await lists.find({ id });
-                // can change own lists
+				// can change own lists
 				return ctx.userId === list?.userId;
 			} else if (deleteAction.match(action)) {
 				const list = await lists.find({ id });
-                // can delete own lists
+				// can delete own lists
 				return ctx.userId === list?.userId;
 			} else {
 				return true;
@@ -48,7 +48,7 @@ export default (server: BaseServer): void => {
 		change: async (_, id, fields) => {
 			const list = await lists.find({ id });
 			if (!list) throw new LoguxNotFoundError();
-			await lists.change(id, fields);
+			await lists.update(id, fields);
 		},
 
 		delete: (_, id) => lists.delete(id)
@@ -57,19 +57,14 @@ export default (server: BaseServer): void => {
 	addSyncMapFilter<List>(server, modelName, {
 		access: () => true,
 		initial: async (_, filter) =>
-			lists.list().then((lists) =>
-				lists
-					.filter(({ id }) => {
-						if (filter?.id) return id === filter.id;
-						return true;
-					})
-					.map(
-						({ id, title, titleChangeTime }) =>
-							({
-								id,
-								title: ChangedAt(title, titleChangeTime)
-							} as SyncMapData<List>)
-					)
+			lists.filter(filter).then((lists) =>
+				lists.map(
+					({ id, title, titleChangeTime }) =>
+						({
+							id,
+							title: ChangedAt(title, titleChangeTime)
+						} as SyncMapData<List>)
+				)
 			)
 	});
 };

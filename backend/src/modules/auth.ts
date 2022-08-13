@@ -1,6 +1,6 @@
 import { BaseServer } from '@logux/server';
 import { keys, users } from '../db/index.js';
-import { SignJWT, generateKeyPair, jwtVerify } from 'jose';
+import { SignJWT, generateKeyPair, jwtVerify, exportSPKI, importSPKI } from 'jose';
 import { compare, hash } from 'bcrypt';
 import { nanoid } from 'nanoid';
 import { IncomingMessage } from 'http';
@@ -8,11 +8,11 @@ import { User } from '@velit/protocol';
 
 export default async (server: BaseServer): Promise<void> => {
 	const { keyId, privateKey, keyAlg } = await generateKeyPair('ES256').then(
-		({ privateKey, publicKey }) =>
+		async ({ privateKey, publicKey }) =>
 			keys
 				.create({
 					id: nanoid(),
-					publicKey,
+					spki: await exportSPKI(publicKey),
 					alg: 'ES256'
 				})
 				.then(({ id }) => ({ keyId: id, privateKey, keyAlg: 'ES256' }))
@@ -23,7 +23,7 @@ export default async (server: BaseServer): Promise<void> => {
 			if (!headers.kid) throw new Error('Missing kid');
 			return keys.find({ id: headers.kid }).then((key) => {
 				if (!key) throw new Error('Key not found');
-				return key.publicKey;
+				return importSPKI(key.spki, key.alg);
 			});
 		});
 

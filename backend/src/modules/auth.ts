@@ -1,12 +1,12 @@
 import { BaseServer } from '@logux/server';
-import { keys, users } from '../db/index.js';
+import { Keys, Users } from '../db/index.js';
 import { SignJWT, generateKeyPair, jwtVerify, exportSPKI, importSPKI } from 'jose';
 import { compare, hash } from 'bcrypt';
 import { nanoid } from 'nanoid';
 import { IncomingMessage } from 'http';
 import { User } from '@velit/protocol';
 
-export default async (server: BaseServer): Promise<void> => {
+export default async (server: BaseServer, keys: Keys, users: Users): Promise<void> => {
 	const { keyId, privateKey, keyAlg } = await generateKeyPair('ES256').then(
 		async ({ privateKey, publicKey }) =>
 			keys

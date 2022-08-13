@@ -8,7 +8,7 @@ import {
 import { defineSyncMapActions, LoguxNotFoundError } from '@logux/actions';
 import type { Roll, Item } from '@velit/protocol';
 
-import { rolls, items } from '../db/index.js';
+import { Rolls, Items } from '../db/index.js';
 
 const modelName = 'rolls';
 
@@ -41,7 +41,7 @@ const weightedRandom = (weights: number[]) => {
 const [createAction, changeAction, deleteAction, _createdAction, changedAction, _deletedAction] =
 	defineSyncMapActions<Roll>(modelName);
 
-export default (server: BaseServer): void => {
+export default (server: BaseServer, rolls: Rolls, items: Items): void => {
 	addSyncMap<Roll>(server, modelName, {
 		access: async (ctx, _id, action) => {
 			if (createAction.match(action)) {

@@ -1,7 +1,5 @@
 import type { List, Item, User, Roll } from '@velit/protocol';
 import { JSONFile, Low } from 'lowdb';
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
 
 export type ItemRecord = {
 	textChangeTime: number;
@@ -86,47 +84,52 @@ const openDB = (filepath: string) => {
 	};
 };
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const file = join(__dirname, 'db.json');
-const db = openDB(file);
-
-// todo: generate this
-export const items = {
-	create: (item: ItemRecord) => db.create('items', item),
-	update: (id: string, value: Partial<ItemRecord>) => db.update('items', id, value),
-	find: (filter: Partial<ItemRecord>) => db.find('items', filter),
-	filter: (filter: Partial<Omit<ItemRecord, 'id'>> = {}) => db.filter('items', filter),
-	delete: (id: string) => db.delete('items', id)
+const createDB = (filepath: string) => {
+	const db = openDB(filepath);
+	// todo: generate this
+	return {
+		items: {
+			create: (item: ItemRecord) => db.create('items', item),
+			update: (id: string, value: Partial<ItemRecord>) => db.update('items', id, value),
+			find: (filter: Partial<ItemRecord>) => db.find('items', filter),
+			filter: (filter: Partial<Omit<ItemRecord, 'id'>> = {}) => db.filter('items', filter),
+			delete: (id: string) => db.delete('items', id)
+		},
+		lists: {
+			create: (list: ListRecord) => db.create('lists', list),
+			update: (id: string, value: Partial<ListRecord>) => db.update('lists', id, value),
+			find: (filter: Partial<ListRecord>) => db.find('lists', filter),
+			filter: (filter: Partial<Omit<ListRecord, 'id'>> = {}) => db.filter('lists', filter),
+			delete: (id: string) => db.delete('lists', id)
+		},
+		rolls: {
+			create: (roll: RollRecord) => db.create('rolls', roll),
+			update: (id: string, value: Partial<RollRecord>) => db.update('rolls', id, value),
+			find: (filter: Partial<RollRecord>) => db.find('rolls', filter),
+			filter: (filter: Partial<Omit<RollRecord, 'id'>> = {}) => db.filter('rolls', filter),
+			delete: (id: string) => db.delete('rolls', id)
+		},
+		users: {
+			create: (user: UserRecord) => db.create('users', user),
+			update: (id: string, value: Partial<UserRecord>) => db.update('users', id, value),
+			find: (filter: Partial<UserRecord>) => db.find('users', filter),
+			filter: (filter: Partial<Omit<UserRecord, 'id'>> = {}) => db.filter('users', filter),
+			delete: (id: string) => db.delete('users', id)
+		},
+		keys: {
+			create: (key: KeyRecord) => db.create('keys', key),
+			update: (id: string, value: Partial<KeyRecord>) => db.update('keys', id, value),
+			find: (filter: Partial<KeyRecord>) => db.find('keys', filter),
+			filter: (filter: Partial<Omit<KeyRecord, 'id'>> = {}) => db.filter('keys', filter),
+			delete: (id: string) => db.delete('keys', id)
+		}
+	};
 };
 
-export const lists = {
-	create: (list: ListRecord) => db.create('lists', list),
-	update: (id: string, value: Partial<ListRecord>) => db.update('lists', id, value),
-	find: (filter: Partial<ListRecord>) => db.find('lists', filter),
-	filter: (filter: Partial<Omit<ListRecord, 'id'>> = {}) => db.filter('lists', filter),
-	delete: (id: string) => db.delete('lists', id)
-};
+export type Items = ReturnType<typeof createDB>['items'];
+export type Lists = ReturnType<typeof createDB>['lists'];
+export type Rolls = ReturnType<typeof createDB>['rolls'];
+export type Users = ReturnType<typeof createDB>['users'];
+export type Keys = ReturnType<typeof createDB>['keys'];
 
-export const rolls = {
-	create: (roll: RollRecord) => db.create('rolls', roll),
-	update: (id: string, value: Partial<RollRecord>) => db.update('rolls', id, value),
-	find: (filter: Partial<RollRecord>) => db.find('rolls', filter),
-	filter: (filter: Partial<Omit<RollRecord, 'id'>> = {}) => db.filter('rolls', filter),
-	delete: (id: string) => db.delete('rolls', id)
-};
-
-export const users = {
-	create: (user: UserRecord) => db.create('users', user),
-	update: (id: string, value: Partial<UserRecord>) => db.update('users', id, value),
-	find: (filter: Partial<UserRecord>) => db.find('users', filter),
-	filter: (filter: Partial<Omit<UserRecord, 'id'>> = {}) => db.filter('users', filter),
-	delete: (id: string) => db.delete('users', id)
-};
-
-export const keys = {
-	create: (key: KeyRecord) => db.create('keys', key),
-	update: (id: string, value: Partial<KeyRecord>) => db.update('keys', id, value),
-	find: (filter: Partial<KeyRecord>) => db.find('keys', filter),
-	filter: (filter: Partial<Omit<KeyRecord, 'id'>> = {}) => db.filter('keys', filter),
-	delete: (id: string) => db.delete('keys', id)
-};
+export default createDB;

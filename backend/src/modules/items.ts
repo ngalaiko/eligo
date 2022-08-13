@@ -9,14 +9,14 @@ import {
 import { defineSyncMapActions, LoguxNotFoundError } from '@logux/actions';
 import type { Item } from '@velit/protocol';
 
-import { items, lists } from '../db/index.js';
+import { Items, Lists } from '../db/index.js';
 
 const modelName = 'items';
 
 const [createAction, changeAction, deleteAction, _createdAction, _changedAction, _deletedAction] =
 	defineSyncMapActions<Item>(modelName);
 
-export default (server: BaseServer): void => {
+export default (server: BaseServer, items: Items, lists: Lists): void => {
 	addSyncMap<Item>(server, modelName, {
 		access: async (ctx, id, action) => {
 			if (createAction.match(action)) {

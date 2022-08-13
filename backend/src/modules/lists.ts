@@ -1,4 +1,11 @@
-import { addSyncMap, addSyncMapFilter, BaseServer, ChangedAt, SyncMapData } from '@logux/server';
+import {
+	addSyncMap,
+	addSyncMapFilter,
+	BaseServer,
+	ChangedAt,
+	NoConflictResolution,
+	SyncMapData
+} from '@logux/server';
 import { defineSyncMapActions, LoguxNotFoundError } from '@logux/actions';
 import type { List } from '@velit/protocol';
 
@@ -33,7 +40,8 @@ export default (server: BaseServer, lists: Lists): void => {
 			if (!list) throw new LoguxNotFoundError();
 			return {
 				id,
-				title: ChangedAt(list.title, list.titleChangeTime)
+				title: ChangedAt(list.title, list.titleChangeTime),
+				userId: NoConflictResolution(list.userId)
 			} as SyncMapData<List>;
 		},
 
@@ -62,10 +70,11 @@ export default (server: BaseServer, lists: Lists): void => {
 		initial: async (_, filter) =>
 			lists.filter(filter).then((lists) =>
 				lists.map(
-					({ id, title, titleChangeTime }) =>
+					({ id, title, titleChangeTime, userId }) =>
 						({
 							id,
-							title: ChangedAt(title, titleChangeTime)
+							title: ChangedAt(title, titleChangeTime),
+							userId: NoConflictResolution(userId)
 						} as SyncMapData<List>)
 				)
 			)

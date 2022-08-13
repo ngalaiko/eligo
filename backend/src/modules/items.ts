@@ -49,7 +49,8 @@ export default (server: BaseServer, items: Items, lists: Lists): void => {
 			return {
 				id,
 				listId: NoConflictResolution(item.listId),
-				text: ChangedAt(item.text, item.textChangeTime)
+				text: ChangedAt(item.text, item.textChangeTime),
+				userId: NoConflictResolution(item.userId)
 			} as SyncMapData<Item>;
 		},
 
@@ -78,11 +79,12 @@ export default (server: BaseServer, items: Items, lists: Lists): void => {
 		initial: (_ctx, filter) =>
 			items.filter(filter).then((lists) =>
 				lists.map(
-					({ id, text, listId, textChangeTime }) =>
+					({ id, text, listId, textChangeTime, userId }) =>
 						({
 							id,
 							listId: NoConflictResolution(listId),
-							text: ChangedAt(text, textChangeTime)
+							text: ChangedAt(text, textChangeTime),
+							userId: NoConflictResolution(userId)
 						} as SyncMapData<Item>)
 				)
 			)

@@ -16,11 +16,11 @@ export const handle: Handle = async ({ event, resolve }) => {
 	if (token) {
 		const sub = extractJWTSubject(token);
 		event.locals.token = token;
-		event.locals.user = { id: sub, name: '?' };
+		event.locals.userId = sub;
 	}
 	return await resolve(event);
 };
 
 export const getSession: GetSession = async (event) => {
-	return { user: event.locals.user, token: event.locals.token };
+	return { userId: event.locals.userId, token: event.locals.token };
 };

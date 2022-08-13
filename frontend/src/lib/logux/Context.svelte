@@ -14,11 +14,12 @@
 		markReady = resolve;
 	});
 
+	let client: Client;
 	onMount(() => {
-		const client = new Client({
+		client = new Client({
 			server: 'ws://127.0.0.1:31337/',
 			subprotocol,
-			userId: $session.user?.id ?? 'anonymous',
+			userId: $session.userId ?? 'anonymous',
 			token: $session.token
 		});
 
@@ -28,6 +29,9 @@
 		log(client);
 		client.start();
 		return () => client.destroy();
+	});
+	session.subscribe((session) => {
+		client?.changeUser(session.userId ?? 'anonymous', session.token);
 	});
 </script>
 

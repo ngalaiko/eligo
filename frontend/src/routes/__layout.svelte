@@ -29,11 +29,11 @@
 			credentials: 'include'
 		}).then((res) =>
 			res.status === 200
-				? res.json().then(({ id, name, token }) => {
+				? res.json().then(({ id, token }) => {
 						name = '';
 						password = '';
 						$session = {
-							user: { id, name },
+							userId: id,
 							token
 						};
 				  })
@@ -52,11 +52,11 @@
 			credentials: 'include'
 		}).then((res) =>
 			res.status === 200
-				? res.json().then(({ id, name, token }) => {
+				? res.json().then(({ id, token }) => {
 						name = '';
 						password = '';
 						$session = {
-							user: { id, name },
+							userId: id,
 							token
 						};
 				  })
@@ -70,7 +70,7 @@
 
 <Context>
 	<header>
-		{#if $session.user}
+		{#if $session.token}
 			<button on:click|preventDefault={logout}>logout</button>
 		{:else}
 			<form>

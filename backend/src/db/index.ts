@@ -18,6 +18,7 @@ export type KeyRecord = {
 export type RollRecord = Roll;
 
 export type UserRecord = User & {
+	nameChangeTime: number;
 	hash: string;
 };
 

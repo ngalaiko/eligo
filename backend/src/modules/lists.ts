@@ -45,10 +45,13 @@ export default (server: BaseServer, lists: Lists): void => {
 			});
 		},
 
-		change: async (_, id, fields) => {
+		change: async (_, id, fields, time) => {
 			const list = await lists.find({ id });
 			if (!list) throw new LoguxNotFoundError();
-			await lists.update(id, fields);
+			await lists.update(id, {
+				...fields,
+				titleChangeTime: fields.title ? time : undefined
+			});
 		},
 
 		delete: (_, id) => lists.delete(id)

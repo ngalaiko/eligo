@@ -1,28 +1,82 @@
 <script lang="ts">
-	import { useLists, createList } from '$lib/lists';
-	import { useClient } from '$lib/logux';
 	import { session } from '$app/stores';
 
-	const client = useClient();
-	const lists = useLists();
+	let username = '';
+	let password = '';
+	let error: string | null = null;
 
-	let title: string = '';
-	const create = async () => {
-		if (!title) return;
-		if (!$session.user) return;
-		await createList(client, { title, userId: $session.user.id }).then(() => (title = ''));
+	const signup = async () => {
+		error = null;
+		await fetch('/api/users', {
+			method: 'POST',
+			body: JSON.stringify({ name: username, password }),
+			credentials: 'include'
+		}).then((res) =>
+			res.status === 200
+				? res.json().then(({ id, name, token }) => {
+						username = '';
+						password = '';
+						$session = {
+							user: { id, name },
+							token
+						};
+				  })
+				: res.text().then((text) => {
+						console.error(text);
+						error = text;
+				  })
+		);
+	};
+
+	const login = async () => {
+		error = null;
+		await fetch('/api/auth', {
+			method: 'POST',
+			body: JSON.stringify({ name: username, password }),
+			credentials: 'include'
+		}).then((res) =>
+			res.status === 200
+				? res.json().then(({ id, name, token }) => {
+						username = '';
+						password = '';
+						$session = {
+							user: { id, name },
+							token
+						};
+				  })
+				: res.text().then((text) => {
+						console.error(text);
+						error = text;
+				  })
+		);
 	};
 </script>
 
-{#await lists.loading then}
-	<h1>lists:</h1>
-	<form on:submit|preventDefault={create}>
-		<input type="text" name="title" bind:value={title} />
-		<button disabled={!title || !$session.user}>new list</button>
+{#if $session.token}
+	<a href="/lists">Lists</a>
+{:else}
+	<form>
+		<div>
+			<input
+				id="username"
+				name="username"
+				type="text"
+				placeholder="username"
+				bind:value={username}
+			/>
+			<input
+				id="password"
+				name="password"
+				type="password"
+				placeholder="password"
+				bind:value={password}
+			/>
+		</div>
+
+		<button on:click|preventDefault={login} disabled={!username || !password}>login</button>
+		<button on:click|preventDefault={signup} disabled={!username || !password}>signup</button>
 	</form>
-	<ul>
-		{#each $lists.list as { id, title }}
-			<li><a href={`/lists/${id}`}>{title}</a></li>
-		{/each}
-	</ul>
-{/await}
+	{#if error}
+		<div>{error}</div>
+	{/if}
+{/if}

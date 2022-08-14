@@ -7,17 +7,16 @@
 </script>
 
 <script lang="ts">
-	import { createItem, useItems } from '$lib/items';
-	import { createRoll, useRolls } from '$lib/rolls';
-	import { useLists } from '$lib/lists';
+	import { createItem, useItems, Card as ItemCard } from '$lib/items';
+	import { createRoll, useRolls, Card as RollCard } from '$lib/rolls';
+	import { useList } from '$lib/lists';
 	import { useClient } from '$lib/logux';
 	import { session } from '$app/stores';
 
 	export let listId: string;
 
 	const client = useClient();
-	const lists = useLists();
-	$: list = $lists.list.find((list) => list.id === listId);
+	const list = useList(listId);
 	const items = useItems({ listId });
 	const rolls = useRolls({ listId });
 
@@ -34,19 +33,17 @@
 	};
 </script>
 
-{#if $lists.isLoading}
+{#if $list.isLoading}
 	loading...
-{:else if !list}
-	not found
-{:else}
-	<h1>{list.title}</h1>
+{:else if $list.isLoading === false}
+	<h1>{$list.title}</h1>
 	<form on:submit|preventDefault={create}>
 		<input type="text" name="title" bind:value={text} />
 		<button disabled={!text || !$session.user}>new item</button>
 	</form>
 	<ul>
 		{#each $items.list as item}
-			<li>{item.text}</li>
+			<li><ItemCard {item} /></li>
 		{/each}
 		{#if $items.isLoading}
 			<li>loading...</li>
@@ -58,12 +55,7 @@
 	<button disabled={$items.isEmpty || !$session.user} on:click={roll}>roll</button>
 	<ul>
 		{#each $rolls.list as roll}
-			{@const rolledItem = $items.list.find((list) => list.id === roll.itemId)}
-			{#if rolledItem}
-				<li>{rolledItem.text}</li>
-			{:else}
-				<li>rolling...</li>
-			{/if}
+			<li><RollCard {roll} /></li>
 		{/each}
 	</ul>
 {/if}

@@ -2,6 +2,7 @@
 	import { useLists, createList } from '$lib/lists';
 	import { useClient } from '$lib/logux';
 	import { session } from '$app/stores';
+	import { Card as ListCard } from '$lib/lists';
 
 	const client = useClient();
 	const lists = useLists();
@@ -21,8 +22,8 @@
 		<button disabled={!title || !$session.user}>new list</button>
 	</form>
 	<ul>
-		{#each $lists.list as { id, title }}
-			<li><a href={`/lists/${id}`}>{title}</a></li>
+		{#each $lists.list as list}
+			<li><ListCard {list} /></li>
 		{/each}
 	</ul>
 {/await}

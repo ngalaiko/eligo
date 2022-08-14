@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { session } from '$app/stores';
+	import { goto } from '$app/navigation';
+	import { session, page } from '$app/stores';
+	import { browser } from '$app/env';
 
 	let username = '';
 	let password = '';
@@ -50,6 +52,11 @@
 				  })
 		);
 	};
+
+	session.subscribe((session) => {
+		const to = $page.url.searchParams.get('redirect') || '/lists/';
+		if (browser && session.user && $page.url.pathname !== to) goto(to);
+	});
 </script>
 
 {#if $session.token}

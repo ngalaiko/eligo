@@ -1,4 +1,6 @@
-import { useFilter } from '$lib/logux';
+export { default as Card } from './Card.svelte';
+
+import { useFilter, useSync } from '$lib/logux';
 import { createSyncMap, syncMapTemplate } from '@logux/client';
 import type { Filter, FilterOptions, Client } from '@logux/client';
 import type { Item } from '@velit/protocol';
@@ -14,3 +16,5 @@ export const createItem = (client: Client, fields: Omit<Item, 'id'>) =>
 
 export const useItems = (filter?: Filter<Item>, opts?: FilterOptions) =>
 	useFilter<Item>(store, filter, opts);
+
+export const useItem = (id: string) => useSync(store, id);

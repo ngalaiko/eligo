@@ -6,21 +6,21 @@ import {
 	SyncMapData
 } from '@logux/server';
 import { defineSyncMapActions, LoguxNotFoundError } from '@logux/actions';
-import type { Roll, Item } from '@velit/protocol';
+import type { Pick, Item } from '@eligo/protocol';
 
-import { Rolls, Items } from '../db/index.js';
+import { Picks, Items } from '../db/index.js';
 
-const modelName = 'rolls';
+const modelName = 'picks';
 
-const nextRoll = (items: Item[], rolls: Roll[]): string => {
+const pickNext = (items: Item[], picks: Pick[]): string => {
 	const itemIds = items.map((item) => item.id);
-	let itemIdsHistory = rolls.filter(({ itemId }) => itemId).map(({ itemId }) => itemId!);
+	let itemIdsHistory = picks.filter(({ itemId }) => itemId).map(({ itemId }) => itemId!);
 	itemIdsHistory = itemIdsHistory.slice(Math.max(itemIdsHistory.length - itemIds.length, 0));
 	const weights = itemIds.map((itemId) => {
-		const rolledAgo = itemIdsHistory.length - itemIdsHistory.lastIndexOf(itemId);
-		const wasRolled = rolledAgo !== -1;
-		if (!wasRolled) return itemIds.length;
-		return rolledAgo;
+		const pickedAgo = itemIdsHistory.length - itemIdsHistory.lastIndexOf(itemId);
+		const wasPicked = pickedAgo !== -1;
+		if (!wasPicked) return itemIds.length;
+		return pickedAgo;
 	});
 	return itemIds[weightedRandom(weights)];
 };
@@ -39,61 +39,61 @@ const weightedRandom = (weights: number[]) => {
 };
 
 const [createAction, changeAction, deleteAction, _createdAction, changedAction, _deletedAction] =
-	defineSyncMapActions<Roll>(modelName);
+	defineSyncMapActions<Pick>(modelName);
 
-export default (server: BaseServer, rolls: Rolls, items: Items): void => {
-	addSyncMap<Roll>(server, modelName, {
+export default (server: BaseServer, picks: Picks, items: Items): void => {
+	addSyncMap<Pick>(server, modelName, {
 		access: async (ctx, _id, action) => {
 			if (createAction.match(action)) {
 				// can't impersonate another user
 				return ctx.userId === action.fields.userId;
 			} else if (changeAction.match(action)) {
-				// rolls are immutable
+				// picks are immutable
 				return false;
 			} else if (deleteAction.match(action)) {
-				// rolls are immutable
+				// picks are immutable
 				return false;
 			} else {
 				return true;
 			}
 		},
 		load: async (_, id) => {
-			const roll = await rolls.find({ id });
-			if (!roll) throw new LoguxNotFoundError();
+			const pick = await picks.find({ id });
+			if (!pick) throw new LoguxNotFoundError();
 			return {
 				id,
-				listId: NoConflictResolution(roll.listId),
-				itemId: NoConflictResolution(roll.itemId),
-				userId: NoConflictResolution(roll.userId),
-				createTime: NoConflictResolution(roll.createTime)
-			} as SyncMapData<Roll>;
+				listId: NoConflictResolution(pick.listId),
+				itemId: NoConflictResolution(pick.itemId),
+				userId: NoConflictResolution(pick.userId),
+				createTime: NoConflictResolution(pick.createTime)
+			} as SyncMapData<Pick>;
 		},
 
 		create: async (_ctx, id, fields, _time, _action) => {
-			// create roll in the db
-			const roll = await rolls.create({ ...fields, id });
+			// create pick in the db
+			const pick = await picks.create({ ...fields, id });
 
-			// actually roll
+			// actually pick
 			const randomItemId = await Promise.all([
 				items.filter({ listId: fields.listId }),
-				rolls.filter({ listId: fields.listId })
-			]).then(([items, rolls]) => {
+				picks.filter({ listId: fields.listId })
+			]).then(([items, picks]) => {
 				if (items.length === 0) throw new LoguxNotFoundError();
-				return nextRoll(items, rolls);
+				return pickNext(items, picks);
 			});
 			const patch = { itemId: randomItemId };
-			await rolls.update(roll.id, patch);
+			await picks.update(pick.id, patch);
 
-			// send back rolled item
-			await server.process(changedAction({ id: roll.id, fields: patch }));
+			// send back picked item
+			await server.process(changedAction({ id: pick.id, fields: patch }));
 		}
 	});
 
-	addSyncMapFilter<Roll>(server, modelName, {
+	addSyncMapFilter<Pick>(server, modelName, {
 		access: () => true,
 		initial: (_, filter) =>
-			rolls.filter(filter).then((rolls) =>
-				rolls.map(
+			picks.filter(filter).then((picks) =>
+				picks.map(
 					({ id, listId, itemId, userId, createTime }) =>
 						({
 							id,
@@ -101,7 +101,7 @@ export default (server: BaseServer, rolls: Rolls, items: Items): void => {
 							itemId: NoConflictResolution(itemId),
 							userId: NoConflictResolution(userId),
 							createTime: NoConflictResolution(createTime)
-						} as SyncMapData<Roll>)
+						} as SyncMapData<Pick>)
 				)
 			)
 	});

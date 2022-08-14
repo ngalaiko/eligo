@@ -20,7 +20,7 @@ export type Item = {
 	createTime: number;
 };
 
-export type Roll = {
+export type Pick = {
 	id: string;
 	listId: string;
 	userId: string;

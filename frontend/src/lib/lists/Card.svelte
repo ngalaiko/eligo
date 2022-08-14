@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { useDistance } from '$lib/time';
 	import { useUser, Card as UserCard } from '$lib/users';
-	import type { List } from '@velit/protocol';
+	import type { List } from '@eligo/protocol';
 
 	export let list: List;
 	const user = useUser(list.userId);

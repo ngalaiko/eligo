@@ -1,23 +1,24 @@
 <script lang="ts">
-	import type { Roll } from '@velit/protocol';
+	import type { Pick } from '@eligo/protocol';
 	import { useItem } from '$lib/items';
 	import { useUser, Card as UserCard } from '$lib/users';
 	import { useDistance } from '$lib/time';
 
-	export let roll: Roll;
-	const user = useUser(roll.userId);
-	$: item = roll.itemId ? useItem(roll.itemId) : undefined;
-	const created = useDistance(roll.createTime);
+	export let pick: Pick;
+	const user = useUser(pick.userId);
+	$: item = pick.itemId ? useItem(pick.itemId) : undefined;
+	const created = useDistance(pick.createTime);
 </script>
 
 <div>
 	{#if $user.isLoading === false}
-		<UserCard user={$user} /> rolled
+		<UserCard user={$user} /> picked
 	{/if}
 	{#if !item}
-		rolling...
+		picking...
 	{:else if $item.isLoading === false}
 		{$item.text}
 		{$created}
+		{pick.id}
 	{/if}
 </div>

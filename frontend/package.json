@@ -1,5 +1,5 @@
 {
-	"name": "@velit/frontend",
+	"name": "@eligo/frontend",
 	"private": true,
 	"scripts": {
 		"dev": "vite dev",
@@ -28,7 +28,7 @@
 	"type": "module",
 	"dependencies": {
 		"@logux/client": "^0.17.0",
-		"@velit/protocol": "workspace:*",
+		"@eligo/protocol": "workspace:*",
 		"cookie": "^0.5.0",
 		"date-fns": "^2.29.1",
 		"nanoid": "^4.0.0"

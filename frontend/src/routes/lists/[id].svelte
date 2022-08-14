@@ -8,7 +8,7 @@
 
 <script lang="ts">
 	import { createItem, useItems, Card as ItemCard } from '$lib/items';
-	import { createRoll, useRolls, Card as RollCard } from '$lib/rolls';
+	import { createPick, usePicks, Card as PickCard } from '$lib/picks';
 	import { useList } from '$lib/lists';
 	import { useClient } from '$lib/logux';
 	import { session } from '$app/stores';
@@ -19,7 +19,7 @@
 	const client = useClient();
 	const list = useList(listId);
 	const items = useItems({ listId });
-	const rolls = useRolls({ listId });
+	const picks = usePicks({ listId });
 
 	let text: string;
 	const create = async () => {
@@ -32,10 +32,10 @@
 			createTime: new Date().getTime()
 		}).then(() => (text = ''));
 	};
-	const roll = async () => {
+	const pick = async () => {
 		if (!$session.user?.id) return;
 		if ($items.isEmpty) return;
-		await createRoll(client, {
+		await createPick(client, {
 			listId,
 			userId: $session.user.id,
 			createTime: new Date().getTime()
@@ -63,10 +63,10 @@
 	<hr />
 
 	<h2>rolls</h2>
-	<button disabled={$items.isEmpty || !$session.user} on:click={roll}>roll</button>
+	<button disabled={$items.isEmpty || !$session.user} on:click={pick}>roll</button>
 	<ul>
-		{#each $rolls.list.sort((a, b) => compareDesc(a.createTime, b.createTime)) as roll}
-			<li><RollCard {roll} /></li>
+		{#each $picks.list.sort((a, b) => compareDesc(a.createTime, b.createTime)) as pick}
+			<li><PickCard {pick} /></li>
 		{/each}
 	</ul>
 {/if}

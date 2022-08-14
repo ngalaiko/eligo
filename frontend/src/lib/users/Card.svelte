@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { User } from '@velit/protocol';
+	import type { User } from '@eligo/protocol';
 	export let user: User;
 </script>
 

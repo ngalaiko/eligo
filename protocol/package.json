@@ -1,5 +1,5 @@
 {
-	"name": "@velit/protocol",
+	"name": "@eligo/protocol",
 	"private": true,
 	"main": "build/index.js",
 	"typings": "build/index.d.ts",

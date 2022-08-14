@@ -3,16 +3,16 @@ export { default as Card } from './Card.svelte';
 import { useFilter } from '$lib/logux';
 import { createSyncMap, syncMapTemplate, Client } from '@logux/client';
 import type { Filter, FilterOptions } from '@logux/client';
-import type { Roll } from '@velit/protocol';
+import type { Pick } from '@eligo/protocol';
 import { nanoid } from 'nanoid';
 
-const store = syncMapTemplate<Roll>('rolls');
+const store = syncMapTemplate<Pick>('picks');
 
-export const createRoll = (client: Client, fields: Omit<Roll, 'id'>) =>
+export const createPick = (client: Client, fields: Omit<Pick, 'id'>) =>
 	createSyncMap(client, store, {
 		...fields,
 		id: nanoid()
 	});
 
-export const useRolls = (filter?: Filter<Roll>, opts?: FilterOptions) =>
-	useFilter<Roll>(store, filter, opts);
+export const usePicks = (filter?: Filter<Pick>, opts?: FilterOptions) =>
+	useFilter<Pick>(store, filter, opts);

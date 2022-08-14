@@ -1,4 +1,4 @@
-import type { List, Item, User, Roll } from '@velit/protocol';
+import type { List, Item, User, Pick } from '@eligo/protocol';
 import { JSONFile, Low } from 'lowdb';
 
 export type ItemRecord = {
@@ -15,7 +15,7 @@ export type KeyRecord = {
 	alg: string;
 };
 
-export type RollRecord = Roll;
+export type PickRecord = Pick;
 
 export type UserRecord = User & {
 	nameChangeTime: number;
@@ -26,7 +26,7 @@ type Data = {
 	items: Record<string, ItemRecord>;
 	keys: Record<string, KeyRecord>;
 	lists: Record<string, ListRecord>;
-	rolls: Record<string, RollRecord>;
+	picks: Record<string, PickRecord>;
 	users: Record<string, UserRecord>;
 };
 
@@ -35,7 +35,7 @@ const openDB = (filepath: string) => {
 	const db = new Low(adapter);
 	const initDB = async () => {
 		await db.read();
-		db.data ||= { items: {}, lists: {}, rolls: {}, users: {}, keys: {} };
+		db.data ||= { items: {}, lists: {}, picks: {}, users: {}, keys: {} };
 	};
 	return {
 		create: async <K extends keyof Data>(key: K, value: Data[K][keyof Data[K]]) => {
@@ -103,12 +103,12 @@ const createDB = (filepath: string) => {
 			filter: (filter: Partial<Omit<ListRecord, 'id'>> = {}) => db.filter('lists', filter),
 			delete: (id: string) => db.delete('lists', id)
 		},
-		rolls: {
-			create: (roll: RollRecord) => db.create('rolls', roll),
-			update: (id: string, value: Partial<RollRecord>) => db.update('rolls', id, value),
-			find: (filter: Partial<RollRecord>) => db.find('rolls', filter),
-			filter: (filter: Partial<Omit<RollRecord, 'id'>> = {}) => db.filter('rolls', filter),
-			delete: (id: string) => db.delete('rolls', id)
+		picks: {
+			create: (roll: PickRecord) => db.create('picks', roll),
+			update: (id: string, value: Partial<PickRecord>) => db.update('picks', id, value),
+			find: (filter: Partial<PickRecord>) => db.find('picks', filter),
+			filter: (filter: Partial<Omit<PickRecord, 'id'>> = {}) => db.filter('picks', filter),
+			delete: (id: string) => db.delete('picks', id)
 		},
 		users: {
 			create: (user: UserRecord) => db.create('users', user),
@@ -129,7 +129,7 @@ const createDB = (filepath: string) => {
 
 export type Items = ReturnType<typeof createDB>['items'];
 export type Lists = ReturnType<typeof createDB>['lists'];
-export type Rolls = ReturnType<typeof createDB>['rolls'];
+export type Picks = ReturnType<typeof createDB>['picks'];
 export type Users = ReturnType<typeof createDB>['users'];
 export type Keys = ReturnType<typeof createDB>['keys'];
 

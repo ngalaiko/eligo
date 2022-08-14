@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { useUser, Card as UserCard } from '$lib/users';
-	import type { Item } from '@velit/protocol';
+	import type { Item } from '@eligo/protocol';
 	import { useDistance } from '$lib/time';
 
 	export let item: Item;

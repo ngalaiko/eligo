@@ -3,7 +3,7 @@ export { default as Card } from './Card.svelte';
 import { useFilter, useSync } from '$lib/logux';
 import { Client, createSyncMap, syncMapTemplate } from '@logux/client';
 import type { Filter, FilterOptions } from '@logux/client';
-import type { List } from '@velit/protocol';
+import type { List } from '@eligo/protocol';
 import { nanoid } from 'nanoid';
 
 const store = syncMapTemplate<List>('lists');

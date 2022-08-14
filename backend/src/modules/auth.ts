@@ -4,7 +4,7 @@ import { SignJWT, generateKeyPair, jwtVerify, exportSPKI, importSPKI } from 'jos
 import { compare, hash } from 'bcrypt';
 import { nanoid } from 'nanoid';
 import { IncomingMessage } from 'http';
-import { User } from '@velit/protocol';
+import { User } from '@eligo/protocol';
 
 export default async (server: BaseServer, keys: Keys, users: Users): Promise<void> => {
 	const { keyId, privateKey, keyAlg } = await generateKeyPair('ES256').then(

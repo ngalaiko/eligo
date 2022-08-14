@@ -1,6 +1,6 @@
 import { addSyncMap, addSyncMapFilter, BaseServer, ChangedAt, SyncMapData } from '@logux/server';
 import { defineSyncMapActions, LoguxNotFoundError } from '@logux/actions';
-import type { User } from '@velit/protocol';
+import type { User } from '@eligo/protocol';
 
 import { Users } from '../db/index.js';
 

@@ -23,7 +23,6 @@
 {#if $lists.isLoading}
 	loading...
 {:else}
-	<h1>lists:</h1>
 	<form on:submit|preventDefault={create}>
 		<input type="text" name="title" bind:value={title} />
 		<button disabled={!title || !$session.user}>new list</button>

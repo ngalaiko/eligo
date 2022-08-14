@@ -9,7 +9,6 @@
 <script lang="ts">
 	import { createItem, useItems, Card as ItemCard } from '$lib/items';
 	import { createPick, usePicks, Card as PickCard } from '$lib/picks';
-	import { useList } from '$lib/lists';
 	import { useClient } from '$lib/logux';
 	import { session } from '$app/stores';
 	import { compareAsc, compareDesc } from 'date-fns';
@@ -17,7 +16,6 @@
 	export let listId: string;
 
 	const client = useClient();
-	const list = useList(listId);
 	const items = useItems({ listId });
 	const picks = usePicks({ listId });
 
@@ -43,30 +41,25 @@
 	};
 </script>
 
-{#if $list.isLoading}
-	loading...
-{:else if $list.isLoading === false}
-	<h1>{$list.title}</h1>
-	<form on:submit|preventDefault={create}>
-		<input type="text" name="title" bind:value={text} />
-		<button disabled={!text || !$session.user}>new item</button>
-	</form>
-	<ul>
-		{#each $items.list.sort((a, b) => compareAsc(a.createTime, b.createTime)) as item}
-			<li><ItemCard {item} /></li>
-		{/each}
-		{#if $items.isLoading}
-			<li>loading...</li>
-		{/if}
-	</ul>
+<form on:submit|preventDefault={create}>
+	<input type="text" name="title" bind:value={text} />
+	<button disabled={!text || !$session.user}>new item</button>
+</form>
+<ul>
+	{#each $items.list.sort((a, b) => compareAsc(a.createTime, b.createTime)) as item}
+		<li><ItemCard {item} /></li>
+	{/each}
+	{#if $items.isLoading}
+		<li>loading...</li>
+	{/if}
+</ul>
 
-	<hr />
+<hr />
 
-	<h2>rolls</h2>
-	<button disabled={$items.isEmpty || !$session.user} on:click={pick}>roll</button>
-	<ul>
-		{#each $picks.list.sort((a, b) => compareDesc(a.createTime, b.createTime)) as pick}
-			<li><PickCard {pick} /></li>
-		{/each}
-	</ul>
-{/if}
+<h2>rolls</h2>
+<button disabled={$items.isEmpty || !$session.user} on:click={pick}>roll</button>
+<ul>
+	{#each $picks.list.sort((a, b) => compareDesc(a.createTime, b.createTime)) as pick}
+		<li><PickCard {pick} /></li>
+	{/each}
+</ul>

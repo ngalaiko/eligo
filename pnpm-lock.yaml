@@ -57,6 +57,7 @@ importers:
       '@typescript-eslint/parser': ^5.27.0
       '@velit/protocol': workspace:*
       cookie: ^0.5.0
+      date-fns: ^2.29.1
       eslint: ^8.16.0
       eslint-config-prettier: ^8.3.0
       eslint-plugin-svelte3: ^4.0.0
@@ -73,6 +74,7 @@ importers:
       '@logux/client': 0.17.0_cdjag4gur464gfepqcn54orpdu
       '@velit/protocol': link:../protocol
       cookie: 0.5.0
+      date-fns: 2.29.1
       nanoid: 4.0.0
     devDependencies:
       '@logux/actions': 0.2.3_@logux+core@0.7.3
@@ -769,6 +771,11 @@ packages:
       shebang-command: 2.0.0
       which: 2.0.2
     dev: true
+
+  /date-fns/2.29.1:
+    resolution: {integrity: sha512-dlLD5rKaKxpFdnjrs+5azHDFOPEu4ANy/LTh04A1DTzMM7qoajmKCBc8pkKRFT41CNzw+4gQh79X5C+Jq27HAw==}
+    engines: {node: '>=0.11'}
+    dev: false
 
   /dateformat/3.0.3:
     resolution: {integrity: sha512-jyCETtSl3VMZMWeRo7iY1FL19ges1t55hMo5yaam4Jrsm5EPL89UQkoQRyiI+Yf4k8r2ZpdngkV8hr1lIdjb3Q==}

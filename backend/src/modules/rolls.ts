@@ -64,7 +64,8 @@ export default (server: BaseServer, rolls: Rolls, items: Items): void => {
 				id,
 				listId: NoConflictResolution(roll.listId),
 				itemId: NoConflictResolution(roll.itemId),
-				userId: NoConflictResolution(roll.userId)
+				userId: NoConflictResolution(roll.userId),
+				createTime: NoConflictResolution(roll.createTime)
 			} as SyncMapData<Roll>;
 		},
 
@@ -93,12 +94,13 @@ export default (server: BaseServer, rolls: Rolls, items: Items): void => {
 		initial: (_, filter) =>
 			rolls.filter(filter).then((rolls) =>
 				rolls.map(
-					({ id, listId, itemId, userId }) =>
+					({ id, listId, itemId, userId, createTime }) =>
 						({
 							id,
 							listId: NoConflictResolution(listId),
 							itemId: NoConflictResolution(itemId),
-							userId: NoConflictResolution(userId)
+							userId: NoConflictResolution(userId),
+							createTime: NoConflictResolution(createTime)
 						} as SyncMapData<Roll>)
 				)
 			)

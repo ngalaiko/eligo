@@ -3,6 +3,7 @@
 	import { useClient } from '$lib/logux';
 	import { session } from '$app/stores';
 	import { Card as ListCard } from '$lib/lists';
+	import { compareAsc } from 'date-fns';
 
 	const client = useClient();
 	const lists = useLists();
@@ -11,19 +12,25 @@
 	const create = async () => {
 		if (!title) return;
 		if (!$session.user) return;
-		await createList(client, { title, userId: $session.user.id }).then(() => (title = ''));
+		await createList(client, {
+			title,
+			userId: $session.user.id,
+			createTime: new Date().getTime()
+		}).then(() => (title = ''));
 	};
 </script>
 
-{#await lists.loading then}
+{#if $lists.isLoading}
+	loading...
+{:else}
 	<h1>lists:</h1>
 	<form on:submit|preventDefault={create}>
 		<input type="text" name="title" bind:value={title} />
 		<button disabled={!title || !$session.user}>new list</button>
 	</form>
 	<ul>
-		{#each $lists.list as list}
+		{#each $lists.list.sort((a, b) => compareAsc(a.createTime, b.createTime)) as list}
 			<li><ListCard {list} /></li>
 		{/each}
 	</ul>
-{/await}
+{/if}

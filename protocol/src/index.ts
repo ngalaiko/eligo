@@ -9,6 +9,7 @@ export type List = {
 	id: string;
 	title: string;
 	userId: string;
+	createTime: number;
 };
 
 export type Item = {
@@ -16,6 +17,7 @@ export type Item = {
 	text: string;
 	listId: string;
 	userId: string;
+	createTime: number;
 };
 
 export type Roll = {
@@ -23,4 +25,5 @@ export type Roll = {
 	listId: string;
 	userId: string;
 	itemId?: string;
+	createTime: number;
 };

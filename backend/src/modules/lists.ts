@@ -41,7 +41,8 @@ export default (server: BaseServer, lists: Lists): void => {
 			return {
 				id,
 				title: ChangedAt(list.title, list.titleChangeTime),
-				userId: NoConflictResolution(list.userId)
+				userId: NoConflictResolution(list.userId),
+				createTime: NoConflictResolution(list.createTime)
 			} as SyncMapData<List>;
 		},
 
@@ -70,11 +71,12 @@ export default (server: BaseServer, lists: Lists): void => {
 		initial: async (_, filter) =>
 			lists.filter(filter).then((lists) =>
 				lists.map(
-					({ id, title, titleChangeTime, userId }) =>
+					({ id, title, titleChangeTime, userId, createTime }) =>
 						({
 							id,
 							title: ChangedAt(title, titleChangeTime),
-							userId: NoConflictResolution(userId)
+							userId: NoConflictResolution(userId),
+							createTime: NoConflictResolution(createTime)
 						} as SyncMapData<List>)
 				)
 			)

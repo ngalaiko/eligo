@@ -12,6 +12,7 @@
 	import { useList } from '$lib/lists';
 	import { useClient } from '$lib/logux';
 	import { session } from '$app/stores';
+	import { compareAsc, compareDesc } from 'date-fns';
 
 	export let listId: string;
 
@@ -24,12 +25,21 @@
 	const create = async () => {
 		if (!text) return;
 		if (!$session.user?.id) return;
-		await createItem(client, { listId, text, userId: $session.user.id }).then(() => (text = ''));
+		await createItem(client, {
+			listId,
+			text,
+			userId: $session.user.id,
+			createTime: new Date().getTime()
+		}).then(() => (text = ''));
 	};
 	const roll = async () => {
 		if (!$session.user?.id) return;
 		if ($items.isEmpty) return;
-		await createRoll(client, { listId, userId: $session.user.id });
+		await createRoll(client, {
+			listId,
+			userId: $session.user.id,
+			createTime: new Date().getTime()
+		});
 	};
 </script>
 
@@ -42,7 +52,7 @@
 		<button disabled={!text || !$session.user}>new item</button>
 	</form>
 	<ul>
-		{#each $items.list as item}
+		{#each $items.list.sort((a, b) => compareAsc(a.createTime, b.createTime)) as item}
 			<li><ItemCard {item} /></li>
 		{/each}
 		{#if $items.isLoading}
@@ -51,10 +61,11 @@
 	</ul>
 
 	<hr />
+
 	<h2>rolls</h2>
 	<button disabled={$items.isEmpty || !$session.user} on:click={roll}>roll</button>
 	<ul>
-		{#each $rolls.list as roll}
+		{#each $rolls.list.sort((a, b) => compareDesc(a.createTime, b.createTime)) as roll}
 			<li><RollCard {roll} /></li>
 		{/each}
 	</ul>

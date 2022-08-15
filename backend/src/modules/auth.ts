@@ -1,5 +1,5 @@
 import { BaseServer } from '@logux/server';
-import { Keys, Users } from '../db/index.js';
+import { Keys, UserRecord, Users } from '../db/index.js';
 import { SignJWT, generateKeyPair, jwtVerify, exportSPKI, importSPKI } from 'jose';
 import { compare, hash } from 'bcrypt';
 import { nanoid } from 'nanoid';
@@ -35,15 +35,15 @@ export default async (server: BaseServer, keys: Keys, users: Users): Promise<voi
 		}
 	}
 
-	const newToken = ({ id }: User) =>
+	const newToken = ({ sub }: { sub: string }) =>
 		new SignJWT({})
-			.setSubject(id)
+			.setSubject(sub)
 			.setProtectedHeader({ kid: keyId, alg: keyAlg })
 			.setExpirationTime('30d')
 			.setIssuedAt()
 			.sign(privateKey);
 
-	const signIn = (req: IncomingMessage): Promise<User> => {
+	const signIn = (req: IncomingMessage): Promise<UserRecord> => {
 		let data = '';
 		req.on('data', (chunk) => {
 			data += chunk;
@@ -77,7 +77,7 @@ export default async (server: BaseServer, keys: Keys, users: Users): Promise<voi
 		}
 	};
 
-	const signUp = (req: IncomingMessage): Promise<User> => {
+	const signUp = (req: IncomingMessage): Promise<User & { id: string }> => {
 		let data = '';
 		req.on('data', (chunk) => {
 			data += chunk;
@@ -108,7 +108,7 @@ export default async (server: BaseServer, keys: Keys, users: Users): Promise<voi
 			if (req.method === 'POST') {
 				signUp(req)
 					.then(async (user) => {
-						const token = await newToken(user);
+						const token = await newToken({ sub: user.id });
 						res.setHeader('Content-Type', 'application/json');
 						res.end(JSON.stringify({ id: user.id, name: user.name, token }));
 					})
@@ -130,7 +130,7 @@ export default async (server: BaseServer, keys: Keys, users: Users): Promise<voi
 			if (req.method === 'POST') {
 				signIn(req)
 					.then(async (user) => {
-						const token = await newToken(user);
+						const token = await newToken({ sub: user.id });
 						res.setHeader('Content-Type', 'application/json');
 						res.end(JSON.stringify({ id: user.id, name: user.name, token }));
 					})

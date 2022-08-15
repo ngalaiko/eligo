@@ -1,4 +1,4 @@
-import { addSyncMap, addSyncMapFilter, BaseServer, ChangedAt, SyncMapData } from '@logux/server';
+import { addSyncMap, addSyncMapFilter, BaseServer, ChangedAt } from '@logux/server';
 import { defineSyncMapActions, LoguxNotFoundError } from '@logux/actions';
 import type { User } from '@eligo/protocol';
 
@@ -39,7 +39,7 @@ export default (server: BaseServer, users: Users): void => {
 			return {
 				id,
 				name: ChangedAt(user.name, user.nameChangeTime)
-			} as SyncMapData<User>;
+			};
 		}
 	});
 
@@ -47,13 +47,10 @@ export default (server: BaseServer, users: Users): void => {
 		access: () => true,
 		initial: (_, filter) =>
 			users.filter(filter).then((users) =>
-				users.map(
-					(user) =>
-						({
-							id: user.id,
-							name: ChangedAt(user.name, user.nameChangeTime)
-						} as SyncMapData<User>)
-				)
+				users.map((user) => ({
+					id: user.id,
+					name: ChangedAt(user.name, user.nameChangeTime)
+				}))
 			)
 	});
 };

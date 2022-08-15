@@ -3,8 +3,7 @@ import {
 	addSyncMapFilter,
 	BaseServer,
 	ChangedAt,
-	NoConflictResolution,
-	SyncMapData
+	NoConflictResolution
 } from '@logux/server';
 import { defineSyncMapActions, LoguxNotFoundError } from '@logux/actions';
 import type { Item } from '@eligo/protocol';
@@ -52,7 +51,7 @@ export default (server: BaseServer, items: Items, lists: Lists): void => {
 				text: ChangedAt(item.text, item.textChangeTime),
 				userId: NoConflictResolution(item.userId),
 				createTime: NoConflictResolution(item.createTime)
-			} as SyncMapData<Item>;
+			};
 		},
 
 		create: (_ctx, id, fields, time) => {
@@ -79,16 +78,13 @@ export default (server: BaseServer, items: Items, lists: Lists): void => {
 		access: () => true,
 		initial: (_ctx, filter) =>
 			items.filter(filter).then((lists) =>
-				lists.map(
-					({ id, text, listId, textChangeTime, userId, createTime }) =>
-						({
-							id,
-							listId: NoConflictResolution(listId),
-							text: ChangedAt(text, textChangeTime),
-							userId: NoConflictResolution(userId),
-							createTime: NoConflictResolution(createTime)
-						} as SyncMapData<Item>)
-				)
+				lists.map(({ id, text, listId, textChangeTime, userId, createTime }) => ({
+					id,
+					listId: NoConflictResolution(listId),
+					text: ChangedAt(text, textChangeTime),
+					userId: NoConflictResolution(userId),
+					createTime: NoConflictResolution(createTime)
+				}))
 			)
 	});
 };

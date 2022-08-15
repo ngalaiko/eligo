@@ -2,10 +2,12 @@ import type { List, Item, User, Pick } from '@eligo/protocol';
 import { JSONFile, Low } from 'lowdb';
 
 export type ItemRecord = {
+	id: string;
 	textChangeTime: number;
 } & Item;
 
 export type ListRecord = {
+	id: string;
 	titleChangeTime: number;
 } & List;
 
@@ -15,9 +17,12 @@ export type KeyRecord = {
 	alg: string;
 };
 
-export type PickRecord = Pick;
+export type PickRecord = Pick & {
+	id: string;
+};
 
 export type UserRecord = User & {
+	id: string;
 	nameChangeTime: number;
 	hash: string;
 };
@@ -45,7 +50,10 @@ const openDB = (filepath: string) => {
 			await db.write();
 			return value;
 		},
-		find: async <K extends keyof Data>(key: K, filter: Partial<Data[K][keyof Data[K]]>) => {
+		find: async <K extends keyof Data>(
+			key: K,
+			filter: Partial<Data[K][keyof Data[K]]>
+		): Promise<Data[K][keyof Data[K]]> => {
 			await initDB();
 			if (!db.data) throw new Error('db.data is null');
 			// shortcut for finding by id

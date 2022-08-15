@@ -1,18 +1,12 @@
-import {
-	addSyncMap,
-	addSyncMapFilter,
-	BaseServer,
-	NoConflictResolution,
-	SyncMapData
-} from '@logux/server';
+import { addSyncMap, addSyncMapFilter, BaseServer, NoConflictResolution } from '@logux/server';
 import { defineSyncMapActions, LoguxNotFoundError } from '@logux/actions';
-import type { Pick, Item } from '@eligo/protocol';
+import type { Pick } from '@eligo/protocol';
 
-import { Picks, Items } from '../db/index.js';
+import { Picks, Items, ItemRecord } from '../db/index.js';
 
 const modelName = 'picks';
 
-const pickNext = (items: Item[], picks: Pick[]): string => {
+const pickNext = (items: ItemRecord[], picks: Pick[]): string => {
 	const itemIds = items.map((item) => item.id);
 	let itemIdsHistory = picks.filter(({ itemId }) => itemId).map(({ itemId }) => itemId!);
 	itemIdsHistory = itemIdsHistory.slice(Math.max(itemIdsHistory.length - itemIds.length, 0));
@@ -66,7 +60,7 @@ export default (server: BaseServer, picks: Picks, items: Items): void => {
 				itemId: NoConflictResolution(pick.itemId),
 				userId: NoConflictResolution(pick.userId),
 				createTime: NoConflictResolution(pick.createTime)
-			} as SyncMapData<Pick>;
+			};
 		},
 
 		create: async (_ctx, id, fields, _time, _action) => {
@@ -93,16 +87,13 @@ export default (server: BaseServer, picks: Picks, items: Items): void => {
 		access: () => true,
 		initial: (_, filter) =>
 			picks.filter(filter).then((picks) =>
-				picks.map(
-					({ id, listId, itemId, userId, createTime }) =>
-						({
-							id,
-							listId: NoConflictResolution(listId),
-							itemId: NoConflictResolution(itemId),
-							userId: NoConflictResolution(userId),
-							createTime: NoConflictResolution(createTime)
-						} as SyncMapData<Pick>)
-				)
+				picks.map(({ id, listId, itemId, userId, createTime }) => ({
+					id,
+					listId: NoConflictResolution(listId),
+					itemId: NoConflictResolution(itemId),
+					userId: NoConflictResolution(userId),
+					createTime: NoConflictResolution(createTime)
+				}))
 			)
 	});
 };

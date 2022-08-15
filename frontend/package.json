@@ -4,7 +4,8 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
-		"preview": "vite preview"
+		"preview": "vite preview",
+		"lint": "prettier --check . --config ../.prettierrc --ignore-path ./.gitignore --ignore-path .gitignore --plugin prettier-plugin-svelte --plugin-search-dir=."
 	},
 	"devDependencies": {
 		"@logux/actions": "^0.2.3",

@@ -4,7 +4,8 @@
 	"main": "build/index.js",
 	"typings": "build/index.d.ts",
 	"scripts": {
-		"build": "tsc"
+		"build": "tsc",
+		"lint": "prettier --check . --config ../.prettierrc --ignore-path ./.gitignore --ignore-path .gitignore"
 	},
 	"type": "module",
 	"devDependencies": {

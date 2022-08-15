@@ -8,6 +8,7 @@ export type List = {
 	title: string;
 	userId: string;
 	createTime: number;
+	invitatationId?: string;
 };
 
 export type Item = {

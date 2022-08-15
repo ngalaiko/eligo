@@ -3,17 +3,26 @@ import {
 	addSyncMapFilter,
 	BaseServer,
 	ChangedAt,
-	NoConflictResolution
+	NoConflictResolution,
+	SyncMapData
 } from '@logux/server';
 import { defineSyncMapActions, LoguxNotFoundError } from '@logux/actions';
 import type { List } from '@eligo/protocol';
 
-import { Lists } from '../db/index.js';
+import { ListRecord, Lists } from '../db/index.js';
 
 const modelName = 'lists';
 
 const [createAction, changeAction, deleteAction, _createdAction, _changedAction, _deletedAction] =
 	defineSyncMapActions<List>(modelName);
+
+const toSyncMapValue = (list: ListRecord): SyncMapData<List> => ({
+	id: list.id,
+	title: ChangedAt(list.title, list.titleChangeTime),
+	userId: NoConflictResolution(list.userId),
+	createTime: NoConflictResolution(list.createTime),
+	invitatationId: ChangedAt(list.invitatationId, list.invitationIdChangeTime)
+});
 
 export default (server: BaseServer, lists: Lists): void => {
 	addSyncMap<List>(server, modelName, {
@@ -37,19 +46,15 @@ export default (server: BaseServer, lists: Lists): void => {
 		load: async (_, id) => {
 			const list = await lists.find({ id });
 			if (!list) throw new LoguxNotFoundError();
-			return {
-				id,
-				title: ChangedAt(list.title, list.titleChangeTime),
-				userId: NoConflictResolution(list.userId),
-				createTime: NoConflictResolution(list.createTime)
-			};
+			return toSyncMapValue(list);
 		},
 
 		create: (_ctx, id, fields, time) => {
 			lists.create({
 				...fields,
 				id,
-				titleChangeTime: time
+				titleChangeTime: time,
+				invitationIdChangeTime: time
 			});
 		},
 
@@ -58,7 +63,8 @@ export default (server: BaseServer, lists: Lists): void => {
 			if (!list) throw new LoguxNotFoundError();
 			await lists.update(id, {
 				...fields,
-				titleChangeTime: fields.title ? time : undefined
+				titleChangeTime: fields.title ? time : undefined,
+				invitationIdChangeTime: fields.invitatationId ? time : undefined
 			});
 		},
 
@@ -67,14 +73,6 @@ export default (server: BaseServer, lists: Lists): void => {
 
 	addSyncMapFilter<List>(server, modelName, {
 		access: () => true,
-		initial: async (_, filter) =>
-			lists.filter(filter).then((lists) =>
-				lists.map(({ id, title, titleChangeTime, userId, createTime }) => ({
-					id,
-					title: ChangedAt(title, titleChangeTime),
-					userId: NoConflictResolution(userId),
-					createTime: NoConflictResolution(createTime)
-				}))
-			)
+		initial: async (_, filter) => lists.filter(filter).then((lists) => lists.map(toSyncMapValue))
 	});
 };

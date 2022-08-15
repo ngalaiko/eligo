@@ -9,6 +9,7 @@ export type ItemRecord = {
 export type ListRecord = {
 	id: string;
 	titleChangeTime: number;
+	invitationIdChangeTime: number;
 } & List;
 
 export type KeyRecord = {

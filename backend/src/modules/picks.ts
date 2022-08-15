@@ -1,8 +1,14 @@
-import { addSyncMap, addSyncMapFilter, BaseServer, NoConflictResolution } from '@logux/server';
+import {
+	addSyncMap,
+	addSyncMapFilter,
+	BaseServer,
+	NoConflictResolution,
+	SyncMapData
+} from '@logux/server';
 import { defineSyncMapActions, LoguxNotFoundError } from '@logux/actions';
 import type { Pick } from '@eligo/protocol';
 
-import { Picks, Items, ItemRecord } from '../db/index.js';
+import { Picks, Items, ItemRecord, PickRecord } from '../db/index.js';
 
 const modelName = 'picks';
 
@@ -35,6 +41,14 @@ const weightedRandom = (weights: number[]) => {
 const [createAction, changeAction, deleteAction, _createdAction, changedAction, _deletedAction] =
 	defineSyncMapActions<Pick>(modelName);
 
+const toSyncMapValue = (pick: PickRecord): SyncMapData<Pick> => ({
+	id: pick.id,
+	listId: NoConflictResolution(pick.listId),
+	itemId: NoConflictResolution(pick.itemId),
+	userId: NoConflictResolution(pick.userId),
+	createTime: NoConflictResolution(pick.createTime)
+});
+
 export default (server: BaseServer, picks: Picks, items: Items): void => {
 	addSyncMap<Pick>(server, modelName, {
 		access: async (ctx, _id, action) => {
@@ -54,13 +68,7 @@ export default (server: BaseServer, picks: Picks, items: Items): void => {
 		load: async (_, id) => {
 			const pick = await picks.find({ id });
 			if (!pick) throw new LoguxNotFoundError();
-			return {
-				id,
-				listId: NoConflictResolution(pick.listId),
-				itemId: NoConflictResolution(pick.itemId),
-				userId: NoConflictResolution(pick.userId),
-				createTime: NoConflictResolution(pick.createTime)
-			};
+			return toSyncMapValue(pick);
 		},
 
 		create: async (_ctx, id, fields, _time, _action) => {
@@ -85,15 +93,6 @@ export default (server: BaseServer, picks: Picks, items: Items): void => {
 
 	addSyncMapFilter<Pick>(server, modelName, {
 		access: () => true,
-		initial: (_, filter) =>
-			picks.filter(filter).then((picks) =>
-				picks.map(({ id, listId, itemId, userId, createTime }) => ({
-					id,
-					listId: NoConflictResolution(listId),
-					itemId: NoConflictResolution(itemId),
-					userId: NoConflictResolution(userId),
-					createTime: NoConflictResolution(createTime)
-				}))
-			)
+		initial: (_, filter) => picks.filter(filter).then((picks) => picks.map(toSyncMapValue))
 	});
 };

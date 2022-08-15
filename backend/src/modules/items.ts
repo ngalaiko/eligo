@@ -3,17 +3,26 @@ import {
 	addSyncMapFilter,
 	BaseServer,
 	ChangedAt,
-	NoConflictResolution
+	NoConflictResolution,
+	SyncMapData
 } from '@logux/server';
 import { defineSyncMapActions, LoguxNotFoundError } from '@logux/actions';
 import type { Item } from '@eligo/protocol';
 
-import { Items, Lists } from '../db/index.js';
+import { ItemRecord, Items, Lists } from '../db/index.js';
 
 const modelName = 'items';
 
 const [createAction, changeAction, deleteAction, _createdAction, _changedAction, _deletedAction] =
 	defineSyncMapActions<Item>(modelName);
+
+const toSyncMapValue = (item: ItemRecord): SyncMapData<Item> => ({
+	id: item.id,
+	listId: NoConflictResolution(item.listId),
+	text: ChangedAt(item.text, item.textChangeTime),
+	userId: NoConflictResolution(item.userId),
+	createTime: NoConflictResolution(item.createTime)
+});
 
 export default (server: BaseServer, items: Items, lists: Lists): void => {
 	addSyncMap<Item>(server, modelName, {
@@ -45,16 +54,10 @@ export default (server: BaseServer, items: Items, lists: Lists): void => {
 		load: async (_, id) => {
 			const item = await items.find({ id });
 			if (!item) throw new LoguxNotFoundError();
-			return {
-				id,
-				listId: NoConflictResolution(item.listId),
-				text: ChangedAt(item.text, item.textChangeTime),
-				userId: NoConflictResolution(item.userId),
-				createTime: NoConflictResolution(item.createTime)
-			};
+			return toSyncMapValue(item);
 		},
 
-		create: (_ctx, id, fields, time) => {
+		create: async (_ctx, id, fields, time) => {
 			items.create({
 				...fields,
 				id,
@@ -76,15 +79,6 @@ export default (server: BaseServer, items: Items, lists: Lists): void => {
 
 	addSyncMapFilter<Item>(server, modelName, {
 		access: () => true,
-		initial: (_ctx, filter) =>
-			items.filter(filter).then((lists) =>
-				lists.map(({ id, text, listId, textChangeTime, userId, createTime }) => ({
-					id,
-					listId: NoConflictResolution(listId),
-					text: ChangedAt(text, textChangeTime),
-					userId: NoConflictResolution(userId),
-					createTime: NoConflictResolution(createTime)
-				}))
-			)
+		initial: (_ctx, filter) => items.filter(filter).then((lists) => lists.map(toSyncMapValue))
 	});
 };

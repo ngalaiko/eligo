@@ -30,7 +30,7 @@ export default (server: BaseServer, users: Users): void => {
 			if (!user) throw new LoguxNotFoundError();
 			await users.update(id, {
 				...fields,
-				nameChangeTime: fields.name ? time : undefined
+				nameChangeTime: fields.name ? time : user.nameChangeTime
 			});
 		},
 		load: async (_, id) => {

@@ -1,4 +1,4 @@
-import type { List, Item, User, Pick } from '@eligo/protocol';
+import type { List, Item, User, Pick, Membership } from '@eligo/protocol';
 import { JSONFile, Low } from 'lowdb';
 
 export type ItemRecord = {
@@ -28,12 +28,17 @@ export type UserRecord = User & {
 	hash: string;
 };
 
+export type MembershipRecord = Membership & {
+	id: string;
+};
+
 type Data = {
 	items: Record<string, ItemRecord>;
 	keys: Record<string, KeyRecord>;
 	lists: Record<string, ListRecord>;
 	picks: Record<string, PickRecord>;
 	users: Record<string, UserRecord>;
+	memberships: Record<string, MembershipRecord>;
 };
 
 const openDB = (filepath: string) => {
@@ -41,7 +46,7 @@ const openDB = (filepath: string) => {
 	const db = new Low(adapter);
 	const initDB = async () => {
 		await db.read();
-		db.data ||= { items: {}, lists: {}, picks: {}, users: {}, keys: {} };
+		db.data ||= { items: {}, lists: {}, picks: {}, users: {}, keys: {}, memberships: {} };
 	};
 	return {
 		create: async <K extends keyof Data>(key: K, value: Data[K][keyof Data[K]]) => {
@@ -99,39 +104,47 @@ const createDB = (filepath: string) => {
 	// todo: generate this
 	return {
 		items: {
-			create: (item: ItemRecord) => db.create('items', item),
+			create: (value: ItemRecord) => db.create('items', value),
 			update: (id: string, value: Partial<ItemRecord>) => db.update('items', id, value),
 			find: (filter: Partial<ItemRecord>) => db.find('items', filter),
 			filter: (filter: Partial<Omit<ItemRecord, 'id'>> = {}) => db.filter('items', filter),
 			delete: (id: string) => db.delete('items', id)
 		},
 		lists: {
-			create: (list: ListRecord) => db.create('lists', list),
+			create: (value: ListRecord) => db.create('lists', value),
 			update: (id: string, value: Partial<ListRecord>) => db.update('lists', id, value),
 			find: (filter: Partial<ListRecord>) => db.find('lists', filter),
 			filter: (filter: Partial<Omit<ListRecord, 'id'>> = {}) => db.filter('lists', filter),
 			delete: (id: string) => db.delete('lists', id)
 		},
 		picks: {
-			create: (roll: PickRecord) => db.create('picks', roll),
+			create: (value: PickRecord) => db.create('picks', value),
 			update: (id: string, value: Partial<PickRecord>) => db.update('picks', id, value),
 			find: (filter: Partial<PickRecord>) => db.find('picks', filter),
 			filter: (filter: Partial<Omit<PickRecord, 'id'>> = {}) => db.filter('picks', filter),
 			delete: (id: string) => db.delete('picks', id)
 		},
 		users: {
-			create: (user: UserRecord) => db.create('users', user),
+			create: (value: UserRecord) => db.create('users', value),
 			update: (id: string, value: Partial<UserRecord>) => db.update('users', id, value),
 			find: (filter: Partial<UserRecord>) => db.find('users', filter),
 			filter: (filter: Partial<Omit<UserRecord, 'id'>> = {}) => db.filter('users', filter),
 			delete: (id: string) => db.delete('users', id)
 		},
 		keys: {
-			create: (key: KeyRecord) => db.create('keys', key),
+			create: (value: KeyRecord) => db.create('keys', value),
 			update: (id: string, value: Partial<KeyRecord>) => db.update('keys', id, value),
 			find: (filter: Partial<KeyRecord>) => db.find('keys', filter),
 			filter: (filter: Partial<Omit<KeyRecord, 'id'>> = {}) => db.filter('keys', filter),
 			delete: (id: string) => db.delete('keys', id)
+		},
+		memberships: {
+			create: (value: MembershipRecord) => db.create('memberships', value),
+			update: (id: string, value: Partial<MembershipRecord>) => db.update('memberships', id, value),
+			find: (filter: Partial<MembershipRecord>) => db.find('memberships', filter),
+			filter: (filter: Partial<Omit<MembershipRecord, 'id'>> = {}) =>
+				db.filter('memberships', filter),
+			delete: (id: string) => db.delete('memberships', id)
 		}
 	};
 };
@@ -141,5 +154,6 @@ export type Lists = ReturnType<typeof createDB>['lists'];
 export type Picks = ReturnType<typeof createDB>['picks'];
 export type Users = ReturnType<typeof createDB>['users'];
 export type Keys = ReturnType<typeof createDB>['keys'];
+export type Memberships = ReturnType<typeof createDB>['memberships'];
 
 export default createDB;

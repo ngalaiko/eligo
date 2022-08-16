@@ -8,6 +8,7 @@ import registerItemsModule from './modules/items.js';
 import registerListsModule from './modules/lists.js';
 import registerPicksModule from './modules/picks.js';
 import registerUsersModule from './modules/users.js';
+import registerMembershipsModule from './modules/memberships.js';
 
 const argv = yargs(process.argv.slice(2))
 	.usage('Usage: $0 <command> [options]')
@@ -26,12 +27,13 @@ const server = new Server(
 	})
 );
 
-const { keys, users, items, lists, picks } = openDB(argv.database);
+const { keys, users, items, lists, picks, memberships } = openDB(argv.database);
 
 await registerAuthModule(server, keys, users);
 registerItemsModule(server, items, lists);
 registerListsModule(server, lists);
 registerPicksModule(server, picks, items);
 registerUsersModule(server, users);
+registerMembershipsModule(server, memberships, lists);
 
 server.listen();

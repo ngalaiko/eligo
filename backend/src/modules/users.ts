@@ -6,7 +6,7 @@ import { Users } from '../db/index.js';
 
 const modelName = 'users';
 
-const [createAction, changeAction, deleteAction, _createdAction, _changedAction, _deletedAction] =
+const [createAction, changeAction, _deleteAction, _createdAction, _changedAction, _deletedAction] =
 	defineSyncMapActions<User>(modelName);
 
 export default (server: BaseServer, users: Users): void => {
@@ -18,9 +18,6 @@ export default (server: BaseServer, users: Users): void => {
 			} else if (changeAction.match(action)) {
 				// can't impersonate another user
 				return ctx.userId === id;
-			} else if (deleteAction.match(action)) {
-				// deletion is not implemented
-				return false;
 			} else {
 				return true;
 			}

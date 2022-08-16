@@ -38,7 +38,7 @@ const weightedRandom = (weights: number[]) => {
 	return weights.length - 1;
 };
 
-const [createAction, changeAction, deleteAction, _createdAction, changedAction, _deletedAction] =
+const [createAction, _changeAction, _deleteAction, _createdAction, changedAction, _deletedAction] =
 	defineSyncMapActions<Pick>(modelName);
 
 const toSyncMapValue = (pick: PickRecord): SyncMapData<Pick> => ({
@@ -55,12 +55,6 @@ export default (server: BaseServer, picks: Picks, items: Items): void => {
 			if (createAction.match(action)) {
 				// can't impersonate another user
 				return ctx.userId === action.fields.userId;
-			} else if (changeAction.match(action)) {
-				// picks are immutable
-				return false;
-			} else if (deleteAction.match(action)) {
-				// picks are immutable
-				return false;
 			} else {
 				return true;
 			}

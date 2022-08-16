@@ -11,6 +11,11 @@ export type List = {
 	invitatationId?: string;
 };
 
+export type Membership = {
+	listId: string;
+	userId: string;
+};
+
 export type Item = {
 	text: string;
 	listId: string;

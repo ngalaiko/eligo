@@ -8,15 +8,17 @@ I use it on a daily basis to decide where I should have a lunch at.
 ## architecture
 
 - [backend](./backend/) is a node app that runs [logux][]'s server node.
-it's used to sync data between client nodes, persist data and create pick items from lists.
+it's used to sync data between client nodes, persist data and pick items from lists.
 - [frontend](./frontend/) is a web app written in [sveltekit][].
-it renders ui and runs [logux][] client nodes to interact with one another.
+it renders ui and runs [logux][] client nodes.
 
 ## development
 
 ```
 $ pnpm dev
 ```
+
+Local database will be created as [./backend/database.dev.json](./backend/database.dev.json).
 
 [logux]: https://logux.io/
 [sveltekit]: https://sveltekit.io/

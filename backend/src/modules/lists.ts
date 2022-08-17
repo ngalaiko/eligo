@@ -3,13 +3,14 @@ import {
 	addSyncMapFilter,
 	BaseServer,
 	ChangedAt,
+	Context,
 	NoConflictResolution,
 	SyncMapData
 } from '@logux/server';
 import { defineSyncMapActions, LoguxNotFoundError } from '@logux/actions';
 import type { List } from '@eligo/protocol';
 
-import { ListRecord, Lists } from '../db/index.js';
+import { ListRecord, Lists, Memberships } from '../db/index.js';
 
 const modelName = 'lists';
 
@@ -24,7 +25,15 @@ const toSyncMapValue = (list: ListRecord): SyncMapData<List> => ({
 	invitatationId: ChangedAt(list.invitatationId, list.invitationIdChangeTime)
 });
 
-export default (server: BaseServer, lists: Lists): void => {
+export default (server: BaseServer, lists: Lists, memberships: Memberships): void => {
+	const canAccess = async (ctx: Context, list: ListRecord): Promise<boolean> => {
+		// owner can access
+		if (ctx.userId === list.userId) return true;
+		// members can access
+		const member = await memberships.find({ listId: list.id, userId: ctx.userId });
+		return !!member;
+	};
+
 	addSyncMap<List>(server, modelName, {
 		access: async (ctx, id, action) => {
 			if (createAction.match(action)) {
@@ -39,7 +48,9 @@ export default (server: BaseServer, lists: Lists): void => {
 				// can delete own lists
 				return ctx.userId === list?.userId;
 			} else {
-				return true;
+				const list = await lists.find({ id });
+				if (!list) throw new LoguxNotFoundError();
+				return canAccess(ctx, list);
 			}
 		},
 
@@ -72,7 +83,17 @@ export default (server: BaseServer, lists: Lists): void => {
 	});
 
 	addSyncMapFilter<List>(server, modelName, {
-		access: () => true,
-		initial: async (_, filter) => lists.filter(filter).then((lists) => lists.map(toSyncMapValue))
+		access: () => {
+			console.log('access');
+			return true;
+		},
+		initial: async (ctx, filter) =>
+			lists
+				.filter(filter)
+				.then(async (lists) => {
+					const hasAccess = await Promise.all(lists.map((list) => canAccess(ctx, list)));
+					return lists.filter((_, i) => hasAccess[i]);
+				})
+				.then((lists) => lists.map((list) => toSyncMapValue(list)))
 	});
 };

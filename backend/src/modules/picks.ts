@@ -3,12 +3,13 @@ import {
 	addSyncMapFilter,
 	BaseServer,
 	NoConflictResolution,
+	Context,
 	SyncMapData
 } from '@logux/server';
 import { defineSyncMapActions, LoguxNotFoundError } from '@logux/actions';
 import type { Pick } from '@eligo/protocol';
 
-import { Picks, Items, ItemRecord, PickRecord } from '../db/index.js';
+import { Picks, Items, ItemRecord, PickRecord, Memberships, Lists } from '../db/index.js';
 
 const modelName = 'picks';
 
@@ -38,7 +39,7 @@ const weightedRandom = (weights: number[]) => {
 	return weights.length - 1;
 };
 
-const [createAction, _changeAction, _deleteAction, _createdAction, changedAction, _deletedAction] =
+const [createAction, changeAction, deleteAction, _createdAction, changedAction, _deletedAction] =
 	defineSyncMapActions<Pick>(modelName);
 
 const toSyncMapValue = (pick: PickRecord): SyncMapData<Pick> => ({
@@ -49,14 +50,43 @@ const toSyncMapValue = (pick: PickRecord): SyncMapData<Pick> => ({
 	createTime: NoConflictResolution(pick.createTime)
 });
 
-export default (server: BaseServer, picks: Picks, items: Items): void => {
+export default (
+	server: BaseServer,
+	picks: Picks,
+	items: Items,
+	memberships: Memberships,
+	lists: Lists
+): void => {
+	const canAccess = async (ctx: Context, pick: PickRecord): Promise<boolean> => {
+		// owner can access
+		if (ctx.userId === pick.userId) return true;
+
+		// list owner can access
+		const list = await lists.find({ id: pick.listId });
+		if (ctx.userId === list.userId) return true;
+
+		// list members can access
+		const members = await memberships.filter({ listId: pick.listId });
+		const memberIds = members.map(({ userId }) => userId);
+		return memberIds.includes(ctx.userId);
+	};
+
 	addSyncMap<Pick>(server, modelName, {
-		access: async (ctx, _id, action) => {
+		access: async (ctx, id, action) => {
 			if (createAction.match(action)) {
 				// can't impersonate another user
 				return ctx.userId === action.fields.userId;
+			} else if (changeAction.match(action)) {
+				// picks are immutable
+				return false;
+			} else if (deleteAction.match(action)) {
+				// picks are immutable
+				return false;
 			} else {
-				return true;
+				const pick = await picks.find({ id: id });
+				if (!pick) throw new LoguxNotFoundError();
+
+				return canAccess(ctx, pick);
 			}
 		},
 		load: async (_, id) => {
@@ -87,6 +117,13 @@ export default (server: BaseServer, picks: Picks, items: Items): void => {
 
 	addSyncMapFilter<Pick>(server, modelName, {
 		access: () => true,
-		initial: (_, filter) => picks.filter(filter).then((picks) => picks.map(toSyncMapValue))
+		initial: (ctx, filter) =>
+			picks
+				.filter(filter)
+				.then(async (picks) => {
+					const hasAccess = await Promise.all(picks.map((pick) => canAccess(ctx, pick)));
+					return picks.filter((_, i) => hasAccess[i]);
+				})
+				.then((picks) => picks.map(toSyncMapValue))
 	});
 };

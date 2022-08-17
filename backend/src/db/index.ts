@@ -47,6 +47,12 @@ const openDB = (filepath: string) => {
 	const initDB = async () => {
 		await db.read();
 		db.data ||= { items: {}, lists: {}, picks: {}, users: {}, keys: {}, memberships: {} };
+        db.data.items ||= {};
+        db.data.lists ||= {};
+        db.data.picks ||= {};
+        db.data.users ||= {};
+        db.data.keys ||= {};
+        db.data.memberships ||= {};
 	};
 	return {
 		create: async <K extends keyof Data>(key: K, value: Data[K][keyof Data[K]]) => {

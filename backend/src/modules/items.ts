@@ -3,13 +3,14 @@ import {
 	addSyncMapFilter,
 	BaseServer,
 	ChangedAt,
+	Context,
 	NoConflictResolution,
 	SyncMapData
 } from '@logux/server';
 import { defineSyncMapActions, LoguxNotFoundError } from '@logux/actions';
 import type { Item } from '@eligo/protocol';
 
-import { ItemRecord, Items, Lists } from '../db/index.js';
+import { ItemRecord, Items, Lists, Memberships } from '../db/index.js';
 
 const modelName = 'items';
 
@@ -24,7 +25,15 @@ const toSyncMapValue = (item: ItemRecord): SyncMapData<Item> => ({
 	createTime: NoConflictResolution(item.createTime)
 });
 
-export default (server: BaseServer, items: Items, lists: Lists): void => {
+export default (server: BaseServer, items: Items, lists: Lists, memberships: Memberships): void => {
+	const canAccess = async (ctx: Context, item: ItemRecord): Promise<boolean> => {
+		// owner can access
+		if (ctx.userId === item.userId) return true;
+		// members can access
+		const member = await memberships.find({ listId: item.listId, userId: ctx.userId });
+		return !!member;
+	};
+
 	addSyncMap<Item>(server, modelName, {
 		access: async (ctx, id, action) => {
 			if (createAction.match(action)) {
@@ -47,7 +56,9 @@ export default (server: BaseServer, items: Items, lists: Lists): void => {
 				// can delete items in own lists
 				return ctx.userId === list?.userId;
 			} else {
-				return true;
+				const item = await items.find({ id });
+				if (!item) throw new LoguxNotFoundError();
+				return canAccess(ctx, item);
 			}
 		},
 
@@ -79,6 +90,13 @@ export default (server: BaseServer, items: Items, lists: Lists): void => {
 
 	addSyncMapFilter<Item>(server, modelName, {
 		access: () => true,
-		initial: (_ctx, filter) => items.filter(filter).then((lists) => lists.map(toSyncMapValue))
+		initial: (ctx, filter) =>
+			items
+				.filter(filter)
+				.then(async (items) => {
+					const hasAccess = await Promise.all(items.map((list) => canAccess(ctx, list)));
+					return items.filter((_, i) => hasAccess[i]);
+				})
+				.then((lists) => lists.map(toSyncMapValue))
 	});
 };

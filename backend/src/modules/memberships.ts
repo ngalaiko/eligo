@@ -2,6 +2,7 @@ import {
 	addSyncMap,
 	addSyncMapFilter,
 	BaseServer,
+	Context,
 	NoConflictResolution,
 	SyncMapData
 } from '@logux/server';
@@ -21,14 +22,27 @@ const toSyncMapValue = (item: MembershipRecord): SyncMapData<Membership> => ({
 	userId: NoConflictResolution(item.userId)
 });
 
-export default (server: BaseServer, membersips: Memberships, lists: Lists): void => {
+export default (server: BaseServer, memberships: Memberships, lists: Lists): void => {
+	const canAccess = async (ctx: Context, membership: MembershipRecord): Promise<boolean> => {
+		// owner can access
+		if (ctx.userId === membership.userId) return true;
+
+		// owner of the list can access
+		const list = await lists.find({ id: membership.listId });
+		if (ctx.userId === list?.userId) return true;
+
+		// members of the list can access
+		const member = await memberships.find({ listId: membership.listId, userId: ctx.userId });
+		return !!member;
+	};
+
 	addSyncMap<Membership>(server, modelName, {
 		access: async (ctx, id, action) => {
 			if (createAction.match(action)) {
 				// can't impersonate another user
 				return ctx.userId === action.fields.userId;
 			} else if (deleteAction.match(action)) {
-				const membersip = await membersips.find({ id });
+				const membersip = await memberships.find({ id });
 				if (!membersip) throw new LoguxNotFoundError();
 				// can delete own membersips
 				if (ctx.userId === membersip?.userId) return true;
@@ -36,28 +50,38 @@ export default (server: BaseServer, membersips: Memberships, lists: Lists): void
 				// can delete membersips in own lists
 				return ctx.userId === list?.userId;
 			} else {
-				return true;
+				const membership = await memberships.find({ id });
+				if (!membership) throw new LoguxNotFoundError();
+
+				return canAccess(ctx, membership);
 			}
 		},
 
 		load: async (_, id) => {
-			const item = await membersips.find({ id });
+			const item = await memberships.find({ id });
 			if (!item) throw new LoguxNotFoundError();
 			return toSyncMapValue(item);
 		},
 
 		create: async (_ctx, id, fields) => {
-			membersips.create({
+			memberships.create({
 				...fields,
 				id
 			});
 		},
 
-		delete: (_, id) => membersips.delete(id)
+		delete: (_, id) => memberships.delete(id)
 	});
 
 	addSyncMapFilter<Membership>(server, modelName, {
 		access: () => true,
-		initial: (_ctx, filter) => membersips.filter(filter).then((lists) => lists.map(toSyncMapValue))
+		initial: (ctx, filter) =>
+			memberships
+				.filter(filter)
+				.then(async (membersips) => {
+					const hasAccess = await Promise.all(membersips.map((list) => canAccess(ctx, list)));
+					return membersips.filter((_, i) => hasAccess[i]);
+				})
+				.then((memberships) => memberships.map(toSyncMapValue))
 	});
 };

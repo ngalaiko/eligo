@@ -30,10 +30,10 @@ const server = new Server(
 const { keys, users, items, lists, picks, memberships } = openDB(argv.database);
 
 await registerAuthModule(server, keys, users);
-registerItemsModule(server, items, lists);
-registerListsModule(server, lists);
-registerPicksModule(server, picks, items);
-registerUsersModule(server, users);
+registerItemsModule(server, items, lists, memberships);
+registerListsModule(server, lists, memberships);
+registerPicksModule(server, picks, items, memberships, lists);
+registerUsersModule(server, users, memberships, lists);
 registerMembershipsModule(server, memberships, lists);
 
 server.listen();

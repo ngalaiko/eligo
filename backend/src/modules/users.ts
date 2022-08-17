@@ -1,25 +1,51 @@
-import { addSyncMap, addSyncMapFilter, BaseServer, ChangedAt } from '@logux/server';
+import { addSyncMap, addSyncMapFilter, BaseServer, ChangedAt, Context } from '@logux/server';
 import { defineSyncMapActions, LoguxNotFoundError } from '@logux/actions';
 import type { User } from '@eligo/protocol';
 
-import { Users } from '../db/index.js';
+import { Lists, Memberships, UserRecord, Users } from '../db/index.js';
 
 const modelName = 'users';
 
-const [createAction, changeAction, _deleteAction, _createdAction, _changedAction, _deletedAction] =
+const [createAction, changeAction, deleteAction, _createdAction, _changedAction, _deletedAction] =
 	defineSyncMapActions<User>(modelName);
 
-export default (server: BaseServer, users: Users): void => {
+export default (server: BaseServer, users: Users, memberships: Memberships, lists: Lists): void => {
+	const canAccess = async (ctx: Context, user: UserRecord): Promise<boolean> => {
+		// own can access
+		if (ctx.userId === user.id) return true;
+
+		// members of the same lists can access
+		// TODO: refactor, there are too many queries
+		const memberIn = await memberships.filter({ userId: ctx.userId });
+		const memberOfListIds = memberIn.map(({ listId }) => listId);
+		const memberOfLists = await Promise.all(
+			memberOfListIds.map((listId) => lists.find({ id: listId }))
+		);
+		const comembers = await Promise.all(
+			memberOfListIds.map((listId) => memberships.find({ listId }))
+		);
+		const allowedIds = comembers
+			.map(({ userId }) => userId)
+			.concat(memberOfLists.map(({ userId }) => userId));
+		return allowedIds.includes(user.id);
+	};
+
 	addSyncMap<User>(server, modelName, {
 		access: async (ctx, id, action) => {
 			if (createAction.match(action)) {
 				// can't impersonate another user
 				return ctx.userId === id;
 			} else if (changeAction.match(action)) {
-				// can't impersonate another user
+				// can only change self
+				return ctx.userId === id;
+			} else if (deleteAction.match(action)) {
+				// can only delete self
 				return ctx.userId === id;
 			} else {
-				return true;
+				const user = await users.find({ id });
+				if (!user) throw new LoguxNotFoundError();
+
+				return canAccess(ctx, user);
 			}
 		},
 		change: async (_ctx, id, fields, time) => {
@@ -42,12 +68,18 @@ export default (server: BaseServer, users: Users): void => {
 
 	addSyncMapFilter<User>(server, modelName, {
 		access: () => true,
-		initial: (_, filter) =>
-			users.filter(filter).then((users) =>
-				users.map((user) => ({
-					id: user.id,
-					name: ChangedAt(user.name, user.nameChangeTime)
-				}))
-			)
+		initial: (ctx, filter) =>
+			users
+				.filter(filter)
+				.then(async (users) => {
+					const hasAccess = await Promise.all(users.map((user) => canAccess(ctx, user)));
+					return users.filter((_, i) => hasAccess[i]);
+				})
+				.then((users) =>
+					users.map((user) => ({
+						id: user.id,
+						name: ChangedAt(user.name, user.nameChangeTime)
+					}))
+				)
 	});
 };

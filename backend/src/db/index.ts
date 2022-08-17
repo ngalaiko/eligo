@@ -47,12 +47,12 @@ const openDB = (filepath: string) => {
 	const initDB = async () => {
 		await db.read();
 		db.data ||= { items: {}, lists: {}, picks: {}, users: {}, keys: {}, memberships: {} };
-        db.data.items ||= {};
-        db.data.lists ||= {};
-        db.data.picks ||= {};
-        db.data.users ||= {};
-        db.data.keys ||= {};
-        db.data.memberships ||= {};
+		db.data.items ||= {};
+		db.data.lists ||= {};
+		db.data.picks ||= {};
+		db.data.users ||= {};
+		db.data.keys ||= {};
+		db.data.memberships ||= {};
 	};
 	return {
 		create: async <K extends keyof Data>(key: K, value: Data[K][keyof Data[K]]) => {
@@ -65,7 +65,7 @@ const openDB = (filepath: string) => {
 		find: async <K extends keyof Data>(
 			key: K,
 			filter: Partial<Data[K][keyof Data[K]]>
-		): Promise<Data[K][keyof Data[K]]> => {
+		): Promise<Data[K][keyof Data[K]] | undefined> => {
 			await initDB();
 			if (!db.data) throw new Error('db.data is null');
 			// shortcut for finding by id

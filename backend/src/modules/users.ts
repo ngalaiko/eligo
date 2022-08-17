@@ -2,7 +2,14 @@ import { addSyncMap, addSyncMapFilter, BaseServer, ChangedAt, Context } from '@l
 import { defineSyncMapActions, LoguxNotFoundError } from '@logux/actions';
 import type { User } from '@eligo/protocol';
 
-import { Lists, Memberships, UserRecord, Users } from '../db/index.js';
+import {
+	ListRecord,
+	Lists,
+	MembershipRecord,
+	Memberships,
+	UserRecord,
+	Users
+} from '../db/index.js';
 
 const modelName = 'users';
 
@@ -18,12 +25,12 @@ export default (server: BaseServer, users: Users, memberships: Memberships, list
 		// TODO: refactor, there are too many queries
 		const memberIn = await memberships.filter({ userId: ctx.userId });
 		const memberOfListIds = memberIn.map(({ listId }) => listId);
-		const memberOfLists = await Promise.all(
-			memberOfListIds.map((listId) => lists.find({ id: listId }))
-		);
-		const comembers = await Promise.all(
-			memberOfListIds.map((listId) => memberships.find({ listId }))
-		);
+		const memberOfLists = (await Promise.all(
+			memberOfListIds.map((listId) => lists.find({ id: listId })).filter((list) => !!list)
+		)) as ListRecord[];
+		const comembers = (await Promise.all(
+			memberOfListIds.map((listId) => memberships.find({ listId })).filter((m) => !!m)
+		)) as MembershipRecord[];
 		const allowedIds = comembers
 			.map(({ userId }) => userId)
 			.concat(memberOfLists.map(({ userId }) => userId));
@@ -80,6 +87,11 @@ export default (server: BaseServer, users: Users, memberships: Memberships, list
 						id: user.id,
 						name: ChangedAt(user.name, user.nameChangeTime)
 					}))
-				)
+				),
+		actions: (ctx) => async (_, action) =>
+			users.find({ id: action.id }).then((user) => {
+				if (!user) return false;
+				return canAccess(ctx, user);
+			})
 	});
 };

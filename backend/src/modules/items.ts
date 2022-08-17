@@ -97,6 +97,11 @@ export default (server: BaseServer, items: Items, lists: Lists, memberships: Mem
 					const hasAccess = await Promise.all(items.map((list) => canAccess(ctx, list)));
 					return items.filter((_, i) => hasAccess[i]);
 				})
-				.then((lists) => lists.map(toSyncMapValue))
+				.then((lists) => lists.map(toSyncMapValue)),
+		actions: (ctx) => (_, action) =>
+			items.find({ id: action.id }).then((item) => {
+				if (!item) return false;
+				return canAccess(ctx, item);
+			})
 	});
 };

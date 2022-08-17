@@ -63,6 +63,7 @@ export default (
 
 		// list owner can access
 		const list = await lists.find({ id: pick.listId });
+		if (!list) throw new LoguxNotFoundError();
 		if (ctx.userId === list.userId) return true;
 
 		// list members can access
@@ -124,6 +125,11 @@ export default (
 					const hasAccess = await Promise.all(picks.map((pick) => canAccess(ctx, pick)));
 					return picks.filter((_, i) => hasAccess[i]);
 				})
-				.then((picks) => picks.map(toSyncMapValue))
+				.then((picks) => picks.map(toSyncMapValue)),
+		actions: (ctx) => (_, action) =>
+			picks.find({ id: action.id }).then((pick) => {
+				if (!pick) return false;
+				return canAccess(ctx, pick);
+			})
 	});
 };

@@ -82,6 +82,11 @@ export default (server: BaseServer, memberships: Memberships, lists: Lists): voi
 					const hasAccess = await Promise.all(membersips.map((list) => canAccess(ctx, list)));
 					return membersips.filter((_, i) => hasAccess[i]);
 				})
-				.then((memberships) => memberships.map(toSyncMapValue))
+				.then((memberships) => memberships.map(toSyncMapValue)),
+		actions: (ctx) => (_, action) =>
+			memberships.find({ id: action.id }).then((membership) => {
+				if (!membership) return false;
+				return canAccess(ctx, membership);
+			})
 	});
 };

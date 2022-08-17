@@ -83,10 +83,7 @@ export default (server: BaseServer, lists: Lists, memberships: Memberships): voi
 	});
 
 	addSyncMapFilter<List>(server, modelName, {
-		access: () => {
-			console.log('access');
-			return true;
-		},
+		access: () => true,
 		initial: async (ctx, filter) =>
 			lists
 				.filter(filter)
@@ -94,6 +91,11 @@ export default (server: BaseServer, lists: Lists, memberships: Memberships): voi
 					const hasAccess = await Promise.all(lists.map((list) => canAccess(ctx, list)));
 					return lists.filter((_, i) => hasAccess[i]);
 				})
-				.then((lists) => lists.map((list) => toSyncMapValue(list)))
+				.then((lists) => lists.map((list) => toSyncMapValue(list))),
+		actions: (ctx) => async (_, action) =>
+			lists.find({ id: action.id }).then((list) => {
+				if (!list) return false;
+				return canAccess(ctx, list);
+			})
 	});
 };

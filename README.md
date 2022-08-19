@@ -1,6 +1,6 @@
 # eligo
 
-A small web app to try out [logux][] and [typescript][]
+A small web app to try out [logux][] and [typescript][].
 
 The app allows to create lists and randomly pick an item from those lists.
 I use it on a daily basis to decide where I should have a lunch at.

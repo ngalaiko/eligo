@@ -8,21 +8,13 @@ import {
 } from '@logux/server';
 import { defineSyncMapActions, LoguxNotFoundError } from '@logux/actions';
 import type { Pick } from '@eligo/protocol';
+import type { Picks, Items, PickRecord, Memberships, Lists, ItemRecord } from '../db/index.js';
+import { getWeights } from '@eligo/protocol';
 
-import { Picks, Items, ItemRecord, PickRecord, Memberships, Lists } from '../db/index.js';
-
-const modelName = 'picks';
-
-const pickNext = (items: ItemRecord[], picks: Pick[]): string => {
+const pickNext = (items: (ItemRecord & { id: string })[], picks: Pick[]): string => {
 	const itemIds = items.map((item) => item.id);
-	let itemIdsHistory = picks.filter(({ itemId }) => itemId).map(({ itemId }) => itemId!);
-	itemIdsHistory = itemIdsHistory.slice(Math.max(itemIdsHistory.length - itemIds.length, 0));
-	const weights = itemIds.map((itemId) => {
-		const pickedAgo = itemIdsHistory.length - itemIdsHistory.lastIndexOf(itemId);
-		const wasPicked = pickedAgo !== -1;
-		if (!wasPicked) return itemIds.length;
-		return pickedAgo;
-	});
+	const weightByItemId = getWeights(items, picks);
+	const weights = itemIds.map((itemId) => weightByItemId[itemId]);
 	return itemIds[weightedRandom(weights)];
 };
 
@@ -38,6 +30,8 @@ const weightedRandom = (weights: number[]) => {
 	}
 	return weights.length - 1;
 };
+
+const modelName = 'picks';
 
 const [createAction, changeAction, deleteAction, _createdAction, changedAction, _deletedAction] =
 	defineSyncMapActions<Pick>(modelName);

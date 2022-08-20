@@ -1,23 +1,25 @@
 <script lang="ts">
 	import type { Pick } from '@eligo/protocol';
 	import { useItem } from '$lib/items';
-	import { useUser, Card as UserCard } from '$lib/users';
-	import { useDistance } from '$lib/time';
+	import { Distance } from '$lib/time';
 
 	export let pick: Pick & { id: string };
-	const user = useUser(pick.userId);
 	$: item = pick.itemId ? useItem(pick.itemId) : undefined;
-	const created = useDistance(pick.createTime);
 </script>
 
-<div id={pick.id}>
-	{#if $user.isLoading === false}
-		<span><UserCard user={$user} /> picked</span>
-	{/if}
+<div
+	id={pick.id}
+	class="border-2 border-black shadow-md flex flex-col gap-4 p-2 shadow-sm text-ellipsis overflow-hidden"
+>
 	{#if !item}
 		<span>picking...</span>
 	{:else if $item.isLoading === false}
-		<span>{$item.text}</span>
-		<span>{$created}</span>
+		<span class="font-semibold text-lg">{$item.text}</span>
 	{/if}
+
+	<div class="opacity-50 text-xs align-right">
+		<span class="flex gap-1">
+			<Distance to={pick.createTime} />
+		</span>
+	</div>
 </div>

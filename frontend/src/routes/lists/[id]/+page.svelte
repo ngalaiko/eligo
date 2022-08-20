@@ -3,7 +3,7 @@
 	import { createPick, usePicks, Card as PickCard } from '$lib/picks';
 	import { useClient } from '$lib/logux';
 	import { session } from '$app/stores';
-	import { compareAsc, compareDesc } from 'date-fns';
+	import { compareDesc } from 'date-fns';
 	import type { PageData } from './$types';
 
 	export let data: PageData;
@@ -34,29 +34,41 @@
 	};
 </script>
 
-<form on:submit|preventDefault={create}>
-	<input type="text" name="title" bind:value={text} />
-	<button disabled={!text || !$session.user}>new item</button>
-</form>
-<ul>
-	{#each $items.list.sort((a, b) => compareAsc(a.createTime, b.createTime)) as item}
-		{#if item.isLoading === false}
-			<li><ItemCard {item} /></li>
-		{/if}
-	{/each}
-	{#if $items.isLoading}
-		<li>loading...</li>
-	{/if}
-</ul>
+<div class="grid gap-6">
+	<ul class="flex gap-4 overflow-auto">
+		<li class="w-36">
+			<button
+				disabled={$items.isEmpty || !$session.user}
+				on:click={pick}
+				class="border-2 border-black flex flex-col p-2 justify-around h-full w-full "
+				class:hover:shadow-lg={!$items.isEmpty && $session.user}
+				class:hover:bg-yellow-100={!$items.isEmpty && $session.user}
+				class:opacity-50={$items.isEmpty || !$session.user}
+			>
+				next
+			</button>
+		</li>
+		{#each $picks.list.sort((a, b) => compareDesc(a.createTime, b.createTime)) as pick}
+			{#if pick.isLoading == false}
+				<li class="w-36"><PickCard {pick} /></li>
+			{/if}
+		{/each}
+	</ul>
 
-<hr />
-
-<h2>rolls</h2>
-<button disabled={$items.isEmpty || !$session.user} on:click={pick}>roll</button>
-<ul>
-	{#each $picks.list.sort((a, b) => compareDesc(a.createTime, b.createTime)) as pick}
-		{#if pick.isLoading == false}
-			<li><PickCard {pick} /></li>
-		{/if}
-	{/each}
-</ul>
+	<ul class="grid grid-cols-3 gap-4">
+		<li>
+			<form
+				on:submit|preventDefault={create}
+				class="border-2 border-black flex flex-col p-2 justify-end h-full"
+			>
+				<button type="submit" hidden />
+				<input type="text" name="title" bind:value={text} placeholder="new item..." />
+			</form>
+		</li>
+		{#each $items.list.sort((a, b) => compareDesc(a.createTime, b.createTime)) as item}
+			{#if item.isLoading === false}
+				<li><ItemCard {item} /></li>
+			{/if}
+		{/each}
+	</ul>
+</div>

@@ -6,4 +6,4 @@
 	const datetime = new Date(to).toLocaleString();
 </script>
 
-<time title={datetime} {datetime}>{$distance}</time>
+<time class="whitespace-nowrap" title={datetime} {datetime}>{$distance}</time>

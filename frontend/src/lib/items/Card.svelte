@@ -6,6 +6,7 @@
 	export let item: Item & { id: string };
 	const user = useUser(item.userId);
 	const created = useDistance(item.createTime);
+	console.log(item);
 </script>
 
 <div id={item.id}>

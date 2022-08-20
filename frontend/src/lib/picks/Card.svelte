@@ -4,21 +4,20 @@
 	import { useUser, Card as UserCard } from '$lib/users';
 	import { useDistance } from '$lib/time';
 
-	export let pick: Pick;
+	export let pick: Pick & { id: string };
 	const user = useUser(pick.userId);
 	$: item = pick.itemId ? useItem(pick.itemId) : undefined;
 	const created = useDistance(pick.createTime);
 </script>
 
-<div>
+<div id={pick.id}>
 	{#if $user.isLoading === false}
-		<UserCard user={$user} /> picked
+		<span><UserCard user={$user} /> picked</span>
 	{/if}
 	{#if !item}
-		picking...
+		<span>picking...</span>
 	{:else if $item.isLoading === false}
-		{$item.text}
-		{$created}
-		{pick.id}
+		<span>{$item.text}</span>
+		<span>{$created}</span>
 	{/if}
 </div>

@@ -1,6 +1,8 @@
 <script lang="ts">
 	import type { User } from '@eligo/protocol';
-	export let user: User;
+	export let user: User & { id: string };
 </script>
 
-<b>{user.name}</b>
+<div id={user.id}>
+	<b>{user.name}</b>
+</div>

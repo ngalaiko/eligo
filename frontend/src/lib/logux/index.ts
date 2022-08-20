@@ -20,7 +20,7 @@ export const useFilter = <Value extends SyncMapValues>(
 	opts?: FilterOptions
 ) => {
 	const instance = createFilter<Value>(useClient(), Template, filter, opts);
-	return readable(instance.get(), (set) => instance.subscribe(set));
+	return readable(instance.get(), (set) => instance.listen(set));
 };
 
 export const useSync = <Value extends SyncMapValues>(
@@ -28,5 +28,5 @@ export const useSync = <Value extends SyncMapValues>(
 	id: string
 ): Readable<SyncMapValue<Value>> => {
 	const store = Template(id, useClient());
-	return readable(store.get(), (set) => store.subscribe(set));
+	return readable(store.get(), (set) => store.listen(set));
 };

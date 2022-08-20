@@ -22,14 +22,17 @@
 
 {#if $lists.isLoading}
 	loading...
-{:else}
+{:else if $lists.isLoading === false}
 	<form on:submit|preventDefault={create}>
 		<input type="text" name="title" bind:value={title} />
 		<button disabled={!title || !$session.user}>new list</button>
 	</form>
+
 	<ul>
 		{#each $lists.list.sort((a, b) => compareAsc(a.createTime, b.createTime)) as list}
-			<li><ListCard {list} /></li>
+			{#if list.isLoading == false}
+				<li><ListCard {list} /></li>
+			{/if}
 		{/each}
 	</ul>
 {/if}

@@ -3,17 +3,17 @@
 	import type { Item } from '@eligo/protocol';
 	import { useDistance } from '$lib/time';
 
-	export let item: Item;
+	export let item: Item & { id: string };
 	const user = useUser(item.userId);
 	const created = useDistance(item.createTime);
 </script>
 
-<div>
-	{item.text}
+<div id={item.id}>
+	<span>{item.text}</span>
 	{#if $user.isLoading}
-		loading...
+		<span>loading...</span>
 	{:else if $user.isLoading === false}
-		added by <UserCard user={$user} />
-		{$created}
+		<span>added by <UserCard user={$user} /></span>
+		<span>{$created}</span>
 	{/if}
 </div>

@@ -47,7 +47,9 @@
 </form>
 <ul>
 	{#each $items.list.sort((a, b) => compareAsc(a.createTime, b.createTime)) as item}
-		<li><ItemCard {item} /></li>
+		{#if item.isLoading == false}
+			<li><ItemCard {item} /></li>
+		{/if}
 	{/each}
 	{#if $items.isLoading}
 		<li>loading...</li>
@@ -60,6 +62,8 @@
 <button disabled={$items.isEmpty || !$session.user} on:click={pick}>roll</button>
 <ul>
 	{#each $picks.list.sort((a, b) => compareDesc(a.createTime, b.createTime)) as pick}
-		<li><PickCard {pick} /></li>
+		{#if pick.isLoading == false}
+			<li><PickCard {pick} /></li>
+		{/if}
 	{/each}
 </ul>

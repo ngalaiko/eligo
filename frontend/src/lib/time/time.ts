@@ -1,8 +1,8 @@
-import { differenceInMinutes, differenceInSeconds, formatDistance } from 'date-fns';
+import { differenceInMinutes, differenceInSeconds, formatDistanceToNow } from 'date-fns';
 import { readable } from 'svelte/store';
 
 export const useDistance = (to: number | Date) =>
-	readable(formatDistance(to, new Date(), { addSuffix: true }), (set) => {
+	readable(formatDistanceToNow(to, { addSuffix: true }), (set) => {
 		const nextInterval = (to: number | Date) => {
 			if (differenceInSeconds(new Date(), to) < 30) {
 				return 1000; // 1 second
@@ -15,7 +15,7 @@ export const useDistance = (to: number | Date) =>
 		let interval: ReturnType<typeof setInterval>;
 		const getInterval = () =>
 			setInterval(() => {
-				set(formatDistance(to, new Date(), { addSuffix: true }));
+				set(formatDistanceToNow(to, { addSuffix: true }));
 				clearInterval(interval);
 				interval = getInterval();
 			}, nextInterval(to));

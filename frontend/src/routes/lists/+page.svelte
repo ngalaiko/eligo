@@ -3,7 +3,7 @@
 	import { useClient } from '$lib/logux';
 	import { session } from '$app/stores';
 	import { Card as ListCard } from '$lib/lists';
-	import { compareAsc } from 'date-fns';
+	import { compareAsc, compareDesc } from 'date-fns';
 
 	const client = useClient();
 	const lists = useLists();
@@ -23,13 +23,17 @@
 {#if $lists.isLoading}
 	loading...
 {:else if $lists.isLoading === false}
-	<form on:submit|preventDefault={create}>
-		<input type="text" name="title" bind:value={title} />
-		<button disabled={!title || !$session.user}>new list</button>
-	</form>
-
-	<ul>
-		{#each $lists.list.sort((a, b) => compareAsc(a.createTime, b.createTime)) as list}
+	<ul class="grid grid-cols-3 gap-4">
+		<li>
+			<form
+				on:submit|preventDefault={create}
+				class="border-2 border-black flex flex-col p-2 justify-end h-full"
+			>
+				<button type="submit" hidden />
+				<input type="text" name="title" bind:value={title} placeholder="new list..." />
+			</form>
+		</li>
+		{#each $lists.list.sort((a, b) => compareDesc(a.createTime, b.createTime)) as list}
 			{#if list.isLoading == false}
 				<li><ListCard {list} /></li>
 			{/if}

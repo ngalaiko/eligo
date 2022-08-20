@@ -59,31 +59,39 @@
 	});
 </script>
 
-{#if $session.token}
-	<a href="/lists">Lists</a>
-{:else}
-	<form>
-		<div>
-			<input
-				id="username"
-				name="username"
-				type="text"
-				placeholder="username"
-				bind:value={username}
-			/>
-			<input
-				id="password"
-				name="password"
-				type="password"
-				placeholder="password"
-				bind:value={password}
-			/>
-		</div>
+<div class="w-full h-full flex justify-around">
+	{#if $session.token}
+		<a href="/lists">Lists</a>
+	{:else}
+		<form class="flex flex-col gap-2">
+			<div class="grid gap-1">
+				<input
+					id="username"
+					name="username"
+					type="text"
+					placeholder="username"
+					bind:value={username}
+				/>
+				<input
+					id="password"
+					name="password"
+					type="password"
+					placeholder="password"
+					bind:value={password}
+				/>
+			</div>
 
-		<button on:click|preventDefault={login} disabled={!username || !password}>login</button>
-		<button on:click|preventDefault={signup} disabled={!username || !password}>signup</button>
-	</form>
-	{#if error}
-		<div>{error}</div>
+			<div>
+				<button class="underline" on:click|preventDefault={login} disabled={!username || !password}
+					>login</button
+				>
+				<button class="underline" on:click|preventDefault={signup} disabled={!username || !password}
+					>signup</button
+				>
+			</div>
+		</form>
+		{#if error}
+			<div>{error}</div>
+		{/if}
 	{/if}
-{/if}
+</div>

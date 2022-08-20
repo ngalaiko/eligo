@@ -3,6 +3,7 @@
 
 	export let to: Date | number;
 	const distance = useDistance(to);
+	const datetime = new Date(to).toLocaleString();
 </script>
 
-<time datetime={new Date(to).toLocaleString()}>{$distance}</time>
+<time title={datetime} {datetime}>{$distance}</time>

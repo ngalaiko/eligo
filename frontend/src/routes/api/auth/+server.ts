@@ -4,7 +4,7 @@ import { serialize } from 'cookie';
 import { host as apiHost } from '$lib/api';
 
 export const DELETE: RequestHandler = () => {
-	return new Response('', {
+	return new Response(undefined, {
 		status: 204,
 		headers: {
 			'set-cookie': serialize('token', '', {

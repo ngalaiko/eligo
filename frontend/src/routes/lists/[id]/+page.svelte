@@ -5,12 +5,15 @@
 	import { session } from '$app/stores';
 	import { compareDesc } from 'date-fns';
 	import type { PageData } from './$types';
+	import { updateList, useList } from '$lib/lists';
+	import { nanoid } from 'nanoid';
 
 	export let data: PageData;
 
 	const client = useClient();
 	const items = useItems({ listId: data.listId });
 	const picks = usePicks({ listId: data.listId });
+	const list = useList(data.listId);
 
 	let text: string;
 	const create = async () => {
@@ -32,9 +35,42 @@
 			createTime: new Date().getTime()
 		});
 	};
+	const createInviteLink = () =>
+		updateList(client, data.listId, {
+			invitatationId: nanoid()
+		});
+
+	const deleteInviteLink = () =>
+		updateList(client, data.listId, {
+			invitatationId: null
+		});
+
+	const copyInviteLink = () => {
+		if ($list.isLoading === true) return;
+		navigator.clipboard.writeText(`${window.location.origin}/join/${$list.invitatationId}/`);
+	};
 </script>
 
 <div class="grid gap-6">
+	<div>
+		{#if $list.isLoading}
+			loading...
+		{:else if $list.isLoading === false}
+			{#if $list.invitatationId}
+				<span>Invite link:</span>
+				<input
+					type="text"
+					value={`${window.location.origin}/join/${$list.invitatationId}/`}
+					disabled
+				/>
+				<button on:click={copyInviteLink}>Copy</button>
+				<button on:click={deleteInviteLink}>Remove </button>
+			{:else}
+				<button on:click={createInviteLink}>Create invite link</button>
+			{/if}
+		{/if}
+	</div>
+
 	<ul class="flex gap-4 overflow-auto">
 		<li class="w-36">
 			<button

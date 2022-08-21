@@ -27,6 +27,8 @@ const toSyncMapValue = (list: ListRecord): SyncMapData<List> => ({
 
 export default (server: BaseServer, lists: Lists, memberships: Memberships): void => {
 	const canAccess = async (ctx: Context, list: ListRecord): Promise<boolean> => {
+		// can join via invitation link
+		if (!!list.invitatationId) return true;
 		// owner can access
 		if (ctx.userId === list.userId) return true;
 		// members can access

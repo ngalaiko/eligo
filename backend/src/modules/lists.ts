@@ -27,8 +27,6 @@ const toSyncMapValue = (list: ListRecord): SyncMapData<List> => ({
 
 export default (server: BaseServer, lists: Lists, memberships: Memberships): void => {
 	const canAccess = async (ctx: Context, list: ListRecord): Promise<boolean> => {
-		// can join via invitation link
-		if (!!list.invitatationId) return true;
 		// owner can access
 		if (ctx.userId === list.userId) return true;
 		// members can access
@@ -43,15 +41,25 @@ export default (server: BaseServer, lists: Lists, memberships: Memberships): voi
 				return ctx.userId === action.fields.userId;
 			} else if (changeAction.match(action)) {
 				const list = await lists.find({ id });
+				if (!list) throw new LoguxNotFoundError();
 				// can change own lists
-				return ctx.userId === list?.userId;
+				if (ctx.userId === list?.userId) return true;
+				// member can change invitationId
+				if (Object.keys(action.fields).length === 1 && action.fields.invitatationId !== undefined) {
+					const member = await memberships.find({ listId: list.id, userId: ctx.userId });
+					return !!member;
+				}
+				return false;
 			} else if (deleteAction.match(action)) {
 				const list = await lists.find({ id });
+				if (!list) throw new LoguxNotFoundError();
 				// can delete own lists
 				return ctx.userId === list?.userId;
 			} else {
 				const list = await lists.find({ id });
 				if (!list) throw new LoguxNotFoundError();
+				// lists with invitation id are public
+				if (!!list.invitatationId) return true;
 				return canAccess(ctx, list);
 			}
 		},
@@ -77,7 +85,7 @@ export default (server: BaseServer, lists: Lists, memberships: Memberships): voi
 			await lists.update(id, {
 				...fields,
 				titleChangeTime: fields.title ? time : undefined,
-				invitationIdChangeTime: fields.invitatationId ? time : undefined
+				invitationIdChangeTime: fields.invitatationId !== undefined ? time : undefined
 			});
 		},
 
@@ -87,13 +95,15 @@ export default (server: BaseServer, lists: Lists, memberships: Memberships): voi
 	addSyncMapFilter<List>(server, modelName, {
 		access: () => true,
 		initial: async (ctx, filter) =>
-			lists
-				.filter(filter)
-				.then(async (lists) => {
-					const hasAccess = await Promise.all(lists.map((list) => canAccess(ctx, list)));
-					return lists.filter((_, i) => hasAccess[i]);
-				})
-				.then((lists) => lists.map((list) => toSyncMapValue(list))),
+			filter && Object.keys(filter).length === 1 && filter?.invitatationId !== undefined // if only invitation id is set
+				? lists.filter(filter).then((lists) => lists.map(toSyncMapValue)) // return all matching lists, they are public
+				: lists
+						.filter(filter)
+						.then(async (lists) => {
+							const hasAccess = await Promise.all(lists.map((list) => canAccess(ctx, list)));
+							return lists.filter((_, i) => hasAccess[i]);
+						})
+						.then((lists) => lists.map(toSyncMapValue)),
 		actions: (ctx) => async (_, action) =>
 			lists.find({ id: action.id }).then((list) => {
 				if (!list) return false;

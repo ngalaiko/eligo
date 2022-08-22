@@ -10,6 +10,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@logux/actions": "^0.2.3",
 		"@logux/server": "^0.11.0",
 		"@eligo/protocol": "workspace:*",
 		"bcrypt": "^5.0.1",
@@ -19,7 +20,6 @@
 		"yargs": "^17.5.1"
 	},
 	"devDependencies": {
-		"@logux/actions": "^0.2.3",
 		"@types/bcrypt": "^5.0.0",
 		"@types/node": "^18.6.3",
 		"@types/node-fetch": "^2.6.2",

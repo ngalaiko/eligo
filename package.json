@@ -1,10 +1,11 @@
 {
-  "name": "eligo",
-  "private": true,
-  "scripts": {
-    "build": "pnpm recursive run build",
-    "preview": "pnpm recursive run preview",
-    "dev": "pnpm recursive run dev",
-    "lint": "pnpm recursive run lint"
-  }
+	"name": "eligo",
+	"private": true,
+	"scripts": {
+		"build": "pnpm recursive run build",
+		"preview": "pnpm recursive run preview",
+		"dev": "pnpm recursive run dev",
+		"lint": "pnpm recursive run lint",
+		"format": "pnpm recursive run format"
+	}
 }

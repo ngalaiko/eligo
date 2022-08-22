@@ -5,7 +5,8 @@
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
-		"lint": "prettier --check . --config ../.prettierrc --ignore-path ./.gitignore --ignore-path .gitignore --plugin prettier-plugin-svelte --plugin-search-dir=."
+		"lint": "prettier --check . --config ../.prettierrc --ignore-path ./.gitignore --ignore-path .gitignore --plugin prettier-plugin-svelte --plugin-search-dir=.",
+		"format": "prettier --write . --config ../.prettierrc --ignore-path ./.gitignore --ignore-path .gitignore --plugin prettier-plugin-svelte --plugin-search-dir=."
 	},
 	"devDependencies": {
 		"@logux/actions": "^0.2.3",

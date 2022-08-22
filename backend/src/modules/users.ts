@@ -1,4 +1,11 @@
-import { addSyncMap, addSyncMapFilter, BaseServer, ChangedAt, Context } from '@logux/server';
+import {
+	addSyncMap,
+	addSyncMapFilter,
+	BaseServer,
+	ChangedAt,
+	Context,
+	SyncMapData
+} from '@logux/server';
 import { defineSyncMapActions, LoguxNotFoundError } from '@logux/actions';
 import type { User } from '@eligo/protocol';
 
@@ -15,6 +22,11 @@ const modelName = 'users';
 
 const [createAction, changeAction, deleteAction, _createdAction, _changedAction, _deletedAction] =
 	defineSyncMapActions<User>(modelName);
+
+const toSyncMapValue = (user: UserRecord): SyncMapData<User> => ({
+	id: user.id,
+	name: ChangedAt(user.name, user.nameChangeTime)
+});
 
 export default (server: BaseServer, users: Users, memberships: Memberships, lists: Lists): void => {
 	const canAccess = async (ctx: Context, user: UserRecord): Promise<boolean> => {
@@ -66,10 +78,7 @@ export default (server: BaseServer, users: Users, memberships: Memberships, list
 		load: async (_, id) => {
 			const user = await users.find({ id });
 			if (!user) throw new LoguxNotFoundError();
-			return {
-				id,
-				name: ChangedAt(user.name, user.nameChangeTime)
-			};
+			return toSyncMapValue(user);
 		}
 	});
 
@@ -82,12 +91,7 @@ export default (server: BaseServer, users: Users, memberships: Memberships, list
 					const hasAccess = await Promise.all(users.map((user) => canAccess(ctx, user)));
 					return users.filter((_, i) => hasAccess[i]);
 				})
-				.then((users) =>
-					users.map((user) => ({
-						id: user.id,
-						name: ChangedAt(user.name, user.nameChangeTime)
-					}))
-				),
+				.then((users) => users.map(toSyncMapValue)),
 		actions: (ctx) => async (_, action) =>
 			users.find({ id: action.id }).then((user) => {
 				if (!user) return false;

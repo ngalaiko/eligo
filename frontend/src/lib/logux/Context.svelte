@@ -5,6 +5,7 @@
 	import context from './context';
 	import { writable } from 'svelte/store';
 	import { session } from '$app/stores';
+	import { wsHost } from '$lib/api';
 
 	const ctx = writable<Client | undefined>(undefined);
 	context.set(ctx);
@@ -17,7 +18,7 @@
 	let client: Client;
 	onMount(() => {
 		client = new Client({
-			server: 'ws://127.0.0.1:31337/',
+			server: wsHost,
 			subprotocol,
 			userId: $session.user?.id ?? 'anonymous',
 			token: $session.token

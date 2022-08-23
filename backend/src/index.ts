@@ -17,15 +17,24 @@ const argv = yargs(process.argv.slice(2))
 		describe: 'Database path',
 		default: './database.dev.json'
 	})
+	.option('port', {
+		alias: 'p',
+		describe: 'Port to listen on',
+		default: 31337
+	})
+	.option('host', {
+		alias: 'h',
+		describe: 'Host to listen on',
+		default: '127.0.0.1'
+	})
 	.parseSync();
 
-const server = new Server(
-	Server.loadOptions(process, {
-		subprotocol,
-		supports: subprotocol,
-		fileUrl: import.meta.url
-	})
-);
+const server = new Server({
+	subprotocol,
+	port: argv.port,
+	host: argv.host,
+	supports: subprotocol
+});
 
 const { keys, users, items, lists, picks, memberships } = openDB(argv.database);
 

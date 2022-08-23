@@ -1,7 +1,7 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { error } from '@sveltejs/kit';
 import { serialize } from 'cookie';
-import { host as apiHost } from '$lib/api';
+import { httpHost } from '$lib/api';
 
 export const DELETE: RequestHandler = () => {
 	return new Response(undefined, {
@@ -20,7 +20,7 @@ export const POST: RequestHandler = ({ request }) =>
 	request
 		.json()
 		.then(({ name, password }) =>
-			fetch(new URL('/auth', apiHost), {
+			fetch(new URL('/auth', httpHost), {
 				method: 'POST',
 				body: JSON.stringify({ name, password })
 			})

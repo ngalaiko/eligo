@@ -1,6 +1,6 @@
 import type { GetSession, Handle } from '@sveltejs/kit';
 import { parse } from 'cookie';
-import { host as apiHost } from '$lib/api';
+import { httpHost as apiHost } from '$lib/api';
 
 export const handle: Handle = async ({ event, resolve }) => {
 	const { token } = parse(event.request.headers.get('cookie') ?? '');

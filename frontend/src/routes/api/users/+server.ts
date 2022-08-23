@@ -1,14 +1,13 @@
+import { httpHost } from '$lib/api';
 import type { RequestHandler } from '@sveltejs/kit';
 import { error } from '@sveltejs/kit';
 import { serialize } from 'cookie';
-
-const apiHost = 'http://127.0.0.1:31337/';
 
 export const POST: RequestHandler = ({ request }) =>
 	request
 		.json()
 		.then(({ name, password }) =>
-			fetch(new URL('/users', apiHost), {
+			fetch(new URL('/users', httpHost), {
 				method: 'POST',
 				body: JSON.stringify({ name, password })
 			})

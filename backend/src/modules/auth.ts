@@ -146,7 +146,7 @@ export default async (server: BaseServer, keys: Keys, users: Users): Promise<voi
 					});
 			} else if (req.method === 'GET') {
 				const [type, token] = req.headers.authorization?.split(' ') || [];
-				if (type.toLowerCase() !== 'bearer') {
+				if (type?.toLowerCase() !== 'bearer') {
 					res.statusCode = 401;
 					res.end();
 					return;

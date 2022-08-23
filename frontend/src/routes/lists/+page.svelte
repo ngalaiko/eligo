@@ -3,7 +3,7 @@
 	import { useClient } from '$lib/logux';
 	import { session } from '$app/stores';
 	import { Card as ListCard } from '$lib/lists';
-	import { compareAsc, compareDesc } from 'date-fns';
+	import { compareDesc } from 'date-fns';
 
 	const client = useClient();
 	const lists = useLists();

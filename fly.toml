@@ -1,7 +1,4 @@
-app = "eligo-frontend"
-
-[build]
-  build-target = "frontend"
+app = "eligo-backend"
 
 [[services]]
   internal_port = 8080
@@ -31,3 +28,7 @@ app = "eligo-frontend"
     interval = "15s"
     restart_limit = 0
     timeout = "2s"
+
+[mounts]
+  source="database"
+  destination="/data"

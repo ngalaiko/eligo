@@ -10,9 +10,9 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@eligo/protocol": "workspace:*",
 		"@logux/actions": "^0.2.3",
 		"@logux/server": "^0.11.0",
-		"@eligo/protocol": "workspace:*",
 		"bcrypt": "^5.0.1",
 		"jose": "^4.8.3",
 		"lowdb": "^3.0.0",

@@ -75,24 +75,23 @@ importers:
       tslib: ^2.3.1
       typescript: ^4.7.4
       vite: ^3.0.0
-    dependencies:
-      '@eligo/protocol': link:../protocol
-      '@logux/client': 0.17.0_cdjag4gur464gfepqcn54orpdu
-      cookie: 0.5.0
-      date-fns: 2.29.1
-      nanoid: 4.0.0
-      nanostores: 0.6.0
     devDependencies:
+      '@eligo/protocol': link:../protocol
       '@logux/actions': 0.2.3_@logux+core@0.7.3
+      '@logux/client': 0.17.0_cdjag4gur464gfepqcn54orpdu
       '@sveltejs/adapter-node': 1.0.0-next.86
       '@sveltejs/kit': 1.0.0-next.414_svelte@3.49.0+vite@3.0.4
       '@types/cookie': 0.5.1
       '@typescript-eslint/eslint-plugin': 5.32.0_iosr3hrei2tubxveewluhu5lhy
       '@typescript-eslint/parser': 5.32.0_qugx7qdu5zevzvxaiqyxfiwquq
       autoprefixer: 10.4.8_postcss@8.4.14
+      cookie: 0.5.0
+      date-fns: 2.29.1
       eslint: 8.21.0
       eslint-config-prettier: 8.5.0_eslint@8.21.0
       eslint-plugin-svelte3: 4.0.0_a7wk4ghvg4hia4trwaglu7p6cq
+      nanoid: 4.0.0
+      nanostores: 0.6.0
       postcss: 8.4.14
       postcss-load-config: 4.0.1_postcss@8.4.14
       prettier: 2.7.1
@@ -234,7 +233,7 @@ packages:
       nanoevents: 7.0.1
       nanoid: 4.0.0
       nanostores: 0.6.0
-    dev: false
+    dev: true
 
   /@logux/core/0.7.3:
     resolution: {integrity: sha512-IMqhl8hEK/Ej/URUcpeREW9hMuKdakVHPyy3k0GSwcC+PlYmtCRirp7+4b7v3EfDjB+evSw8CnQTiNwnfev0gQ==}
@@ -869,7 +868,7 @@ packages:
   /date-fns/2.29.1:
     resolution: {integrity: sha512-dlLD5rKaKxpFdnjrs+5azHDFOPEu4ANy/LTh04A1DTzMM7qoajmKCBc8pkKRFT41CNzw+4gQh79X5C+Jq27HAw==}
     engines: {node: '>=0.11'}
-    dev: false
+    dev: true
 
   /dateformat/3.0.3:
     resolution: {integrity: sha512-jyCETtSl3VMZMWeRo7iY1FL19ges1t55hMo5yaam4Jrsm5EPL89UQkoQRyiI+Yf4k8r2ZpdngkV8hr1lIdjb3Q==}
@@ -1396,6 +1395,7 @@ packages:
 
   /fast-json-stable-stringify/2.1.0:
     resolution: {integrity: sha512-lhd/wF+Lk98HZoTCtlVraHtfh5XYijIjalXck7saUtuanSDyLMxnHhSXEDJqHxD7msR8D0uCmqlkwjCV8xvwHw==}
+    dev: true
 
   /fast-levenshtein/2.0.6:
     resolution: {integrity: sha512-DCXu6Ifhqcks7TZKY3Hxp3y6qphY5SJZmrWMDrKcERSOXWQdMhU9Ig/PYrzyw/ul9jOIyh0N4M0tbC5hodg8dw==}
@@ -1882,7 +1882,6 @@ packages:
   /nanodelay/2.0.2:
     resolution: {integrity: sha512-6AS5aCSXsjoxq2Jr9CdaAeT60yoYDOTp6po9ziqeOeY6vf6uTEHYSqWql6EFILrM3fEfXgkZ4KqE9L0rTm/wlA==}
     engines: {node: ^12.0.0 || ^14.0.0 || >=16.0.0}
-    dev: false
 
   /nanoevents/6.0.2:
     resolution: {integrity: sha512-FRS2otuFcPPYDPYViNWQ42+1iZqbXydinkRHTHFxrF4a1CpBfmydR9zkI44WSXAXCyPrkcGtPk5CnpW6Y3lFKQ==}
@@ -1891,7 +1890,7 @@ packages:
   /nanoevents/7.0.1:
     resolution: {integrity: sha512-o6lpKiCxLeijK4hgsqfR6CNToPyRU3keKyyI6uwuHRvpRTbZ0wXw51WRgyldVugZqoJfkGFrjrIenYH3bfEO3Q==}
     engines: {node: ^14.0.0 || ^16.0.0 || >=18.0.0}
-    dev: false
+    dev: true
 
   /nanoid/3.3.4:
     resolution: {integrity: sha512-MqBkQh/OHTS2egovRtLk45wEyNXwF+cokD+1YPf9u5VfJiRdAiRwB2froX5Co9Rh20xs4siNPm8naNotSD6RBw==}
@@ -1902,12 +1901,11 @@ packages:
     resolution: {integrity: sha512-IgBP8piMxe/gf73RTQx7hmnhwz0aaEXYakvqZyE302IXW3HyVNhdNGC+O2MwMAVhLEnvXlvKtGbtJf6wvHihCg==}
     engines: {node: ^14 || ^16 || >=18}
     hasBin: true
-    dev: false
 
   /nanostores/0.6.0:
     resolution: {integrity: sha512-CQpKE8wtaJAr66hbg32t0MOAeybzLywU6UsLAX18kyQL/bME+xwhjWpmrvJRBp5kueFy6hs2oHlt3HFpNP+JaA==}
     engines: {node: ^14.0.0 || ^16.0.0 || >=18.0.0}
-    dev: false
+    dev: true
 
   /natural-compare/1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}

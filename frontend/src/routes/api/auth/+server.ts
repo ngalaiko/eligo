@@ -1,5 +1,4 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { error } from '@sveltejs/kit';
 import { serialize } from 'cookie';
 import { httpHost } from '$lib/api';
 
@@ -40,7 +39,5 @@ export const POST: RequestHandler = ({ request }) =>
 								}
 							})
 				  )
-				: res.text().then((text) => {
-						throw error(res.status, text);
-				  })
+				: res.text().then((text) => new Response(text, { status: res.status }))
 		);

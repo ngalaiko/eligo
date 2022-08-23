@@ -59,11 +59,11 @@
 	});
 </script>
 
-<div class="w-full h-full flex justify-around">
+<div class="flex justify-around">
 	{#if $session.token}
 		<a href="/lists">Lists</a>
 	{:else}
-		<form class="flex flex-col gap-2">
+		<form class="flex flex-col gap-2 justify-around">
 			<div class="grid gap-1">
 				<input
 					id="username"
@@ -89,9 +89,10 @@
 					>signup</button
 				>
 			</div>
+
+			{#if error}
+				<div class="bg-red-300 p-2 rounded">{error}</div>
+			{/if}
 		</form>
-		{#if error}
-			<div>{error}</div>
-		{/if}
 	{/if}
 </div>

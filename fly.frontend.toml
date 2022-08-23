@@ -1,3 +1,8 @@
+app = "eligo-frontend"
+
+[build]
+  build-target = "frontend"
+
 [[services]]
   internal_port = 8080
   protocol = "tcp"

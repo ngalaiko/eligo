@@ -1,21 +1,21 @@
 <script lang="ts">
 	import { useLists } from '$lib/lists';
 	import { createMembership, useMemberships } from '$lib/memberships';
-	import { session } from '$app/stores';
 	import type { PageData } from './$types';
-	import { useClient } from '$lib/logux';
+	import { useAuth, useClient } from '$lib/logux';
 	import { derived } from 'svelte/store';
 	import { goto } from '$app/navigation';
 
 	export let data: PageData;
 
 	const client = useClient();
+	const auth = useAuth();
 	const lists = useLists({ invitatationId: data.invitationId });
-	const memberships = useMemberships({ userId: $session.user.id });
+	const memberships = useMemberships({ userId: $auth.userId });
 
 	const join = (listId: string) => {
 		createMembership(client, {
-			userId: $session.user.id,
+			userId: $auth.userId,
 			listId: listId
 		}).then(() => goto(`/lists/${listId}/`));
 	};
@@ -30,7 +30,7 @@
 		return {
 			isLoading: false,
 			list: lists.list[0],
-			isMember: !!existingMembership || lists.list[0].userId === $session.user.id
+			isMember: !!existingMembership || lists.list[0].userId === $auth.userId
 		};
 	});
 </script>

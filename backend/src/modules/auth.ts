@@ -5,6 +5,10 @@ import { compare, hash } from 'bcrypt';
 import { nanoid } from 'nanoid';
 import { IncomingMessage } from 'http';
 import { User } from '@eligo/protocol';
+import { serialize } from 'cookie';
+import { addDays } from 'date-fns';
+
+const authCookieName = 'token';
 
 export default async (server: BaseServer, keys: Keys, users: Users): Promise<void> => {
 	const { keyId, privateKey, keyAlg } = await generateKeyPair('ES256').then(
@@ -103,14 +107,31 @@ export default async (server: BaseServer, keys: Keys, users: Users): Promise<voi
 		});
 	};
 
+	const isOriginAllowed = (origin: string): boolean => {
+		if (['http://127.0.0.1:5173'].indexOf(origin) !== -1) return true;
+		return false;
+	};
+
 	server.http((req, res) => {
+		if (req.headers.origin && isOriginAllowed(req.headers.origin)) {
+			res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
+			res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
+			res.setHeader('Access-Control-Allow-Credentials', 'true');
+			res.setHeader('Access-Control-Max-Age', '86400');
+		}
+
 		if (req.url === '/users') {
 			if (req.method === 'POST') {
 				signUp(req)
 					.then(async (user) => {
 						const token = await newToken({ sub: user.id });
+						const cookie = serialize(authCookieName, token, {
+							httpOnly: true,
+							expires: addDays(new Date(), 28)
+						});
+						res.setHeader('Set-Cookie', cookie);
 						res.setHeader('Content-Type', 'application/json');
-						res.end(JSON.stringify({ id: user.id, name: user.name, token }));
+						res.end(JSON.stringify({ id: user.id, name: user.name }));
 					})
 					.catch((err) => {
 						if (err instanceof HTTPError) {
@@ -122,6 +143,9 @@ export default async (server: BaseServer, keys: Keys, users: Users): Promise<voi
 							res.end('Internal server error');
 						}
 					});
+			} else if (req.method === 'OPTIONS') {
+				res.statusCode = 204;
+				res.end();
 			} else {
 				res.statusCode = 405;
 				res.end();
@@ -131,8 +155,13 @@ export default async (server: BaseServer, keys: Keys, users: Users): Promise<voi
 				signIn(req)
 					.then(async (user) => {
 						const token = await newToken({ sub: user.id });
+						const cookie = serialize(authCookieName, token, {
+							httpOnly: true,
+							expires: addDays(new Date(), 28)
+						});
+						res.setHeader('Set-Cookie', cookie);
 						res.setHeader('Content-Type', 'application/json');
-						res.end(JSON.stringify({ id: user.id, name: user.name, token }));
+						res.end(JSON.stringify({ id: user.id, name: user.name }));
 					})
 					.catch((err) => {
 						if (err instanceof HTTPError) {
@@ -144,29 +173,17 @@ export default async (server: BaseServer, keys: Keys, users: Users): Promise<voi
 							res.end('Internal server error');
 						}
 					});
-			} else if (req.method === 'GET') {
-				const [type, token] = req.headers.authorization?.split(' ') || [];
-				if (type?.toLowerCase() !== 'bearer') {
-					res.statusCode = 401;
-					res.end();
-					return;
-				}
-				verifyJWT(token)
-					.then(({ payload }) => users.find({ id: payload.sub }))
-					.then((user) => {
-						if (!user) {
-							res.statusCode = 401;
-							res.end();
-							return;
-						}
-						res.setHeader('Content-Type', 'application/json');
-						res.end(JSON.stringify({ id: user.id, name: user.name, token: token }));
-					})
-					.catch((err) => {
-						console.error(err);
-						res.statusCode = 500;
-						res.end('Internal server error');
-					});
+			} else if (req.method === 'DELETE') {
+				const cookie = serialize(authCookieName, '', {
+					httpOnly: true,
+					expires: addDays(new Date(), -1)
+				});
+				res.setHeader('Set-Cookie', cookie);
+				res.statusCode = 204;
+				res.end();
+			} else if (req.method === 'OPTIONS') {
+				res.statusCode = 204;
+				res.end();
 			} else {
 				res.statusCode = 405;
 				res.end();
@@ -177,11 +194,9 @@ export default async (server: BaseServer, keys: Keys, users: Users): Promise<voi
 		}
 	});
 
-	server.auth(
-		({ userId, token }) =>
-			userId === 'anonymous' ||
-			verifyJWT(token)
-				.then(({ payload }) => payload.sub === userId)
-				.catch(() => false)
+	server.auth(({ userId, cookie }) =>
+		verifyJWT(cookie[authCookieName])
+			.then(({ payload }) => payload.sub === userId)
+			.catch(() => false)
 	);
 };

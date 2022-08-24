@@ -11,11 +11,14 @@ importers:
       '@logux/actions': ^0.2.3
       '@logux/server': ^0.11.0
       '@types/bcrypt': ^5.0.0
+      '@types/cookie': ^0.5.1
       '@types/node': ^18.6.3
       '@types/node-fetch': ^2.6.2
       '@types/ws': ^8.5.3
       '@types/yargs': ^17.0.11
       bcrypt: ^5.0.1
+      cookie: ^0.5.0
+      date-fns: ^2.29.1
       jose: ^4.8.3
       lowdb: ^3.0.0
       nanoid: ^4.0.0
@@ -29,7 +32,10 @@ importers:
       '@eligo/protocol': link:../protocol
       '@logux/actions': 0.2.3_@logux+core@0.7.3
       '@logux/server': 0.11.0
+      '@types/cookie': 0.5.1
       bcrypt: 5.0.1
+      cookie: 0.5.0
+      date-fns: 2.29.1
       jose: 4.8.3
       lowdb: 3.0.0
       nanoid: 4.0.0
@@ -53,11 +59,9 @@ importers:
       '@logux/client': ^0.17.0
       '@sveltejs/adapter-vercel': 1.0.0-next.67
       '@sveltejs/kit': 1.0.0-next.414
-      '@types/cookie': ^0.5.1
       '@typescript-eslint/eslint-plugin': ^5.27.0
       '@typescript-eslint/parser': ^5.27.0
       autoprefixer: ^10.4.7
-      cookie: ^0.5.0
       date-fns: ^2.29.1
       eslint: ^8.16.0
       eslint-config-prettier: ^8.3.0
@@ -81,11 +85,9 @@ importers:
       '@logux/client': 0.17.0_cdjag4gur464gfepqcn54orpdu
       '@sveltejs/adapter-vercel': 1.0.0-next.67
       '@sveltejs/kit': 1.0.0-next.414_svelte@3.49.0+vite@3.0.4
-      '@types/cookie': 0.5.1
       '@typescript-eslint/eslint-plugin': 5.32.0_iosr3hrei2tubxveewluhu5lhy
       '@typescript-eslint/parser': 5.32.0_qugx7qdu5zevzvxaiqyxfiwquq
       autoprefixer: 10.4.8_postcss@8.4.14
-      cookie: 0.5.0
       date-fns: 2.29.1
       eslint: 8.21.0
       eslint-config-prettier: 8.5.0_eslint@8.21.0
@@ -403,7 +405,7 @@ packages:
 
   /@types/cookie/0.5.1:
     resolution: {integrity: sha512-COUnqfB2+ckwXXSFInsFdOAWQzCCx+a5hq2ruyj+Vjund94RJQd4LG2u9hnvJrTgunKAaax7ancBYlDrNYxA0g==}
-    dev: true
+    dev: false
 
   /@types/json-schema/7.0.11:
     resolution: {integrity: sha512-wOuvG1SN4Us4rez+tylwwwCV1psiNVOkJeM3AUWUNWg/jDQY2+HE/444y5gc+jBmRqASOm2Oeh5c1axHobwRKQ==}
@@ -896,7 +898,6 @@ packages:
   /date-fns/2.29.1:
     resolution: {integrity: sha512-dlLD5rKaKxpFdnjrs+5azHDFOPEu4ANy/LTh04A1DTzMM7qoajmKCBc8pkKRFT41CNzw+4gQh79X5C+Jq27HAw==}
     engines: {node: '>=0.11'}
-    dev: true
 
   /dateformat/3.0.3:
     resolution: {integrity: sha512-jyCETtSl3VMZMWeRo7iY1FL19ges1t55hMo5yaam4Jrsm5EPL89UQkoQRyiI+Yf4k8r2ZpdngkV8hr1lIdjb3Q==}

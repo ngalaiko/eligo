@@ -4,7 +4,6 @@
 	import { subprotocol } from '@eligo/protocol';
 	import context from './context';
 	import { writable } from 'svelte/store';
-	import { session } from '$app/stores';
 	import { wsHost } from '$lib/api';
 
 	const ctx = writable<Client | undefined>(undefined);
@@ -20,8 +19,7 @@
 		client = new Client({
 			server: wsHost,
 			subprotocol,
-			userId: $session.user?.id ?? 'anonymous',
-			token: $session.token
+			userId: localStorage.getItem('user-id') ?? 'anonymous'
 		});
 
 		ctx.set(client);
@@ -30,9 +28,6 @@
 		log(client);
 		client.start();
 		return () => client.destroy();
-	});
-	session.subscribe((session) => {
-		client?.changeUser(session.user?.id ?? 'anonymous', session.token);
 	});
 </script>
 

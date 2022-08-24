@@ -2,6 +2,7 @@ export { default as Context } from './Context.svelte';
 
 import context from './context';
 import { get, readable, type Readable } from 'svelte/store';
+
 export const useClient = () => {
 	const clientStore = context.get();
 	if (!clientStore) throw new Error('Client is not set');
@@ -10,7 +11,7 @@ export const useClient = () => {
 	return client;
 };
 
-import { createFilter, type SyncMapValue } from '@logux/client';
+import { createAuth, createFilter, type SyncMapValue } from '@logux/client';
 import type { SyncMapTemplate, Filter, FilterOptions } from '@logux/client';
 import type { SyncMapValues } from '@logux/actions';
 
@@ -29,4 +30,10 @@ export const useSync = <Value extends SyncMapValues>(
 ): Readable<SyncMapValue<Value>> => {
 	const store = Template(id, useClient());
 	return readable(store.get(), (set) => store.listen(set));
+};
+
+export const useAuth = () => {
+	const client = useClient();
+	const auth = createAuth(client);
+	return readable(auth.get(), (set) => auth.listen(set));
 };

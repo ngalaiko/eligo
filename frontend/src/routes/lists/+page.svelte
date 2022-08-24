@@ -1,20 +1,19 @@
 <script lang="ts">
 	import { useLists, createList } from '$lib/lists';
-	import { useClient } from '$lib/logux';
-	import { session } from '$app/stores';
+	import { useAuth, useClient } from '$lib/logux';
 	import { Card as ListCard } from '$lib/lists';
 	import { compareDesc } from 'date-fns';
 
 	const client = useClient();
 	const lists = useLists();
+	const auth = useAuth();
 
 	let title: string = '';
 	const create = async () => {
 		if (!title) return;
-		if (!$session.user) return;
 		await createList(client, {
 			title,
-			userId: $session.user.id,
+			userId: $auth.userId,
 			createTime: new Date().getTime()
 		}).then(() => (title = ''));
 	};

@@ -1,27 +1,32 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { session, page } from '$app/stores';
-	import { browser } from '$app/env';
+
+	import { httpHost } from '$lib/api';
+	import { useAuth, useClient } from '$lib/logux';
 
 	let username = '';
 	let password = '';
 	let error: string | null = null;
 
+	const client = useClient();
+
+	const auth = useAuth();
+
 	const signup = async () => {
 		error = null;
-		await fetch('/api/users', {
+		await fetch(new URL('/users', httpHost).toString(), {
 			method: 'POST',
 			body: JSON.stringify({ name: username, password }),
 			credentials: 'include'
 		}).then((res) =>
 			res.status === 200
-				? res.json().then(({ id, name, token }) => {
+				? res.json().then(({ id }) => {
+						client.changeUser(id);
+						client.start();
+						localStorage.setItem('user-id', id);
+						goto('/lists/');
 						username = '';
 						password = '';
-						$session = {
-							user: { id, name },
-							token
-						};
 				  })
 				: res.text().then((text) => {
 						console.error(text);
@@ -32,19 +37,19 @@
 
 	const login = async () => {
 		error = null;
-		await fetch('/api/auth', {
+		await fetch(new URL('/auth', httpHost).toString(), {
 			method: 'POST',
 			body: JSON.stringify({ name: username, password }),
 			credentials: 'include'
 		}).then((res) =>
 			res.status === 200
-				? res.json().then(({ id, name, token }) => {
+				? res.json().then(({ id }) => {
+						client.changeUser(id);
+						client.start();
+						localStorage.setItem('user-id', id);
+						goto('/lists/');
 						username = '';
 						password = '';
-						$session = {
-							user: { id, name },
-							token
-						};
 				  })
 				: res.text().then((text) => {
 						console.error(text);
@@ -52,16 +57,11 @@
 				  })
 		);
 	};
-
-	session.subscribe((session) => {
-		const to = $page.url.searchParams.get('redirect') || '/lists/';
-		if (browser && session.user && $page.url.pathname !== to) goto(to);
-	});
 </script>
 
 <div class="flex justify-around">
-	{#if $session.token}
-		<a href="/lists">Lists</a>
+	{#if $auth.isAuthenticated}
+		<a href="/lists">Lists -></a>
 	{:else}
 		<form class="flex flex-col gap-2 justify-around">
 			<div class="grid gap-1">

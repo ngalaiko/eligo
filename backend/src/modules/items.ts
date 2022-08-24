@@ -29,6 +29,10 @@ export default (server: BaseServer, items: Items, lists: Lists, memberships: Mem
 	const canAccess = async (ctx: Context, item: ItemRecord): Promise<boolean> => {
 		// owner can access
 		if (ctx.userId === item.userId) return true;
+		// list owner can access
+		const list = await lists.find({ id: item.listId });
+		if (!list) throw new LoguxNotFoundError();
+		if (list.userId === ctx.userId) return true;
 		// members can access
 		const member = await memberships.find({ listId: item.listId, userId: ctx.userId });
 		return !!member;

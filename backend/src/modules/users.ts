@@ -9,14 +9,7 @@ import {
 import { defineSyncMapActions, LoguxNotFoundError } from '@logux/actions';
 import type { User } from '@eligo/protocol';
 
-import {
-	ListRecord,
-	Lists,
-	MembershipRecord,
-	Memberships,
-	UserRecord,
-	Users
-} from '../db/index.js';
+import { Lists, Memberships, UserRecord, Users } from '../db/index.js';
 
 const modelName = 'users';
 
@@ -32,21 +25,25 @@ export default (server: BaseServer, users: Users, memberships: Memberships, list
 	const canAccess = async (ctx: Context, user: UserRecord): Promise<boolean> => {
 		// own can access
 		if (ctx.userId === user.id) return true;
-
-		// members of the same lists can access
 		// TODO: refactor, there are too many queries
-		const memberIn = await memberships.filter({ userId: ctx.userId });
-		const memberOfListIds = memberIn.map(({ listId }) => listId);
-		const memberOfLists = (await Promise.all(
-			memberOfListIds.map((listId) => lists.find({ id: listId })).filter((list) => !!list)
-		)) as ListRecord[];
-		const comembers = (await Promise.all(
-			memberOfListIds.map((listId) => memberships.find({ listId })).filter((m) => !!m)
-		)) as MembershipRecord[];
-		const allowedIds = comembers
-			.map(({ userId }) => userId)
-			.concat(memberOfLists.map(({ userId }) => userId));
-		return allowedIds.includes(user.id);
+		// members of the same lists can access
+		const mm = (await memberships.filter({ userId: ctx.userId })).concat(
+			await memberships.filter({ userId: user.id })
+		);
+		const listIds = mm.map(({ listId }) => listId);
+		const memberOfLists = await Promise.all(
+			listIds.map((listId) => lists.find({ id: listId })).filter((list) => !!list)
+		);
+		// owners of lists that the user is in can access
+		const listOwnerIds = memberOfLists.map((list) => list?.userId);
+		if (listOwnerIds.includes(user.id)) return true;
+		// members of the same lists can access
+		const comembers = await Promise.all(
+			listIds.map((listId) => memberships.find({ listId })).filter((m) => !!m)
+		);
+		const comemberIds = comembers.map((member) => member?.userId);
+		if (comemberIds.includes(user.id)) return true;
+		return false;
 	};
 
 	addSyncMap<User>(server, modelName, {

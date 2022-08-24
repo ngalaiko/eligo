@@ -6,7 +6,16 @@
 
 	let username = '';
 	let password = '';
+	let passwordRepeat = '';
+	let type: 'login' | 'signup' = 'login';
 	let error: string | null = null;
+
+	$: isValid =
+		(type === 'signup' &&
+			username.length > 0 &&
+			password.length > 0 &&
+			password === passwordRepeat) ||
+		(type === 'login' && username.length > 0 && password.length > 0);
 
 	const client = useClient();
 
@@ -59,18 +68,23 @@
 	};
 </script>
 
-<div class="flex justify-around">
+<div class="flex flex-col items-center gap-4">
 	{#if $auth.isAuthenticated}
-		<a href="/lists">Lists -></a>
+		<a href="/lists">lists -></a>
 	{:else}
 		<form class="flex flex-col gap-2 justify-around">
-			<div class="grid gap-1">
+			{#if error}
+				<p class="bg-red-300 p-2 rounded">{error}</p>
+			{/if}
+
+			<fieldset class="grid gap-1">
 				<input
 					id="username"
 					name="username"
 					type="text"
 					placeholder="username"
 					bind:value={username}
+					on:input={() => (error = null)}
 				/>
 				<input
 					id="password"
@@ -78,21 +92,43 @@
 					type="password"
 					placeholder="password"
 					bind:value={password}
+					on:input={() => (error = null)}
 				/>
-			</div>
+				{#if type === 'signup'}
+					<input
+						id="password-repeat"
+						name="password-repeat"
+						type="password"
+						placeholder="repeat password"
+						bind:value={passwordRepeat}
+						on:input={() => (error = null)}
+					/>
+				{/if}
+			</fieldset>
 
 			<div>
-				<button class="underline" on:click|preventDefault={login} disabled={!username || !password}
-					>login</button
-				>
-				<button class="underline" on:click|preventDefault={signup} disabled={!username || !password}
-					>signup</button
-				>
+				{#if type === 'login'}
+					<button class="underline" on:click|preventDefault={login} disabled={!isValid}
+						>login</button
+					>
+				{:else if type === 'signup'}
+					<button class="underline" on:click|preventDefault={signup} disabled={!isValid}
+						>signup</button
+					>
+				{/if}
 			</div>
-
-			{#if error}
-				<div class="bg-red-300 p-2 rounded">{error}</div>
-			{/if}
 		</form>
+
+		<div>
+			{#if type === 'login'}
+				<button class="opacity-50 text-sm" on:click={() => (type = 'signup')}>
+					don't have an account?
+				</button>
+			{:else if type === 'signup'}
+				<button class="opacity-50 text-sm" on:click={() => (type = 'login')}>
+					already have an account?
+				</button>
+			{/if}
+		</div>
 	{/if}
 </div>

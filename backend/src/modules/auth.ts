@@ -107,9 +107,12 @@ export default async (server: BaseServer, keys: Keys, users: Users): Promise<voi
 		});
 	};
 
+	const wellKnownOrigins = ['http://127.0.0.1:5173', 'https://eligo-six.vercel.app'];
+	const vercelOriginRegexp = new RegExp('https://eligo(-.+)?-ngalaiko.vercel.app');
+
 	const isOriginAllowed = (origin: string): boolean => {
-		if (['http://127.0.0.1:5173'].indexOf(origin) !== -1) return true;
-		return false;
+		if (wellKnownOrigins.indexOf(origin) !== -1) return true;
+		return vercelOriginRegexp.test(origin);
 	};
 
 	server.http((req, res) => {

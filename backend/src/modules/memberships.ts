@@ -64,13 +64,15 @@ export default (server: BaseServer, memberships: Memberships, lists: Lists): voi
 		},
 
 		create: async (_ctx, id, fields) => {
-			memberships.create({
+			await memberships.create({
 				...fields,
 				id
 			});
 		},
 
-		delete: (_, id) => memberships.delete(id)
+		delete: async (_, id) => {
+			await memberships.delete(id);
+		}
 	});
 
 	addSyncMapFilter<Membership>(server, modelName, {

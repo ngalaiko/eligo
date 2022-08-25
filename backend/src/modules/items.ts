@@ -73,7 +73,7 @@ export default (server: BaseServer, items: Items, lists: Lists, memberships: Mem
 		},
 
 		create: async (_ctx, id, fields, time) => {
-			items.create({
+			await items.create({
 				...fields,
 				id,
 				textChangeTime: time
@@ -89,7 +89,9 @@ export default (server: BaseServer, items: Items, lists: Lists, memberships: Mem
 			});
 		},
 
-		delete: (_, id) => items.delete(id)
+		delete: async (_, id) => {
+			await items.delete(id);
+		}
 	});
 
 	addSyncMapFilter<Item>(server, modelName, {

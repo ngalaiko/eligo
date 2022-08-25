@@ -70,8 +70,8 @@ export default (server: BaseServer, lists: Lists, memberships: Memberships): voi
 			return toSyncMapValue(list);
 		},
 
-		create: (_ctx, id, fields, time) => {
-			lists.create({
+		create: async (_ctx, id, fields, time) => {
+			await lists.create({
 				...fields,
 				id,
 				titleChangeTime: time,
@@ -89,7 +89,9 @@ export default (server: BaseServer, lists: Lists, memberships: Memberships): voi
 			});
 		},
 
-		delete: (_, id) => lists.delete(id)
+		delete: async (_, id) => {
+			await lists.delete(id);
+		}
 	});
 
 	addSyncMapFilter<List>(server, modelName, {

@@ -33,7 +33,10 @@ const server = new Server({
 	subprotocol,
 	port: argv.port,
 	host: argv.host,
-	supports: subprotocol
+	supports: subprotocol,
+	logger: {
+		type: process.env.NODE_ENV === 'production' ? 'json' : 'human'
+	}
 });
 
 const { keys, users, items, lists, picks, memberships } = openDB(argv.database);

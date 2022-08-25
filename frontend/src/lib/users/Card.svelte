@@ -7,5 +7,5 @@
 </script>
 
 <div id={user.id}>
-	<span>{replaceSelf && $session.user?.id === user.id ? 'you' : user.name}</span>
+	{replaceSelf && $session.user?.id === user.id ? 'you' : user.name}
 </div>

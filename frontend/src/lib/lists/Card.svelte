@@ -7,24 +7,16 @@
 	const user = useUser(list.userId);
 </script>
 
-<a
-	id={list.id}
-	href="/lists/{list.id}"
-	class="border-2 border-black shadow-md flex flex-col gap-4 p-2 shadow-sm hover:shadow-lg hover:bg-yellow-50 text-ellipsis overflow-hidden"
->
-	<div class="opacity-50 text-xs align-right">
-		{#if $user.isLoading}
-			<span>loading...</span>
-		{:else if $user.isLoading === false}
-			<span class="flex gap-1">
-				<UserCard user={$user} />
-				created
-				<Distance to={list.createTime} />
-			</span>
+<div id={list.id} class="border-2 px-2 py-1 rounded-2xl hover:bg-yellow-100">
+	<span class="font-semibold whitespace-nowrap text-lg text-ellipsis overflow-hidden">
+		{list.title}
+	</span>
+
+	<div class="flex gap-1 opacity-50 text-sm">
+		created
+		<Distance to={list.createTime} />
+		{#if $user.isLoading === false}
+			by <UserCard user={$user} />
 		{/if}
 	</div>
-
-	<h2 class="font-semibold text-lg whitespace-nowrap text-ellipsis overflow-hidden">
-		{list.title}
-	</h2>
-</a>
+</div>

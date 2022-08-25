@@ -1,4 +1,6 @@
 export { default as Card } from './Card.svelte';
+export { default as List } from './List.svelte';
+export { default as Button } from './Button.svelte';
 
 import { useFilter } from '$lib/logux';
 import { createSyncMap, syncMapTemplate, Client } from '@logux/client';

@@ -7,23 +7,17 @@
 	const user = useUser(item.userId);
 </script>
 
-<div
-	id={item.id}
-	class="border-2 border-black shadow-md flex flex-col gap-4 p-2 shadow-sm text-ellipsis overflow-hidden"
->
-	<div class="opacity-50 text-xs align-right">
-		{#if $user.isLoading}
-			<span>loading...</span>
-		{:else if $user.isLoading === false}
-			<span class="flex gap-1">
-				<UserCard user={$user} />
-				added
-				<Distance to={item.createTime} />
-			</span>
+<div id={item.id} class="border-2 px-2 py-1 rounded-2xl">
+	<span class="font-semibold text-lg whitespace-nowrap text-ellipsis overflow-hidden">
+		{item.text}
+	</span>
+
+	<div class="flex gap-1 opacity-50 text-sm">
+		created
+		<Distance to={item.createTime} />
+		{#if $user.isLoading === false}
+			by
+			<UserCard user={$user} />
 		{/if}
 	</div>
-
-	<h3 class="font-semibold text-lg whitespace-nowrap text-ellipsis overflow-hidden">
-		{item.text}
-	</h3>
 </div>

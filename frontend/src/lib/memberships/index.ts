@@ -1,3 +1,5 @@
+export { default as InviteLink } from './InviteLink.svelte';
+
 import {
 	syncMapTemplate,
 	createSyncMap,

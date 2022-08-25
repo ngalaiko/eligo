@@ -4,7 +4,7 @@
 </script>
 
 <Context>
-	<main class="w-screen h-screen p-4">
+	<main class="max-w-lg h-screen p-4 mx-auto">
 		<slot />
 	</main>
 </Context>

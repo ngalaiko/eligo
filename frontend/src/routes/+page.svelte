@@ -68,14 +68,12 @@
 	};
 </script>
 
-<div class="flex flex-col items-center gap-4">
+<div class="flex flex-col items-center gap-4 h-1/2">
 	{#if $auth.isAuthenticated}
 		<a href="/lists">lists -></a>
 	{:else}
-		<form class="flex flex-col gap-2 justify-around">
-			{#if error}
-				<p class="bg-red-300 p-2 rounded">{error}</p>
-			{/if}
+		<form class="flex flex-col gap-2 justify-around m-auto">
+			<p class="text-red-600 opacity-0" class:opacity-100={error}>{error}</p>
 
 			<fieldset class="grid gap-1">
 				<input
@@ -117,18 +115,18 @@
 					>
 				{/if}
 			</div>
-		</form>
 
-		<div>
-			{#if type === 'login'}
-				<button class="opacity-50 text-sm" on:click={() => (type = 'signup')}>
-					don't have an account?
-				</button>
-			{:else if type === 'signup'}
-				<button class="opacity-50 text-sm" on:click={() => (type = 'login')}>
-					already have an account?
-				</button>
-			{/if}
-		</div>
+			<div>
+				{#if type === 'login'}
+					<button class="opacity-50 text-sm" on:click={() => (type = 'signup')}>
+						don't have an account?
+					</button>
+				{:else if type === 'signup'}
+					<button class="opacity-50 text-sm" on:click={() => (type = 'login')}>
+						already have an account?
+					</button>
+				{/if}
+			</div>
+		</form>
 	{/if}
 </div>

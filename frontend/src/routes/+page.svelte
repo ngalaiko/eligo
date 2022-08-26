@@ -1,8 +1,12 @@
 <script lang="ts">
+	import { browser } from '$app/env';
+
 	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 
 	import { httpHost } from '$lib/api';
 	import { useAuth, useClient } from '$lib/logux';
+	import { onMount } from 'svelte';
 
 	let username = '';
 	let password = '';
@@ -65,8 +69,16 @@
 		);
 	};
 
+	console.log($page.url.searchParams.get('redirect'));
 	auth.subscribe(({ isAuthenticated }) => {
-		if (isAuthenticated) goto('/lists/');
+		const nextUrl = $page.url.searchParams.get('redirect');
+		if (isAuthenticated) goto(nextUrl ?? '/lists/');
+	});
+
+	onMount(async () => {
+		await client.node.waitFor('disconnected');
+		if (browser && !$auth.isAuthenticated && $page.url.pathname !== '/')
+			goto('/?redirect=' + encodeURIComponent($page.url.pathname));
 	});
 </script>
 

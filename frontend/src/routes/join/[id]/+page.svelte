@@ -5,6 +5,9 @@
 	import { useAuth, useClient } from '$lib/logux';
 	import { derived } from 'svelte/store';
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
+	import { browser } from '$app/env';
+	import { page } from '$app/stores';
 
 	export let data: PageData;
 
@@ -18,7 +21,7 @@
 			userId: $auth.userId,
 			listId: listId,
 			createTime: new Date().getTime()
-		}).then(() => goto(`/lists/${listId}/`));
+		}).then(() => goto(`/lists/${listId}/items/`));
 	};
 
 	const computed = derived([lists, memberships], ([lists, memberships]) => {
@@ -33,6 +36,12 @@
 			list: lists.list[0],
 			isMember: !!existingMembership || lists.list[0].userId === $auth.userId
 		};
+	});
+
+	onMount(async () => {
+		await client.node.waitFor('disconnected');
+		if (browser && !$auth.isAuthenticated && $page.url.pathname !== '/')
+			goto('/?redirect=' + encodeURIComponent($page.url.pathname));
 	});
 </script>
 

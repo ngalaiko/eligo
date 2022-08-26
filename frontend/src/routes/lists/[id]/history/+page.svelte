@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { List } from '$lib/picks';
+	import { List } from '$lib/history';
 	import type { PageData } from './$types';
 
 	export let data: PageData;

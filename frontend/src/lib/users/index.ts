@@ -1,4 +1,4 @@
-export { default as Card } from './Card.svelte';
+export { default as Single } from './Single.svelte';
 
 import { useSync, useFilter } from '$lib/logux';
 import { syncMapTemplate } from '@logux/client';

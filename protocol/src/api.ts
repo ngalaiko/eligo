@@ -14,6 +14,7 @@ export type List = {
 export type Membership = {
 	listId: string;
 	userId: string;
+	createTime: number;
 };
 
 export type Item = {

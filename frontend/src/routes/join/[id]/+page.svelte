@@ -16,7 +16,8 @@
 	const join = (listId: string) => {
 		createMembership(client, {
 			userId: $auth.userId,
-			listId: listId
+			listId: listId,
+			createTime: new Date().getTime()
 		}).then(() => goto(`/lists/${listId}/`));
 	};
 

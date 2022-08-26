@@ -1,11 +1,10 @@
 <script lang="ts">
-	import { useUser, Card as UserCard } from '$lib/users';
+	import { Single as User } from '$lib/users';
 	import type { Item } from '@eligo/protocol';
 	import { Distance } from '$lib/time';
 
 	export let item: Item & { id: string };
 	export let chance: number;
-	const user = useUser(item.userId);
 </script>
 
 <div id={item.id} class="border-2 px-2 py-1 rounded-2xl">
@@ -19,9 +18,7 @@
 	<div class="flex gap-1 opacity-50 text-sm">
 		created
 		<Distance to={item.createTime} />
-		{#if $user.isLoading === false}
-			by
-			<UserCard user={$user} />
-		{/if}
+		by
+		<User userId={item.userId} />
 	</div>
 </div>

@@ -16,10 +16,11 @@ const modelName = 'memberships';
 const [createAction, _changeAction, deleteAction, _createdAction, _changedAction, _deletedAction] =
 	defineSyncMapActions<Membership>(modelName);
 
-const toSyncMapValue = (item: MembershipRecord): SyncMapData<Membership> => ({
-	id: item.id,
-	listId: NoConflictResolution(item.listId),
-	userId: NoConflictResolution(item.userId)
+const toSyncMapValue = (membership: MembershipRecord): SyncMapData<Membership> => ({
+	id: membership.id,
+	listId: NoConflictResolution(membership.listId),
+	userId: NoConflictResolution(membership.userId),
+    createTime: NoConflictResolution(membership.createTime)
 });
 
 export default (server: BaseServer, memberships: Memberships, lists: Lists): void => {

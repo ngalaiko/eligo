@@ -31,12 +31,16 @@
 		</figcaption>
 		<nav class="flex gap-4 w-full border-b-2">
 			<a
+				class:font-bold={$page.url.pathname === `/lists/${$list.id}/pick/`}
+				href="/lists/{$list.id}/pick/">pick</a
+			>
+			<a
 				class:font-bold={$page.url.pathname === `/lists/${$list.id}/items/`}
 				href="/lists/{$list.id}/items/">items</a
 			>
 			<a
-				class:font-bold={$page.url.pathname === `/lists/${$list.id}/picks/`}
-				href="/lists/{$list.id}/picks/">picks</a
+				class:font-bold={$page.url.pathname === `/lists/${$list.id}/history/`}
+				href="/lists/{$list.id}/history/">history</a
 			>
 		</nav>
 

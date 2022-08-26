@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Card as UserCard, useUser } from '$lib/users';
+	import { Single as User } from '$lib/users';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/env';
@@ -23,7 +23,6 @@
 	};
 
 	const auth = useAuth();
-	const user = useUser($auth.userId);
 
 	onMount(async () => {
 		await client.node.waitFor('disconnected');
@@ -33,12 +32,10 @@
 </script>
 
 <header class="inline-flex gap-6 pt-2 w-full justify-between">
-	{#if $auth.isAuthenticated && $user.isLoading === false}
+	{#if $auth.isAuthenticated}
 		<span class="inline-flex gap-1">
 			you are logged in as
-			<b>
-				<UserCard user={$user} replaceSelf={false} />
-			</b>
+			<User userId={$auth.userId} />
 		</span>
 		<button on:click|preventDefault={logout} class="underline">logout</button>
 	{/if}

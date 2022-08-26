@@ -5,9 +5,17 @@
 
 	export let item: Item & { id: string };
 	export let chance: number;
+
+	$: chancePercentage = (chance * 100).toFixed(0);
 </script>
 
-<div id={item.id} class="border-2 px-2 py-1 rounded-2xl">
+<div
+	id={item.id}
+	class="border-2 px-2 py-1 rounded-2xl bg-gray-300"
+	style:background="linear-gradient(90deg, var(--color-gray-300) {chancePercentage}%,
+	var(--color-white) {chancePercentage}%)"
+>
+	<div style:width="{(chance * 100).toFixed(0)}%" class="h-2 bg--500 relative z-1" />
 	<span
 		class="font-semibold text-lg whitespace-nowrap text-ellipsis overflow-hidden flex justify-between"
 	>

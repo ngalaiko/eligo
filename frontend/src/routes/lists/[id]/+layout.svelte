@@ -18,7 +18,7 @@
 	{/if}
 </svelte:head>
 
-<figure class="flex flex-col min-h-0 flex-1 gap-6">
+<figure class="flex flex-col min-h-0 flex-1 gap-2">
 	{#if $list.isLoading}
 		loading...
 	{:else if $list.isLoading === false}

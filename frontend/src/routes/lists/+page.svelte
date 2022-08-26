@@ -6,7 +6,7 @@
 	const lists = useLists();
 </script>
 
-<figure class="grid gap-4">
+<figure class="grid gap-2">
 	<figcaption class="text-2xl font-semibold">Lists</figcaption>
 
 	<Form />

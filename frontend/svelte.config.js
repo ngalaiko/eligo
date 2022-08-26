@@ -5,7 +5,10 @@ import preprocess from 'svelte-preprocess';
 const config = {
 	preprocess: [
 		preprocess({
-			postcss: true
+			postcss: true,
+			replace: [
+				['import.meta.env.VERCEL_ANALYTICS_ID', JSON.stringify(process.env.VERCEL_ANALYTICS_ID)]
+			]
 		})
 	],
 	kit: {

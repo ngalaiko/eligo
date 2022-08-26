@@ -22,7 +22,7 @@
 	const auth = useAuth();
 </script>
 
-<header class="inline-flex gap-6 pt-2 w-full justify-between">
+<header class="inline-flex gap-6 py-3 w-full justify-between">
 	{#if $auth.isAuthenticated}
 		<span class="inline-flex gap-1">
 			you are logged in as

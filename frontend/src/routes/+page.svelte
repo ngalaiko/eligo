@@ -69,7 +69,6 @@
 		);
 	};
 
-	console.log($page.url.searchParams.get('redirect'));
 	auth.subscribe(({ isAuthenticated }) => {
 		const nextUrl = $page.url.searchParams.get('redirect');
 		if (isAuthenticated) goto(nextUrl ?? '/lists/');
@@ -82,7 +81,7 @@
 	});
 </script>
 
-<div class="flex flex-col items-center gap-4 h-1/2">
+<div class="flex flex-col items-center gap-4 h-1/2 text-xl">
 	{#if $auth.isAuthenticated}
 		<a href="/lists/">lists -></a>
 	{:else}

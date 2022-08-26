@@ -11,7 +11,7 @@
 		{#each $lists.list.sort((a, b) => compareDesc(a.createTime, b.createTime)) as list}
 			{#if list.isLoading === false}
 				<li>
-					<a href="/lists/{list.id}/items/">
+					<a href="/lists/{list.id}/pick/">
 						<Card {list} />
 					</a>
 				</li>

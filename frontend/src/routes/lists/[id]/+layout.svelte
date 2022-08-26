@@ -22,7 +22,7 @@
 	{#if $list.isLoading}
 		loading...
 	{:else if $list.isLoading === false}
-		<figcaption class="my-4 gap-6 justify-between items-baseline">
+		<figcaption class="gap-6 justify-between items-baseline">
 			<a href="/lists/" class="hover:opacity-70 flex items-center"
 				><IconChevronLeft class="w-5 h-5" />lists</a
 			>

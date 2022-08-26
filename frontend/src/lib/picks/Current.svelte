@@ -14,10 +14,10 @@
 	$: item = latest && latest.itemId ? useItem(latest.itemId) : null;
 </script>
 
-{#if $item?.isLoading === false}
-	{$item.text}
-{:else if $picks.isEmpty}
-	nothing
-{:else}
-	loading...
-{/if}
+<figure class="text-2xl font-semibold flex flex-col items-center">
+	{#if $item?.isLoading === false}
+		<span>{$item.text}</span>
+	{:else if !$picks.isEmpty}
+		loading...
+	{/if}
+</figure>

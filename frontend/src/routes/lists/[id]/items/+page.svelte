@@ -7,7 +7,7 @@
 	export let data: PageData;
 	const items = useItems({ listId: data.listId });
 	const picks = usePicks({ listId: data.listId });
-	$: weights = getWeights($items.list, $picks.list);
+	$: weights = getWeights($items, $picks);
 	$: weightsSum = Object.values(weights).reduce((a, b) => a + b, 0);
 	$: chances = Object.fromEntries(
 		Object.entries(weights).map(([itemId, weight]) => [itemId, weight / weightsSum])
@@ -17,12 +17,10 @@
 <Form listId={data.listId} />
 
 <ul class="overflow-y-scroll flex flex-col gap-2">
-	{#each $items.list.sort((a, b) => chances[b.id] - chances[a.id]) as item}
+	{#each $items.sort((a, b) => chances[b.id] - chances[a.id]) as item}
 		{@const chance = chances[item.id]}
-		{#if item.isLoading === false}
-			<li>
-				<Card {item} {chance} />
-			</li>
-		{/if}
+		<li>
+			<Card {item} {chance} />
+		</li>
 	{/each}
 </ul>

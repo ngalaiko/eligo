@@ -5,7 +5,7 @@
 	export let data: PageData;
 </script>
 
-<div class="flex flex-col m-auto gap-2">
+<div class="flex flex-col gap-2">
 	<Current listId={data.listId} />
 	<Button listId={data.listId} />
 </div>

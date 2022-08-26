@@ -7,9 +7,9 @@
 
 	const picks = usePicks({ listId });
 
-	$: latest = $picks.list.reduce(
+	$: latest = $picks.reduce(
 		(latest, pick) => (compareDesc(latest.createTime, pick.createTime) ? latest : pick),
-		$picks.list.slice(-1)[0]
+		$picks.slice(-1)[0]
 	);
 	$: item = latest && latest.itemId ? useItem(latest.itemId) : null;
 </script>
@@ -17,7 +17,7 @@
 <figure class="text-2xl font-semibold flex flex-col items-center">
 	{#if $item?.isLoading === false}
 		<span>{$item.text}</span>
-	{:else if !$picks.isEmpty}
+	{:else if $picks.length > 0}
 		loading...
 	{/if}
 </figure>

@@ -49,11 +49,8 @@ export const useHistory = ({ listId }: { listId: string }) =>
 		[useItems({ listId }), useMemberships({ listId }), usePicks({ listId })],
 		([items, memberships, picks]) =>
 			[
-				...items.list.filter((i) => i.isLoading === false).map(itemToEntry),
-				...memberships.list.filter((m) => m.isLoading === false).map(membershipToEntry),
-				...picks.list
-					.filter((p) => p.isLoading === false)
-					.filter((p) => !!p.itemId)
-					.map(pickToEntry)
+				...items.map(itemToEntry),
+				...memberships.map(membershipToEntry),
+				...picks.filter((p) => !!p.itemId).map(pickToEntry)
 			].sort((a, b) => compareDesc(a.time, b.time))
 	);

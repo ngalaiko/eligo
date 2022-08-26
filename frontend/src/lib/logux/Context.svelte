@@ -5,6 +5,7 @@
 	import context from './context';
 	import { writable } from 'svelte/store';
 	import { wsHost } from '$lib/api';
+	import { dev } from '$app/env';
 
 	const ctx = writable<Client | undefined>(undefined);
 	context.set(ctx);
@@ -25,7 +26,7 @@
 		ctx.set(client);
 		markReady();
 
-		log(client);
+		if (dev) log(client);
 		client.start();
 		return () => client.destroy();
 	});

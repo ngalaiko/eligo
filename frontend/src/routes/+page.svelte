@@ -33,7 +33,6 @@
 						client.changeUser(id);
 						client.start();
 						localStorage.setItem('user-id', id);
-						goto('/lists/');
 						username = '';
 						password = '';
 				  })
@@ -56,7 +55,6 @@
 						client.changeUser(id);
 						client.start();
 						localStorage.setItem('user-id', id);
-						goto('/lists/');
 						username = '';
 						password = '';
 				  })
@@ -66,11 +64,15 @@
 				  })
 		);
 	};
+
+	auth.subscribe(({ isAuthenticated }) => {
+		if (isAuthenticated) goto('/lists/');
+	});
 </script>
 
 <div class="flex flex-col items-center gap-4 h-1/2">
 	{#if $auth.isAuthenticated}
-		<a href="/lists">lists -></a>
+		<a href="/lists/">lists -></a>
 	{:else}
 		<form class="flex flex-col gap-2 justify-around m-auto">
 			<p class="text-red-600 opacity-0" class:opacity-100={error}>{error}</p>

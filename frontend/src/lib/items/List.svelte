@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Form, Card, useItems } from '$lib/items';
+	import { Card, useItems } from '$lib/items';
 	import { usePicks } from '$lib/picks';
 	import { getWeights } from '@eligo/protocol';
 
@@ -14,9 +14,6 @@
 </script>
 
 <ul class="grid grid-cols-1 gap-2">
-	<li>
-		<Form {listId} />
-	</li>
 	{#each $items.list.sort((a, b) => chances[b.id] - chances[a.id]) as item}
 		{@const chance = chances[item.id]}
 		{#if item.isLoading === false}

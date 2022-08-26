@@ -16,7 +16,7 @@
 </script>
 
 <Context>
-	<main class="max-w-lg h-screen p-4 mx-auto">
+	<main class="flex flex-col max-w-lg h-screen p-4 mx-auto">
 		<slot />
 	</main>
 </Context>

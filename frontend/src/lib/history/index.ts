@@ -1,5 +1,3 @@
-export { default as List } from './List.svelte';
-
 import { useItems } from '$lib/items';
 import { useMemberships } from '$lib/memberships';
 import { usePicks } from '$lib/picks';

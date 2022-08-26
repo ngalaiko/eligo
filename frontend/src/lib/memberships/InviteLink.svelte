@@ -4,7 +4,6 @@
 	import { nanoid } from 'nanoid';
 	import { useClient } from '$lib/logux';
 	import IconX from '$lib/assets/IconX.svelte';
-	import IconCopy from '$lib/assets/IconCopy.svelte';
 
 	export let list: List & { id: string };
 

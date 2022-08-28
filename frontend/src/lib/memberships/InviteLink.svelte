@@ -26,7 +26,7 @@
 	};
 </script>
 
-<div class="text-sm opacity-50 flex gap-1">
+<div class="text-sm opacity-50 flex gap-1 whitespace-nowrap overflow-ellipsis">
 	{#if list.invitatationId}
 		<button on:click={copyInviteLink} class="active:opacity-70 text-ellipsis overflow-hidden">
 			{inviteLink}

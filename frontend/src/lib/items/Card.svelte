@@ -16,12 +16,15 @@
 	style:background="linear-gradient(90deg, var(--color-gray-300) {chancePercentage}%,
 	var(--color-white) {chancePercentage}%)"
 >
-	<div style:width="{(chance * 100).toFixed(0)}%" class="h-2 bg--500 relative z-1" />
+	<div style:width="{chancePercentage}%" class="h-2 bg--500 relative z-1" />
 	<div
 		class="font-semibold text-lg whitespace-nowrap text-ellipsis overflow-hidden flex justify-between"
 	>
 		<p>{item.text}</p>
-		<Boost itemId={item.id} listId={item.listId} />
+		<figure class="text-sm flex items-center gap-1">
+			<figcaption>{(chance * 100).toFixed(2)}%</figcaption>
+			<Boost itemId={item.id} listId={item.listId} />
+		</figure>
 	</div>
 
 	<div class="flex gap-1 opacity-50 text-sm">

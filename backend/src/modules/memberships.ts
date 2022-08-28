@@ -20,7 +20,7 @@ const toSyncMapValue = (membership: MembershipRecord): SyncMapData<Membership> =
 	id: membership.id,
 	listId: NoConflictResolution(membership.listId),
 	userId: NoConflictResolution(membership.userId),
-    createTime: NoConflictResolution(membership.createTime)
+	createTime: NoConflictResolution(membership.createTime)
 });
 
 export default (server: BaseServer, memberships: Memberships, lists: Lists): void => {

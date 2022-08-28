@@ -25,16 +25,12 @@
 	};
 
 	const computed = derived([lists, memberships], ([lists, memberships]) => {
-		if (lists.isLoading !== false) return { isLoading: true };
-		if (lists.list.length === 0) return { isLoading: false, invalidLink: true };
-		if (memberships.isLoading !== false) return { isLoading: true };
-		const existingMembership = memberships.list.find(
-			(membership) => membership.listId === lists.list[0].id
-		);
+		if (lists.length === 0) return { isLoading: false, invalidLink: true };
+		const existingMembership = memberships.find((membership) => membership.listId === lists[0].id);
 		return {
 			isLoading: false,
-			list: lists.list[0],
-			isMember: !!existingMembership || lists.list[0].userId === $auth.userId
+			list: lists[0],
+			isMember: !!existingMembership || lists[0].userId === $auth.userId
 		};
 	});
 

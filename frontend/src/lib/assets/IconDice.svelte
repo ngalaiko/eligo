@@ -22,4 +22,3 @@
 	<circle cx="15.5" cy="15.5" r=".5" fill="currentColor" />
 	<circle cx="8.5" cy="15.5" r=".5" fill="currentColor" />
 </svg>
-

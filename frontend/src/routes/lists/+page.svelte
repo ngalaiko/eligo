@@ -6,6 +6,10 @@
 	const lists = useLists();
 </script>
 
+<svelte:head>
+	<title>Lists</title>
+</svelte:head>
+
 <figure class="grid gap-2">
 	<figcaption class="text-2xl font-semibold">Lists</figcaption>
 

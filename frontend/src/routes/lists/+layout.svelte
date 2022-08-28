@@ -22,10 +22,6 @@
 	const auth = useAuth();
 </script>
 
-<svelte:head>
-	<title>Lists</title>
-</svelte:head>
-
 <header class="inline-flex gap-6 pb-3 w-full justify-between">
 	{#if $auth.isAuthenticated}
 		<span class="inline-flex gap-1">

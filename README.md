@@ -14,15 +14,15 @@ I use it on a daily basis to decide where I should have a lunch at.
 
 ## deployment
 
-- backend can be deployed on [fly.io][] by running:
+- backend can be deployed on [fly.io][] by:
 
   ```sh
   flyctl deploy
   ```
 
-  from the root directory.
+  from the root directory. It's is also automatically deployed for every new commit in master.
 
-- frontend is automatically deployed to [vercel][] from their GitHub integration.
+- frontend is automatically deployed to [vercel][] using their GitHub integration on every new commit.
 
 ## development
 

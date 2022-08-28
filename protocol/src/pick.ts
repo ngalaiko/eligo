@@ -14,7 +14,7 @@ export const getWeights = (
 	const activeBoosts = boosts
 		.filter((boost) => {
 			if (picks.length === 0) return true;
-			const latestPick = picks.slice(-1)[0];
+			const latestPick = picks.sort((a, b) => a.createTime - b.createTime).slice(-1)[0];
 			return boost.createTime > latestPick.createTime;
 		})
 		.reduce((acc, boost) => {

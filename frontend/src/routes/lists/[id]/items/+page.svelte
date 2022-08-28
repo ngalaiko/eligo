@@ -7,7 +7,9 @@
 	import { derived } from 'svelte/store';
 
 	export let data: PageData;
-	const items = useItems({ listId: data.listId });
+	const items = derived(useItems({ listId: data.listId }), (items) =>
+		items.sort((a, b) => a.text.localeCompare(b.text))
+	);
 	const boosts = useBoosts({ listId: data.listId });
 	const chances = derived(
 		[items, usePicks({ listId: data.listId }), boosts],

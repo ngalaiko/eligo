@@ -26,7 +26,7 @@
 	{#if $auth.isAuthenticated}
 		<span class="inline-flex gap-1">
 			you are logged in as
-			<User userId={$auth.userId} />
+			<User userId={$auth.userId} replaceSelf={false} />
 		</span>
 		<button on:click|preventDefault={logout} class="underline">logout</button>
 	{/if}

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Single as User } from '$lib/users';
+	import { Button as Boost } from '$lib/boosts';
 	import type { Item } from '@eligo/protocol';
 	import { Distance } from '$lib/time';
 
@@ -16,12 +17,12 @@
 	var(--color-white) {chancePercentage}%)"
 >
 	<div style:width="{(chance * 100).toFixed(0)}%" class="h-2 bg--500 relative z-1" />
-	<span
+	<div
 		class="font-semibold text-lg whitespace-nowrap text-ellipsis overflow-hidden flex justify-between"
 	>
 		<p>{item.text}</p>
-		<p>{(chance * 100).toFixed(0)}%</p>
-	</span>
+		<Boost itemId={item.id} listId={item.listId} />
+	</div>
 
 	<div class="flex gap-1 opacity-50 text-sm">
 		created

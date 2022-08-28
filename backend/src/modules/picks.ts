@@ -7,13 +7,25 @@ import {
 	SyncMapData
 } from '@logux/server';
 import { defineSyncMapActions, LoguxNotFoundError } from '@logux/actions';
-import type { Pick } from '@eligo/protocol';
-import type { Picks, Items, PickRecord, Memberships, Lists, ItemRecord } from '../db/index.js';
+import type { Boost, Pick } from '@eligo/protocol';
+import type {
+	Picks,
+	Items,
+	PickRecord,
+	Memberships,
+	Lists,
+	ItemRecord,
+	Boosts
+} from '../db/index.js';
 import { getWeights } from '@eligo/protocol';
 
-const pickNext = (items: (ItemRecord & { id: string })[], picks: Pick[]): string => {
+const pickNext = (
+	items: (ItemRecord & { id: string })[],
+	picks: Pick[],
+	boosts: Boost[]
+): string => {
 	const itemIds = items.map((item) => item.id);
-	const weightByItemId = getWeights(items, picks);
+	const weightByItemId = getWeights(items, picks, boosts);
 	const weights = itemIds.map((itemId) => weightByItemId[itemId]);
 	return itemIds[weightedRandom(weights)];
 };
@@ -48,6 +60,7 @@ export default (
 	server: BaseServer,
 	picks: Picks,
 	items: Items,
+	boosts: Boosts,
 	memberships: Memberships,
 	lists: Lists
 ): void => {
@@ -97,10 +110,11 @@ export default (
 			// actually pick
 			const randomItemId = await Promise.all([
 				items.filter({ listId: fields.listId }),
-				picks.filter({ listId: fields.listId })
-			]).then(([items, picks]) => {
+				picks.filter({ listId: fields.listId }),
+				boosts.filter({ listId: fields.listId })
+			]).then(([items, picks, boosts]) => {
 				if (items.length === 0) throw new LoguxNotFoundError();
-				return pickNext(items, picks);
+				return pickNext(items, picks, boosts);
 			});
 			const patch = { itemId: randomItemId };
 			await picks.update(pick.id, patch);

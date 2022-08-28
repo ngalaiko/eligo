@@ -30,3 +30,10 @@ export type Pick = {
 	itemId?: string;
 	createTime: number;
 };
+
+export type Boost = {
+	userId: string;
+	listId: string;
+	itemId: string;
+	createTime: number;
+};

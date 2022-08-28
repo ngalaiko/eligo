@@ -7,6 +7,7 @@ import registerAuthModule from './modules/auth.js';
 import registerItemsModule from './modules/items.js';
 import registerListsModule from './modules/lists.js';
 import registerPicksModule from './modules/picks.js';
+import registerBoostsModule from './modules/boosts.js';
 import registerUsersModule from './modules/users.js';
 import registerMembershipsModule from './modules/memberships.js';
 
@@ -39,12 +40,13 @@ const server = new Server({
 	}
 });
 
-const { keys, users, items, lists, picks, memberships } = openDB(argv.database);
+const { keys, users, items, lists, picks, memberships, boosts } = openDB(argv.database);
 
 await registerAuthModule(server, keys, users);
 registerItemsModule(server, items, lists, memberships);
 registerListsModule(server, lists, memberships);
-registerPicksModule(server, picks, items, memberships, lists);
+registerPicksModule(server, picks, items, boosts, memberships, lists);
+registerBoostsModule(server, boosts, items, memberships, lists);
 registerUsersModule(server, users, memberships, lists);
 registerMembershipsModule(server, memberships, lists);
 

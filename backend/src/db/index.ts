@@ -1,4 +1,4 @@
-import type { List, Item, User, Pick, Membership } from '@eligo/protocol';
+import type { List, Item, User, Pick, Membership, Boost } from '@eligo/protocol';
 import { JSONFile, Low } from 'lowdb';
 
 export type ItemRecord = {
@@ -32,6 +32,10 @@ export type MembershipRecord = Membership & {
 	id: string;
 };
 
+export type BoostResord = Boost & {
+	id: string;
+};
+
 type Data = {
 	items: Record<string, ItemRecord>;
 	keys: Record<string, KeyRecord>;
@@ -39,6 +43,7 @@ type Data = {
 	picks: Record<string, PickRecord>;
 	users: Record<string, UserRecord>;
 	memberships: Record<string, MembershipRecord>;
+	boosts: Record<string, BoostResord>;
 };
 
 const openDB = (filepath: string) => {
@@ -46,8 +51,17 @@ const openDB = (filepath: string) => {
 	const db = new Low(adapter);
 	const initDB = async () => {
 		await db.read();
-		db.data ||= { items: {}, lists: {}, picks: {}, users: {}, keys: {}, memberships: {} };
+		db.data ||= {
+			items: {},
+			lists: {},
+			picks: {},
+			users: {},
+			keys: {},
+			memberships: {},
+			boosts: {}
+		};
 		db.data.items ||= {};
+		db.data.boosts ||= {};
 		db.data.lists ||= {};
 		db.data.picks ||= {};
 		db.data.users ||= {};
@@ -123,6 +137,13 @@ const createDB = (filepath: string) => {
 			filter: (filter: Partial<Omit<ListRecord, 'id'>> = {}) => db.filter('lists', filter),
 			delete: (id: string) => db.delete('lists', id)
 		},
+		boosts: {
+			create: (value: BoostResord) => db.create('boosts', value),
+			update: (id: string, value: Partial<BoostResord>) => db.update('boosts', id, value),
+			find: (filter: Partial<BoostResord>) => db.find('boosts', filter),
+			filter: (filter: Partial<Omit<BoostResord, 'id'>> = {}) => db.filter('boosts', filter),
+			delete: (id: string) => db.delete('boosts', id)
+		},
 		picks: {
 			create: (value: PickRecord) => db.create('picks', value),
 			update: (id: string, value: Partial<PickRecord>) => db.update('picks', id, value),
@@ -158,6 +179,7 @@ const createDB = (filepath: string) => {
 export type Items = ReturnType<typeof createDB>['items'];
 export type Lists = ReturnType<typeof createDB>['lists'];
 export type Picks = ReturnType<typeof createDB>['picks'];
+export type Boosts = ReturnType<typeof createDB>['boosts'];
 export type Users = ReturnType<typeof createDB>['users'];
 export type Keys = ReturnType<typeof createDB>['keys'];
 export type Memberships = ReturnType<typeof createDB>['memberships'];

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Client, log } from '@logux/client';
+	import { Client, IndexedStore, log } from '@logux/client';
 	import { subprotocol } from '@eligo/protocol';
 	import context from './context';
 	import { writable } from 'svelte/store';
@@ -20,7 +20,8 @@
 		client = new Client({
 			server: wsHost,
 			subprotocol,
-			userId: localStorage.getItem('user-id') ?? 'anonymous'
+			userId: localStorage.getItem('user-id') ?? 'anonymous',
+			store: new IndexedStore()
 		});
 
 		ctx.set(client);

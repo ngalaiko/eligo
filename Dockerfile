@@ -29,4 +29,4 @@ COPY --from=builder /app/backend/node_modules/  ./backend/node_modules/
 COPY --from=builder /app/backend/build/         ./backend/build/
 COPY --from=builder /app/backend/package.json   ./backend/
 VOLUME [ "/data/database.json" ]
-CMD [ "node", "/app/backend/build/index.js", "--host", "0.0.0.0", "--port", "8080", "--database", "/data/database.json" ]
+CMD [ "node", "/app/backend/build/index.js", "--host", "0.0.0.0", "--port", "8080", "--database", "/data/database.json", "--log", "/data/log.json" ]

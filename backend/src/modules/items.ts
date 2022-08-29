@@ -96,9 +96,14 @@ export default (server: BaseServer, items: Items, lists: Lists, memberships: Mem
 
 	addSyncMapFilter<Item>(server, modelName, {
 		access: () => true,
-		initial: (ctx, filter) =>
+		initial: (ctx, filter, since) =>
 			items
 				.filter(filter)
+				.then((items) =>
+					items.filter(
+						(item) => item.createTime >= (since ?? 0) || item.textChangeTime >= (since ?? 0)
+					)
+				)
 				.then(async (items) => {
 					const hasAccess = await Promise.all(items.map((list) => canAccess(ctx, list)));
 					return items.filter((_, i) => hasAccess[i]);

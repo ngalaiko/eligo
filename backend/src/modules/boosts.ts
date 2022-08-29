@@ -78,9 +78,10 @@ export default (
 
 	addSyncMapFilter<Boost>(server, modelName, {
 		access: () => true,
-		initial: (ctx, filter) =>
+		initial: (ctx, filter, since) =>
 			boosts
 				.filter(filter)
+				.then((boosts) => boosts.filter((boost) => boost.createTime >= (since ?? 0)))
 				.then(async (boosts) => {
 					const hasAccess = await Promise.all(boosts.map((pick) => canAccess(ctx, pick)));
 					return boosts.filter((_, i) => hasAccess[i]);

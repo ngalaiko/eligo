@@ -96,11 +96,29 @@ export default (server: BaseServer, lists: Lists, memberships: Memberships): voi
 
 	addSyncMapFilter<List>(server, modelName, {
 		access: () => true,
-		initial: async (ctx, filter) =>
+		initial: async (ctx, filter, since) =>
 			filter && Object.keys(filter).length === 1 && filter?.invitatationId !== undefined // if only invitation id is set
-				? lists.filter(filter).then((lists) => lists.map(toSyncMapValue)) // return all matching lists, they are public
+				? lists
+						.filter(filter)
+						.then((lists) =>
+							lists.filter(
+								(list) =>
+									list.createTime > (since ?? 0) ||
+									list.titleChangeTime > (since ?? 0) ||
+									list.invitationIdChangeTime > (since ?? 0)
+							)
+						)
+						.then((lists) => lists.map(toSyncMapValue)) // return all matching lists, they are public
 				: lists
 						.filter(filter)
+						.then((lists) =>
+							lists.filter(
+								(list) =>
+									list.createTime > (since ?? 0) ||
+									list.titleChangeTime > (since ?? 0) ||
+									list.invitationIdChangeTime > (since ?? 0)
+							)
+						)
 						.then(async (lists) => {
 							const hasAccess = await Promise.all(lists.map((list) => canAccess(ctx, list)));
 							return lists.filter((_, i) => hasAccess[i]);

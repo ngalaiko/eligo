@@ -126,9 +126,12 @@ export default (
 
 	addSyncMapFilter<Pick>(server, modelName, {
 		access: () => true,
-		initial: (ctx, filter) =>
+		initial: (ctx, filter, since) =>
 			picks
 				.filter(filter)
+				.then((picks) =>
+					picks.filter((pick) => pick.createTime > (since ?? 0))
+				)
 				.then(async (picks) => {
 					const hasAccess = await Promise.all(picks.map((pick) => canAccess(ctx, pick)));
 					return picks.filter((_, i) => hasAccess[i]);

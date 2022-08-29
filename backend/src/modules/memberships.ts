@@ -78,9 +78,12 @@ export default (server: BaseServer, memberships: Memberships, lists: Lists): voi
 
 	addSyncMapFilter<Membership>(server, modelName, {
 		access: () => true,
-		initial: (ctx, filter) =>
+		initial: (ctx, filter, since) =>
 			memberships
 				.filter(filter)
+				.then((memberships) =>
+					memberships.filter((membership) => membership.createTime > (since ?? 0))
+				)
 				.then(async (membersips) => {
 					const hasAccess = await Promise.all(membersips.map((list) => canAccess(ctx, list)));
 					return membersips.filter((_, i) => hasAccess[i]);

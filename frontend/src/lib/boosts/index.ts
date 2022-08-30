@@ -6,7 +6,9 @@ import type { Filter, FilterOptions } from '@logux/client';
 import type { Boost } from '@eligo/protocol';
 import { nanoid } from 'nanoid';
 
-const store = syncMapTemplate<Boost>('boosts');
+const store = syncMapTemplate<Boost>('boosts', {
+	offline: true
+});
 
 export const createBoost = (client: Client, fields: Omit<Boost, 'id'>) =>
 	createSyncMap(client, store, {

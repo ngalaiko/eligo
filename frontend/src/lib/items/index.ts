@@ -8,7 +8,9 @@ import type { Filter, FilterOptions, Client } from '@logux/client';
 import type { Item } from '@eligo/protocol';
 import { nanoid } from 'nanoid';
 
-const store = syncMapTemplate<Item>('items');
+const store = syncMapTemplate<Item>('items', {
+	offline: true
+});
 
 export const createItem = (client: Client, fields: Omit<Item, 'id'>) =>
 	createSyncMap(client, store, {

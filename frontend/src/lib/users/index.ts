@@ -5,7 +5,9 @@ import { syncMapTemplate } from '@logux/client';
 import type { Filter, FilterOptions } from '@logux/client';
 import type { User } from '@eligo/protocol';
 
-const store = syncMapTemplate<User>('users');
+const store = syncMapTemplate<User>('users', {
+    offline: true
+});
 
 export const useUsers = (filter?: Filter<User>, opts?: FilterOptions) =>
 	useFilter<User>(store, filter, opts);

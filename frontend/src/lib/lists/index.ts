@@ -7,7 +7,9 @@ import type { Filter, FilterOptions } from '@logux/client';
 import type { List } from '@eligo/protocol';
 import { nanoid } from 'nanoid';
 
-const store = syncMapTemplate<List>('lists');
+const store = syncMapTemplate<List>('lists', {
+	offline: true
+});
 
 export const useList = (id: string) => useSync(store, id);
 

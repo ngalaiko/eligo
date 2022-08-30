@@ -5,7 +5,7 @@ import { compare, hash } from 'bcrypt';
 import { nanoid } from 'nanoid';
 import { IncomingMessage } from 'http';
 import { User } from '@eligo/protocol';
-import { serialize } from 'cookie';
+import { serialize, parse } from 'cookie';
 import { addDays } from 'date-fns';
 
 const authCookieName = 'token';
@@ -81,6 +81,37 @@ export default async (server: BaseServer, keys: Keys, users: Users): Promise<voi
 		}
 	};
 
+	const updateUser = (id: string, req: IncomingMessage): Promise<User & { id: string }> => {
+		let data = '';
+		req.on('data', (chunk) => {
+			data += chunk;
+		});
+		return new Promise((resolve, reject) => {
+			req.on('end', () => {
+				parseJSON(data)
+					.then(async ({ password }) => {
+						const user = await users.find({ id });
+						if (!user) throw new HTTPError(404, 'Not found');
+						try {
+							const token = parse(req.headers.cookie ?? '')[authCookieName];
+							await verifyJWT(token);
+						} catch {
+							throw new HTTPError(404, 'Not found');
+						}
+
+						if (password) {
+							user.hash = await hash(password, 10);
+							await users.update(user.id, user);
+						}
+
+						return user;
+					})
+					.then(resolve)
+					.catch(reject);
+			});
+		});
+	};
+
 	const signUp = (req: IncomingMessage): Promise<User & { id: string }> => {
 		let data = '';
 		req.on('data', (chunk) => {
@@ -119,15 +150,42 @@ export default async (server: BaseServer, keys: Keys, users: Users): Promise<voi
 		return vercelOriginRegexp.test(origin);
 	};
 
+	const userUrlRegexp = new RegExp('/users/(.+)');
+
 	server.http((req, res) => {
 		if (req.headers.origin && isOriginAllowed(req.headers.origin)) {
 			res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
-			res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
+			res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS');
 			res.setHeader('Access-Control-Allow-Credentials', 'true');
 			res.setHeader('Access-Control-Max-Age', '86400');
 		}
 
-		if (req.url === '/users') {
+		if (userUrlRegexp.test(req.url!)) {
+			if (req.method === 'PATCH') {
+				const id = req.url?.slice(7) ?? '';
+				updateUser(id, req)
+					.then(async (user) => {
+						res.setHeader('Content-Type', 'application/json');
+						res.end(JSON.stringify({ id: user.id, name: user.name }));
+					})
+					.catch((err) => {
+						if (err instanceof HTTPError) {
+							res.statusCode = err.status;
+							res.end(err.message);
+						} else {
+							console.error(err);
+							res.statusCode = 500;
+							res.end('Internal server error');
+						}
+					});
+			} else if (req.method === 'OPTIONS') {
+				res.statusCode = 204;
+				res.end();
+			} else {
+				res.statusCode = 405;
+				res.end();
+			}
+		} else if (req.url === '/users') {
 			if (req.method === 'POST') {
 				signUp(req)
 					.then(async (user) => {

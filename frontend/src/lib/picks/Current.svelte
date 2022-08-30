@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { compareDesc } from 'date-fns';
 	import { usePicks } from '$lib/picks';
 	import { useItem } from '$lib/items';
 
@@ -8,8 +7,8 @@
 	const picks = usePicks({ listId });
 
 	$: latest = $picks.reduce(
-		(latest, pick) => (compareDesc(latest.createTime, pick.createTime) ? latest : pick),
-		$picks.slice(-1)[0]
+		(latest, pick) => (pick.createTime < latest.createTime ? latest : pick),
+		$picks[0]
 	);
 	$: item = latest && latest.itemId ? useItem(latest.itemId) : null;
 </script>

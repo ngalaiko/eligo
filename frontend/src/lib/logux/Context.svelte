@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Client, IndexedStore, log } from '@logux/client';
+	import { Client, createAuth, IndexedStore, log, type AuthStore } from '@logux/client';
 	import { subprotocol } from '@eligo/protocol';
 	import context from './context';
 	import { writable } from 'svelte/store';
@@ -16,6 +16,7 @@
 	});
 
 	let client: Client;
+	let auth: AuthStore;
 	onMount(() => {
 		client = new Client({
 			server: wsHost,
@@ -23,6 +24,7 @@
 			userId: localStorage.getItem('user-id') ?? 'anonymous',
 			store: new IndexedStore()
 		});
+		auth = createAuth(client);
 
 		ctx.set(client);
 		markReady();
@@ -34,5 +36,5 @@
 </script>
 
 {#await ready then}
-	<slot />
+	<slot {client} auth={auth.get()} />
 {/await}

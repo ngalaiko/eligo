@@ -17,10 +17,8 @@
 	var(--color-white) {chancePercentage}%)"
 >
 	<div style:width="{chancePercentage}%" class="h-2 bg--500 relative z-1" />
-	<div
-		class="font-semibold text-lg whitespace-nowrap text-ellipsis overflow-hidden flex justify-between"
-	>
-		<p>{item.text}</p>
+	<div class="font-semibold text-lg flex justify-between">
+		<p class="overflow-ellipsis">{item.text}</p>
 		<figure class="text-sm flex items-center gap-1">
 			<figcaption>{(chance * 100).toFixed(2)}%</figcaption>
 			<Boost itemId={item.id} listId={item.listId} />

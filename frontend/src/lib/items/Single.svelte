@@ -6,5 +6,7 @@
 </script>
 
 {#if $item.isLoading === false}
-	<b>{$item.text}</b>
+	<span class="whitespace-nowrap overflow-ellipsis overflow-hidden">
+		<b>{$item.text}</b>
+	</span>
 {/if}

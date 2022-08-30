@@ -24,7 +24,7 @@
 	{:else if $list.isLoading === false}
 		<figcaption>
 			<a href="/lists/" class="hover:opacity-70 flex items-center">
-				<IconChevronLeft class="w-4 h-4" />
+				<IconChevronLeft class="w-4 h-4 -ml-2" />
 				<span>lists</span>
 			</a>
 			<h2 class="whitespace-nowrap text-2xl font-semibold">{$list.title}</h2>

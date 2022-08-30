@@ -10,7 +10,6 @@ import registerPicksModule from './modules/picks.js';
 import registerBoostsModule from './modules/boosts.js';
 import registerUsersModule from './modules/users.js';
 import registerMembershipsModule from './modules/memberships.js';
-import { jsonStore } from './store/index.js';
 
 const argv = yargs(process.argv.slice(2))
 	.usage('Usage: $0 <command> [options]')
@@ -18,11 +17,6 @@ const argv = yargs(process.argv.slice(2))
 		alias: 'd',
 		describe: 'Database path',
 		default: './database.dev.json'
-	})
-	.option('log', {
-		alias: 'l',
-		describe: 'Log path',
-		default: './log.dev.json'
 	})
 	.option('port', {
 		alias: 'p',
@@ -41,7 +35,6 @@ const server = new Server({
 	port: argv.port,
 	host: argv.host,
 	supports: subprotocol,
-	store: jsonStore(argv.log),
 	logger: {
 		type: process.env.NODE_ENV === 'production' ? 'json' : 'human'
 	}

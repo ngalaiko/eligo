@@ -9,7 +9,6 @@ importers:
     specifiers:
       '@eligo/protocol': workspace:*
       '@logux/actions': ^0.2.3
-      '@logux/core': ^0.7.3
       '@logux/server': ^0.11.0
       '@types/bcrypt': ^5.0.0
       '@types/cookie': ^0.5.1
@@ -29,7 +28,6 @@ importers:
       tsc-watch: ^5.0.3
       tsm: ^2.2.2
       typescript: ^4.7.4
-      uvu: ^0.5.6
       yargs: ^17.5.1
     dependencies:
       '@eligo/protocol': link:../protocol
@@ -44,7 +42,6 @@ importers:
       nanoid: 4.0.0
       yargs: 17.5.1
     devDependencies:
-      '@logux/core': 0.7.3
       '@types/bcrypt': 5.0.0
       '@types/node': 18.6.3
       '@types/node-fetch': 2.6.2
@@ -56,7 +53,6 @@ importers:
       tsc-watch: 5.0.3_typescript@4.7.4
       tsm: 2.2.2
       typescript: 4.7.4
-      uvu: 0.5.6
 
   frontend:
     specifiers:
@@ -947,11 +943,6 @@ packages:
   /delegates/1.0.0:
     resolution: {integrity: sha512-bd2L678uiWATM6m5Z1VzNCErI3jiGzt6HGY8OVICs40JQq/HALfbyNJmp0UDakEY4pMMaN0Ly5om/B1VI/+xfQ==}
 
-  /dequal/2.0.3:
-    resolution: {integrity: sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==}
-    engines: {node: '>=6'}
-    dev: true
-
   /detect-indent/6.1.0:
     resolution: {integrity: sha512-reYkTUJAZb9gUuZ2RvVCNhVHdg62RHnJ7WJl8ftMi4diZ6NWlciOzQN88pUhSELEwflJht4oQDv0F0BMlwaYtA==}
     engines: {node: '>=8'}
@@ -981,11 +972,6 @@ packages:
 
   /diff/4.0.2:
     resolution: {integrity: sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==}
-    engines: {node: '>=0.3.1'}
-    dev: true
-
-  /diff/5.1.0:
-    resolution: {integrity: sha512-D+mk+qE8VC/PAUrlAU34N+VfXev0ghe5ywmpqrawphmVZc1bEfn56uo9qpyGp1p4xpzOHkSW4ztBd6L7Xx4ACw==}
     engines: {node: '>=0.3.1'}
     dev: true
 
@@ -2872,17 +2858,6 @@ packages:
   /uuid/8.3.2:
     resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
     hasBin: true
-    dev: true
-
-  /uvu/0.5.6:
-    resolution: {integrity: sha512-+g8ENReyr8YsOc6fv/NVJs2vFdHBnBNdfE49rshrTzDWOlUx4Gq7KOS2GD8eqhy2j+Ejq29+SbKH8yjkAqXqoA==}
-    engines: {node: '>=8'}
-    hasBin: true
-    dependencies:
-      dequal: 2.0.3
-      diff: 5.1.0
-      kleur: 4.1.5
-      sade: 1.8.1
     dev: true
 
   /v8-compile-cache-lib/3.0.1:

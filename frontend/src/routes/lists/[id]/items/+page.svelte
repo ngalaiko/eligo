@@ -7,14 +7,16 @@
 	import { derived } from 'svelte/store';
 
 	export let data: PageData;
-	const items = derived(useItems({ listId: data.listId }), (items) =>
-		items.sort((a, b) => a.text.localeCompare(b.text))
-	);
+	const items = useItems({ listId: data.listId });
 	const boosts = useBoosts({ listId: data.listId });
 	const chances = derived(
 		[items, usePicks({ listId: data.listId }), boosts],
 		([items, picks, boosts]) => {
-			const weights = getWeights(items, picks, boosts);
+			const weights = getWeights(
+				items.list.filter(({ isLoading }) => !isLoading),
+				picks.list.filter(({ isLoading }) => !isLoading),
+				boosts.list.filter(({ isLoading }) => !isLoading)
+			);
 			const weightsSum = Object.values(weights).reduce((a, b) => a + b, 0);
 			return Object.fromEntries(
 				Object.entries(weights).map(([itemId, weight]) => [itemId, weight / weightsSum])
@@ -25,11 +27,18 @@
 
 <Form listId={data.listId} />
 
-<ul class="overflow-y-scroll flex flex-col gap-2">
-	{#each $items.sort((a, b) => $chances[b.id] - $chances[a.id]) as item}
-		{@const chance = $chances[item.id]}
-		<li>
-			<Card {item} {chance} />
-		</li>
-	{/each}
-</ul>
+{#await items.loading}
+	loading...
+{:then}
+	<ul class="overflow-y-scroll flex flex-col gap-2">
+		{#each $items.list
+			.filter(({ isLoading }) => !isLoading)
+			.sort((a, b) => a.text.localeCompare(b.text))
+			.sort((a, b) => $chances[b.id] - $chances[a.id]) as item}
+			{@const chance = $chances[item.id]}
+			<li>
+				<Card {item} {chance} />
+			</li>
+		{/each}
+	</ul>
+{/await}

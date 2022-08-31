@@ -10,17 +10,23 @@
 	<title>Lists</title>
 </svelte:head>
 
-<figure class="grid gap-2">
-	<figcaption class="text-2xl font-semibold">Lists</figcaption>
+{#await lists.loading}
+	loading...
+{:then}
+	<figure class="grid gap-2">
+		<figcaption class="text-2xl font-semibold">Lists</figcaption>
 
-	<Form />
-	<ul class="grid grid-cols-1 gap-2">
-		{#each $lists.sort((a, b) => compareDesc(a.createTime, b.createTime)) as list}
-			<li>
-				<a href="/lists/{list.id}/pick/">
-					<Card {list} />
-				</a>
-			</li>
-		{/each}
-	</ul>
-</figure>
+		<Form />
+		<ul class="grid grid-cols-1 gap-2">
+			{#each $lists.list
+				.filter(({ isLoading }) => !isLoading)
+				.sort((a, b) => compareDesc(a.createTime, b.createTime)) as list}
+				<li>
+					<a href="/lists/{list.id}/pick/">
+						<Card {list} />
+					</a>
+				</li>
+			{/each}
+		</ul>
+	</figure>
+{/await}

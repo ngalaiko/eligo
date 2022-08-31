@@ -25,8 +25,10 @@
 	};
 
 	const computed = derived([lists, memberships], ([lists, memberships]) => {
-		if (lists.length === 0) return { isLoading: false, invalidLink: true };
-		const existingMembership = memberships.find((membership) => membership.listId === lists[0].id);
+		if (lists.isEmpty) return { isLoading: false, invalidLink: true };
+		const existingMembership = memberships.list.find(
+			(membership) => membership.listId === lists[0].id
+		);
 		return {
 			isLoading: false,
 			list: lists[0],

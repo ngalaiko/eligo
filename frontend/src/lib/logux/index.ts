@@ -1,7 +1,7 @@
 export { default as Context } from './Context.svelte';
 
 import context from './context';
-import { derived, get, readable, type Readable } from 'svelte/store';
+import { get, readable, type Readable } from 'svelte/store';
 
 export const useClient = () => {
 	const clientStore = context.get();
@@ -19,24 +19,14 @@ export const useFilter = <Value extends SyncMapValues>(
 	Template: SyncMapTemplate<Value>,
 	filter?: Filter<Value>,
 	opts?: FilterOptions
-): Readable<(Value & { id: string })[]> => {
-	const instance = createFilter<Value>(useClient(), Template, filter, opts);
-	return derived(
-		readable(instance.get(), (set) => instance.listen(set)),
-		(result) => (result.isLoading ? [] : result.list.filter((r) => r.isLoading === false))
-	);
-};
+) => createFilter<Value>(useClient(), Template, filter, opts);
 
 export const useSync = <Value extends SyncMapValues>(
 	Template: SyncMapTemplate<Value>,
 	id: string
-): Readable<SyncMapValue<Value>> => {
-	const store = Template(id, useClient());
-	return readable(store.get(), (set) => store.listen(set));
-};
+) => Template(id, useClient());
 
 export const useAuth = () => {
 	const client = useClient();
-	const auth = createAuth(client);
-	return readable(auth.get(), (set) => auth.listen(set));
+	return createAuth(client);
 };

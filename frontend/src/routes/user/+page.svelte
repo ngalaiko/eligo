@@ -3,6 +3,7 @@
 	import { useAuth, useClient } from '$lib/logux';
 	import { updateUser, useUser } from '$lib/users';
 	import { logout as sendLogout, updateUser as sendUpdateUser } from '$lib/api';
+	import { Button as NotificationsButton } from '$lib/pushSubscriptions';
 
 	const auth = useAuth();
 	const user = useUser($auth.userId);
@@ -29,6 +30,7 @@
 		sendLogout()
 			.then(() => {
 				client.changeUser('anonymous');
+				localStorage.removeItem('user-id');
 				goto('/');
 			})
 			.catch(console.error);
@@ -42,8 +44,8 @@
 	<button on:click|preventDefault={logout} class="underline">logout</button>
 </header>
 
-<div class="grid gap-6">
-	<p>update your profile:</p>
+<div class="flex flex-col gap-6">
+	<span>update your profile:</span>
 	{#if $user.isLoading === false}
 		<form class="flex flex-col gap-2 items-end" on:submit|preventDefault={update} bind:this={form}>
 			<fieldset class="grid grid-cols-2 gap-1">
@@ -72,4 +74,8 @@
 	{:else}
 		loading...
 	{/if}
+	<div class="flex justify-between">
+		<span>push notifications:</span>
+		<NotificationsButton />
+	</div>
 </div>

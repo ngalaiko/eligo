@@ -12,6 +12,9 @@
 				client.changeUser('anonymous');
 				goto('/');
 			})
+			.then(() => {
+				localStorage.removeItem('user-id');
+			})
 			.catch(console.error);
 
 	const auth = useAuth();

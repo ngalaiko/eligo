@@ -45,35 +45,41 @@
 </header>
 
 <div class="flex flex-col gap-6">
-	<span>update your profile:</span>
-	{#if $user.isLoading === false}
-		<form class="flex flex-col gap-2 items-end" on:submit|preventDefault={update} bind:this={form}>
-			<fieldset class="grid grid-cols-2 gap-1">
-				<label for="username">username</label>
-				<input
-					id="username"
-					name="username"
-					type="text"
-					placeholder="username"
-					value={$user.name}
-					class="border-2"
-				/>
+	<div class="flex flex-col gap-3">
+		<span>update your profile:</span>
+		{#if $user.isLoading === false}
+			<form
+				class="flex flex-col gap-2 items-end"
+				on:submit|preventDefault={update}
+				bind:this={form}
+			>
+				<fieldset class="grid grid-cols-2 gap-1">
+					<label for="username">username</label>
+					<input
+						id="username"
+						name="username"
+						type="text"
+						placeholder="username"
+						value={$user.name}
+						class="border-2"
+					/>
 
-				<label for="password">password</label>
-				<input
-					bind:this={passwordInput}
-					id="password"
-					name="password"
-					type="password"
-					placeholder="new password"
-					class="border-2"
-				/>
-			</fieldset>
-			<button type="submit" class="underline">update</button>
-		</form>
-	{:else}
-		loading...
-	{/if}
+					<label for="password">password</label>
+					<input
+						bind:this={passwordInput}
+						id="password"
+						name="password"
+						type="password"
+						placeholder="new password"
+						class="border-2"
+					/>
+				</fieldset>
+				<button type="submit" class="underline">update</button>
+			</form>
+		{:else}
+			loading...
+		{/if}
+	</div>
 	<div class="flex justify-between">
 		<span>push notifications:</span>
 		<NotificationsButton />

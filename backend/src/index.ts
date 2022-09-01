@@ -40,9 +40,11 @@ const server = new Server({
 	}
 });
 
-const { keys, users, items, lists, picks, memberships, boosts } = openDB(argv.database);
+const { keys, users, items, lists, picks, memberships, boosts, pushSubscriptions } = openDB(
+	argv.database
+);
 
-await registerAuthModule(server, keys, users);
+await registerAuthModule(server, keys, users, pushSubscriptions);
 registerItemsModule(server, items, lists, memberships);
 registerListsModule(server, lists, memberships);
 registerPicksModule(server, picks, items, boosts, memberships, lists);

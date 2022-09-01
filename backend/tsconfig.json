@@ -6,6 +6,6 @@
 		"moduleResolution": "node",
 		"rootDir": "src",
 		"outDir": "build",
-		"declaration": true
+		"declaration": true,
 	}
 }

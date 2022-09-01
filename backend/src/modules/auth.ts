@@ -1,5 +1,5 @@
 import { BaseServer } from '@logux/server';
-import { Keys, UserRecord, Users } from '../db/index.js';
+import { Keys, PushSubscriptionRecord, PushSubscriptions, UserRecord, Users } from '../db/index.js';
 import { SignJWT, generateKeyPair, jwtVerify, exportSPKI, importSPKI } from 'jose';
 import { compare, hash } from 'bcrypt';
 import { nanoid } from 'nanoid';
@@ -10,7 +10,12 @@ import { addDays } from 'date-fns';
 
 const authCookieName = 'token';
 
-export default async (server: BaseServer, keys: Keys, users: Users): Promise<void> => {
+export default async (
+	server: BaseServer,
+	keys: Keys,
+	users: Users,
+	pushSubscriptions: PushSubscriptions
+): Promise<void> => {
 	const { keyId, privateKey, keyAlg } = await generateKeyPair('ES256').then(
 		async ({ privateKey, publicKey }) =>
 			keys
@@ -81,6 +86,44 @@ export default async (server: BaseServer, keys: Keys, users: Users): Promise<voi
 		}
 	};
 
+	const deleteSubscription = (id: string, _req: IncomingMessage): Promise<void> =>
+		pushSubscriptions
+			.filter({ endpoint: id })
+			.then((subscriptions) => subscriptions.map(({ id }) => id))
+			.then(async (ids) => {
+				await Promise.all(ids.map((id) => pushSubscriptions.delete(id)));
+			});
+
+	const createSubscription = (req: IncomingMessage): Promise<PushSubscriptionRecord> => {
+		let data = '';
+		req.on('data', (chunk) => {
+			data += chunk;
+		});
+		return new Promise((resolve, reject) => {
+			req.on('end', () => {
+				parseJSON(data)
+					.then(async (subscription: PushSubscriptionJSON) => {
+						if (!subscription.endpoint) throw new HTTPError(400, 'Missing endpoint ');
+						try {
+							const token = parse(req.headers.cookie ?? '')[authCookieName];
+							return verifyJWT(token).then(({ payload }) => {
+								const pushSubscription = {
+									...subscription,
+									userId: payload.sub!,
+									id: subscription.endpoint!!
+								};
+								return pushSubscriptions.create(pushSubscription);
+							});
+						} catch {
+							throw new HTTPError(404, 'Not found');
+						}
+					})
+					.then(resolve)
+					.catch(reject);
+			});
+		});
+	};
+
 	const updateUser = (id: string, req: IncomingMessage): Promise<User & { id: string }> => {
 		let data = '';
 		req.on('data', (chunk) => {
@@ -140,6 +183,7 @@ export default async (server: BaseServer, keys: Keys, users: Users): Promise<voi
 
 	const wellKnownOrigins = [
 		'http://127.0.0.1:5173',
+		'http://127.0.0.1:4173',
 		'https://eligo-six.vercel.app',
 		'https://eligo.galaiko.rocks'
 	];
@@ -150,43 +194,71 @@ export default async (server: BaseServer, keys: Keys, users: Users): Promise<voi
 		return vercelOriginRegexp.test(origin);
 	};
 
-	const userUrlRegexp = new RegExp('/users/(.+)');
-
 	server.http((req, res) => {
 		if (req.headers.origin && isOriginAllowed(req.headers.origin)) {
 			res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
 			res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS');
 			res.setHeader('Access-Control-Allow-Credentials', 'true');
+			res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 			res.setHeader('Access-Control-Max-Age', '86400');
 		}
 
-		if (userUrlRegexp.test(req.url!)) {
-			if (req.method === 'PATCH') {
-				const id = req.url?.slice(7) ?? '';
-				updateUser(id, req)
-					.then(async (user) => {
-						res.setHeader('Content-Type', 'application/json');
-						res.end(JSON.stringify({ id: user.id, name: user.name }));
-					})
-					.catch((err) => {
-						if (err instanceof HTTPError) {
-							res.statusCode = err.status;
-							res.end(err.message);
-						} else {
-							console.error(err);
-							res.statusCode = 500;
-							res.end('Internal server error');
-						}
+		if (req.url?.startsWith('/subscriptions')) {
+			const subscriptionId = decodeURIComponent(req.url?.slice(15) ?? '');
+			if (subscriptionId !== '') {
+				if (req.method === 'DELETE') {
+					deleteSubscription(subscriptionId, req).then(() => {
+						res.statusCode = 204;
+						res.end();
 					});
-			} else if (req.method === 'OPTIONS') {
-				res.statusCode = 204;
-				res.end();
+				} else if (req.method === 'OPTIONS') {
+					res.statusCode = 204;
+					res.end();
+				} else {
+					res.statusCode = 405;
+					res.end();
+				}
 			} else {
-				res.statusCode = 405;
-				res.end();
+				if (req.method === 'POST') {
+					createSubscription(req).then((resp) => {
+						res.setHeader('Content-Type', 'application/json');
+						res.end(JSON.stringify(resp));
+					});
+				} else if (req.method === 'OPTIONS') {
+					res.statusCode = 204;
+					res.end();
+				} else {
+					res.statusCode = 405;
+					res.end();
+				}
 			}
-		} else if (req.url === '/users') {
-			if (req.method === 'POST') {
+		} else if (req.url?.startsWith('/users')) {
+			const userId = req.url?.slice(7) ?? '';
+			if (userId !== '') {
+				if (req.method === 'PATCH') {
+					updateUser(userId, req)
+						.then(async (user) => {
+							res.setHeader('Content-Type', 'application/json');
+							res.end(JSON.stringify({ id: user.id, name: user.name }));
+						})
+						.catch((err) => {
+							if (err instanceof HTTPError) {
+								res.statusCode = err.status;
+								res.end(err.message);
+							} else {
+								console.error(err);
+								res.statusCode = 500;
+								res.end('Internal server error');
+							}
+						});
+				} else if (req.method === 'OPTIONS') {
+					res.statusCode = 204;
+					res.end();
+				} else {
+					res.statusCode = 405;
+					res.end();
+				}
+			} else if (req.method === 'POST') {
 				signUp(req)
 					.then(async (user) => {
 						const token = await newToken({ sub: user.id });

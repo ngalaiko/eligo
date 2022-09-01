@@ -1,6 +1,11 @@
 import type { List, Item, User, Pick, Membership, Boost } from '@eligo/protocol';
 import { JSONFile, Low } from 'lowdb';
 
+export type PushSubscriptionRecord = {
+	id: string;
+	userId: string;
+} & PushSubscriptionJSON;
+
 export type ItemRecord = {
 	id: string;
 	textChangeTime: number;
@@ -44,6 +49,7 @@ type Data = {
 	users: Record<string, UserRecord>;
 	memberships: Record<string, MembershipRecord>;
 	boosts: Record<string, BoostResord>;
+	pushSubscriptions: Record<string, PushSubscriptionRecord>;
 };
 
 const openDB = (filepath: string) => {
@@ -58,7 +64,8 @@ const openDB = (filepath: string) => {
 			users: {},
 			keys: {},
 			memberships: {},
-			boosts: {}
+			boosts: {},
+			pushSubscriptions: {}
 		};
 		db.data.items ||= {};
 		db.data.boosts ||= {};
@@ -67,6 +74,7 @@ const openDB = (filepath: string) => {
 		db.data.users ||= {};
 		db.data.keys ||= {};
 		db.data.memberships ||= {};
+		db.data.pushSubscriptions ||= {};
 	};
 	return {
 		create: async <K extends keyof Data>(key: K, value: Data[K][keyof Data[K]]) => {
@@ -172,6 +180,15 @@ const createDB = (filepath: string) => {
 			filter: (filter: Partial<Omit<MembershipRecord, 'id'>> = {}) =>
 				db.filter('memberships', filter),
 			delete: (id: string) => db.delete('memberships', id)
+		},
+		pushSubscriptions: {
+			create: (value: PushSubscriptionRecord) => db.create('pushSubscriptions', value),
+			update: (id: string, value: Partial<PushSubscriptionRecord>) =>
+				db.update('pushSubscriptions', id, value),
+			find: (filter: Partial<PushSubscriptionRecord>) => db.find('pushSubscriptions', filter),
+			filter: (filter: Partial<Omit<PushSubscriptionRecord, 'id'>> = {}) =>
+				db.filter('pushSubscriptions', filter),
+			delete: (id: string) => db.delete('pushSubscriptions', id)
 		}
 	};
 };
@@ -183,5 +200,6 @@ export type Boosts = ReturnType<typeof createDB>['boosts'];
 export type Users = ReturnType<typeof createDB>['users'];
 export type Keys = ReturnType<typeof createDB>['keys'];
 export type Memberships = ReturnType<typeof createDB>['memberships'];
+export type PushSubscriptions = ReturnType<typeof createDB>['pushSubscriptions'];
 
 export default createDB;

@@ -1,5 +1,12 @@
 export const subprotocol = '1.0.0';
 
+export type WebNotification = {
+	title: string;
+	options: {
+		body: string;
+	};
+};
+
 export type User = {
 	name: string;
 };

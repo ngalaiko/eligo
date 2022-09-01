@@ -1,8 +1,10 @@
 import { subprotocol } from '@eligo/protocol';
 import { Server } from '@logux/server';
 import yargs from 'yargs';
+import { readFileSync } from 'fs';
 
 import openDB from './db/index.js';
+import createNotifications from './notifications/index.js';
 import registerAuthModule from './modules/auth.js';
 import registerItemsModule from './modules/items.js';
 import registerListsModule from './modules/lists.js';
@@ -28,6 +30,15 @@ const argv = yargs(process.argv.slice(2))
 		describe: 'Host to listen on',
 		default: '127.0.0.1'
 	})
+	.option('vapid-public-key', {
+		describe: 'Public VAPID key to send WebPush notifications',
+		default:
+			'BOf5qTvP_zovZipWAEL9lKsiGJC7nMs6qeTIvWoef05EQdSpGksLXCwVJ147qbAM4DO9tOrs8dAQEkQJCxXV0kc'
+	})
+	.option('vapid-private-key-path', {
+		describe: 'Path to a file with VALID private key to send WebPush notifications',
+		default: './vapid-private-key.txt'
+	})
 	.parseSync();
 
 const server = new Server({
@@ -44,7 +55,17 @@ const { keys, users, items, lists, picks, memberships, boosts, pushSubscriptions
 	argv.database
 );
 
+createNotifications(
+	{
+		subject: 'mailto:nikita@galaiko.rocks',
+		privateKey: readFileSync(argv.vapidPrivateKeyPath).toString().trim(),
+		publicKey: argv.vapidPublicKey
+	},
+	pushSubscriptions
+);
+
 await registerAuthModule(server, keys, users, pushSubscriptions);
+
 registerItemsModule(server, items, lists, memberships);
 registerListsModule(server, lists, memberships);
 registerPicksModule(server, picks, items, boosts, memberships, lists);

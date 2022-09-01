@@ -4,7 +4,10 @@ import { JSONFile, Low } from 'lowdb';
 export type PushSubscriptionRecord = {
 	id: string;
 	userId: string;
-} & PushSubscriptionJSON;
+	endpoint: string;
+	expirationTime: EpochTimeStamp | null;
+	keys: { p256dh: string; auth: string };
+};
 
 export type ItemRecord = {
 	id: string;

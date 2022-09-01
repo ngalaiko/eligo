@@ -102,22 +102,34 @@ export default async (
 		return new Promise((resolve, reject) => {
 			req.on('end', () => {
 				parseJSON(data)
-					.then(async (subscription: PushSubscriptionJSON) => {
-						if (!subscription.endpoint) throw new HTTPError(400, 'Missing endpoint ');
-						try {
-							const token = parse(req.headers.cookie ?? '')[authCookieName];
-							return verifyJWT(token).then(({ payload }) => {
-								const pushSubscription = {
-									...subscription,
-									userId: payload.sub!,
-									id: subscription.endpoint!!
-								};
-								return pushSubscriptions.create(pushSubscription);
-							});
-						} catch {
-							throw new HTTPError(404, 'Not found');
+					.then(
+						async (subscription: {
+							endpoint: string;
+							expirationTime: EpochTimeStamp | null;
+							keys: { p256dh: string; auth: string };
+						}) => {
+							if (!subscription.endpoint || subscription.endpoint.length === 0)
+								throw new HTTPError(400, 'Missing endpoint');
+							if (!subscription.keys) throw new HTTPError(400, 'Missing keys');
+							if (!subscription.keys.p256dh || subscription.keys.p256dh.length === 0)
+								throw new HTTPError(400, 'Missing keys.p256dh');
+							if (!subscription.keys.auth || subscription.keys.auth.length === 0)
+								throw new HTTPError(400, 'Missing keys.auth');
+							try {
+								const token = parse(req.headers.cookie ?? '')[authCookieName];
+								return verifyJWT(token).then(({ payload }) => {
+									const pushSubscription = {
+										...subscription,
+										userId: payload.sub!,
+										id: subscription.endpoint!!
+									};
+									return pushSubscriptions.create(pushSubscription);
+								});
+							} catch {
+								throw new HTTPError(404, 'Not found');
+							}
 						}
-					})
+					)
 					.then(resolve)
 					.catch(reject);
 			});
@@ -207,10 +219,21 @@ export default async (
 			const subscriptionId = decodeURIComponent(req.url?.slice(15) ?? '');
 			if (subscriptionId !== '') {
 				if (req.method === 'DELETE') {
-					deleteSubscription(subscriptionId, req).then(() => {
-						res.statusCode = 204;
-						res.end();
-					});
+					deleteSubscription(subscriptionId, req)
+						.then(() => {
+							res.statusCode = 204;
+							res.end();
+						})
+						.catch((err) => {
+							if (err instanceof HTTPError) {
+								res.statusCode = err.status;
+								res.end(err.message);
+							} else {
+								console.error(err);
+								res.statusCode = 500;
+								res.end('Internal server error');
+							}
+						});
 				} else if (req.method === 'OPTIONS') {
 					res.statusCode = 204;
 					res.end();
@@ -220,10 +243,21 @@ export default async (
 				}
 			} else {
 				if (req.method === 'POST') {
-					createSubscription(req).then((resp) => {
-						res.setHeader('Content-Type', 'application/json');
-						res.end(JSON.stringify(resp));
-					});
+					createSubscription(req)
+						.then((resp) => {
+							res.setHeader('Content-Type', 'application/json');
+							res.end(JSON.stringify(resp));
+						})
+						.catch((err) => {
+							if (err instanceof HTTPError) {
+								res.statusCode = err.status;
+								res.end(err.message);
+							} else {
+								console.error(err);
+								res.statusCode = 500;
+								res.end('Internal server error');
+							}
+						});
 				} else if (req.method === 'OPTIONS') {
 					res.statusCode = 204;
 					res.end();

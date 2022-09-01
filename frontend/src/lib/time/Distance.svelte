@@ -2,7 +2,9 @@
 	import { differenceInMinutes, differenceInSeconds, formatDistance } from 'date-fns';
 	import { onMount } from 'svelte';
 
+	let className = '';
 	export let to: Date | number;
+	export { className as class };
 	const datetime = new Date(to).toLocaleString();
 
 	let now = new Date();
@@ -31,6 +33,6 @@
 	});
 </script>
 
-<time class="whitespace-nowrap" title={datetime} {datetime}>
-	{formatDistance(now, to, { addSuffix: true })}
+<time class="whitespace-nowrap {className}" title={datetime} {datetime}>
+	{formatDistance(to, now, { addSuffix: true })}
 </time>

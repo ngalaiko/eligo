@@ -24,7 +24,7 @@
 				<span>added</span>
 				<Item itemId={entry.itemId} />
 			{/if}
-			<Distance to={entry.time} />
+			<Distance class="flex-1 text-right" to={entry.time} />
 		</li>
 	{/each}
 </ul>

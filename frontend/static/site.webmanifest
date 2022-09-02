@@ -1,4 +1,7 @@
 {
+	"name": "eligo",
+	"display": "browser",
+	"start_url": "https://eligo.rocks",
 	"icons": [
 		{
 			"src": "/android-chrome-192x192.png",

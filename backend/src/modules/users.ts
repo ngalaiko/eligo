@@ -25,24 +25,30 @@ export default (server: BaseServer, users: Users, memberships: Memberships, list
 	const canAccess = async (ctx: Context, user: UserRecord): Promise<boolean> => {
 		// own can access
 		if (ctx.userId === user.id) return true;
-		// TODO: refactor, there are too many queries
-		// members of the same lists can access
-		const mm = (await memberships.filter({ userId: ctx.userId })).concat(
-			await memberships.filter({ userId: user.id })
-		);
-		const listIds = mm.map(({ listId }) => listId);
-		const memberOfLists = await Promise.all(
-			listIds.map((listId) => lists.find({ id: listId })).filter((list) => !!list)
-		);
-		// owners of lists that the user is in can access
-		const listOwnerIds = memberOfLists.map((list) => list?.userId);
-		if (listOwnerIds.includes(user.id)) return true;
-		// members of the same lists can access
-		const comembers = await Promise.all(
-			listIds.map((listId) => memberships.find({ listId })).filter((m) => !!m)
-		);
-		const comemberIds = comembers.map((member) => member?.userId);
-		if (comemberIds.includes(user.id)) return true;
+
+		// owner of the list I am in
+		const myMemberships = await memberships.filter({ userId: ctx.userId });
+		const listsIAmIn = await Promise.all(
+			myMemberships.map(({ listId }) => lists.find({ id: listId }))
+		).then((lists) => lists.filter((l) => !!l).map((l) => l!));
+		const isOwnerOfAListIAmIn = listsIAmIn.some(({ userId }) => userId === user.id);
+		if (isOwnerOfAListIAmIn) return true;
+
+		// member of the list I own
+		const listsIOwn = await lists.filter({ userId: ctx.userId });
+		const membersOfListsIOwn = await Promise.all(
+			listsIOwn.map(({ id }) => memberships.filter({ listId: id }))
+		).then((mm) => mm.flatMap((m) => m));
+		const isMemberOfAListIOwn = membersOfListsIOwn.some(({ userId }) => userId === user.id);
+		if (isMemberOfAListIOwn) return true;
+
+		// comembers
+		const coMembers = await Promise.all(
+			listsIAmIn.map(({ id }) => memberships.filter({ listId: id }))
+		).then((mm) => mm.flatMap((m) => m));
+		const isComember = coMembers.some(({ userId }) => userId === user.id);
+		if (isComember) return true;
+
 		return false;
 	};
 
@@ -84,11 +90,7 @@ export default (server: BaseServer, users: Users, memberships: Memberships, list
 		initial: async (ctx, filter, since) =>
 			await users
 				.filter(filter)
-				.then((users) =>
-					users.filter(
-						(user) => user.createTime > (since ?? 0) || user.nameChangeTime > (since ?? 0)
-					)
-				)
+				.then((users) => users.filter((user) => user.nameChangeTime > (since ?? 0)))
 				.then(async (users) => {
 					const hasAccess = await Promise.all(users.map((user) => canAccess(ctx, user)));
 					return users.filter((_, i) => hasAccess[i]);

@@ -103,7 +103,7 @@ const openDB = (filepath: string) => {
 		filter: async <K extends keyof Data>(
 			key: K,
 			filter: Partial<Omit<Data[K][keyof Data[K]], 'id'>> = {}
-		) => {
+		): Promise<Data[K][keyof Data[K]][]> => {
 			await initDB();
 			if (!db.data) throw new Error('db.data is null');
 			return Object.values(db.data[key]).filter((value) =>

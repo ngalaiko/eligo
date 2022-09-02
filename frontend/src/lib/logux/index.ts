@@ -1,7 +1,7 @@
 export { default as Context } from './Context.svelte';
 
 import context from './context';
-import { get, readable, type Readable } from 'svelte/store';
+import { get } from 'svelte/store';
 
 export const useClient = () => {
 	const clientStore = context.get();
@@ -11,7 +11,7 @@ export const useClient = () => {
 	return client;
 };
 
-import { createAuth, createFilter, type SyncMapValue } from '@logux/client';
+import { createAuth, createFilter } from '@logux/client';
 import type { SyncMapTemplate, Filter, FilterOptions } from '@logux/client';
 import type { SyncMapValues } from '@logux/actions';
 

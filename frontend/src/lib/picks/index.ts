@@ -1,6 +1,3 @@
-export { default as Button } from './Button.svelte';
-export { default as Current } from './Current.svelte';
-
 import { useFilter } from '$lib/logux';
 import { createSyncMap, syncMapTemplate, Client } from '@logux/client';
 import type { Filter, FilterOptions } from '@logux/client';

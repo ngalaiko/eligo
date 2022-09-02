@@ -3,7 +3,6 @@ import {
 	addSyncMapFilter,
 	BaseServer,
 	Context,
-	LoguxActionError,
 	NoConflictResolution,
 	SyncMapData
 } from '@logux/server';
@@ -73,11 +72,9 @@ export default (
 		},
 
 		create: async (_ctx, id, fields) => {
-			if (!fields.listId || fields.listId.length === 0)
-				throw new LoguxActionError('listId must be set');
-			if (!fields.userId || fields.userId.length === 0)
-				throw new LoguxActionError('userId must be set');
-			if (!fields.createTime) throw new LoguxActionError('createTime must be set');
+			if (!fields.listId || fields.listId.length === 0) throw new Error('listId must be set');
+			if (!fields.userId || fields.userId.length === 0) throw new Error('userId must be set');
+			if (!fields.createTime) throw new Error('createTime must be set');
 
 			const membership = await memberships.create({
 				...fields,
@@ -114,8 +111,8 @@ export default (
 
 	addSyncMapFilter<Membership>(server, modelName, {
 		access: () => true,
-		initial: (ctx, filter, since) =>
-			memberships
+		initial: async (ctx, filter, since) =>
+			await memberships
 				.filter(filter)
 				.then((memberships) =>
 					memberships.filter((membership) => membership.createTime > (since ?? 0))
@@ -125,8 +122,8 @@ export default (
 					return membersips.filter((_, i) => hasAccess[i]);
 				})
 				.then((memberships) => memberships.map(toSyncMapValue)),
-		actions: (ctx) => (_, action) =>
-			memberships.find({ id: action.id }).then((membership) => {
+		actions: (ctx) => async (_, action) =>
+			await memberships.find({ id: action.id }).then((membership) => {
 				if (!membership) return false;
 				return canAccess(ctx, membership);
 			})

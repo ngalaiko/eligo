@@ -50,7 +50,7 @@ export default (server: BaseServer, users: Users, memberships: Memberships, list
 		access: async (ctx, id, action) => {
 			if (createAction.match(action)) {
 				// users are created via http endpoints
-				return false
+				return false;
 			} else if (changeAction.match(action)) {
 				// can only change self
 				return ctx.userId === id;
@@ -81,8 +81,8 @@ export default (server: BaseServer, users: Users, memberships: Memberships, list
 
 	addSyncMapFilter<User>(server, modelName, {
 		access: () => true,
-		initial: (ctx, filter, since) =>
-			users
+		initial: async (ctx, filter, since) =>
+			await users
 				.filter(filter)
 				.then((users) =>
 					users.filter(
@@ -95,7 +95,7 @@ export default (server: BaseServer, users: Users, memberships: Memberships, list
 				})
 				.then((users) => users.map(toSyncMapValue)),
 		actions: (ctx) => async (_, action) =>
-			users.find({ id: action.id }).then((user) => {
+			await users.find({ id: action.id }).then((user) => {
 				if (!user) return false;
 				return canAccess(ctx, user);
 			})

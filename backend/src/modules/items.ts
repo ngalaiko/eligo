@@ -4,7 +4,6 @@ import {
 	BaseServer,
 	ChangedAt,
 	Context,
-	LoguxActionError,
 	NoConflictResolution,
 	SyncMapData
 } from '@logux/server';
@@ -82,12 +81,10 @@ export default (
 		},
 
 		create: async (_ctx, id, fields, time) => {
-			if (!fields.text || fields.text.length === 0) throw new LoguxActionError('text must be set');
-			if (!fields.listId || fields.listId.length === 0)
-				throw new LoguxActionError('listId must be set');
-			if (!fields.userId || fields.userId.length === 0)
-				throw new LoguxActionError('userId must be set');
-			if (!fields.createTime) throw new LoguxActionError('createTime must be set');
+			if (!fields.text || fields.text.length === 0) throw new Error('text must be set');
+			if (!fields.listId || fields.listId.length === 0) throw new Error('listId must be set');
+			if (!fields.userId || fields.userId.length === 0) throw new Error('userId must be set');
+			if (!fields.createTime) throw new Error('createTime must be set');
 
 			const item = await items.create({
 				...fields,
@@ -133,8 +130,8 @@ export default (
 
 	addSyncMapFilter<Item>(server, modelName, {
 		access: () => true,
-		initial: (ctx, filter, since) =>
-			items
+		initial: async (ctx, filter, since) =>
+			await items
 				.filter(filter)
 				.then((items) =>
 					items.filter(
@@ -146,8 +143,8 @@ export default (
 					return items.filter((_, i) => hasAccess[i]);
 				})
 				.then((lists) => lists.map(toSyncMapValue)),
-		actions: (ctx) => (_, action) =>
-			items.find({ id: action.id }).then((item) => {
+		actions: (ctx) => async (_, action) =>
+			await items.find({ id: action.id }).then((item) => {
 				if (!item) return false;
 				return canAccess(ctx, item);
 			})

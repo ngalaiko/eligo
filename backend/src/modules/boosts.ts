@@ -4,8 +4,7 @@ import {
 	BaseServer,
 	NoConflictResolution,
 	Context,
-	SyncMapData,
-	LoguxActionError
+	SyncMapData
 } from '@logux/server';
 import { defineSyncMapActions, LoguxNotFoundError } from '@logux/actions';
 import type { Boost } from '@eligo/protocol';
@@ -76,13 +75,10 @@ export default (
 		},
 
 		create: async (_ctx, id, fields, _time, _action) => {
-			if (!fields.itemId || fields.itemId.length === 0)
-				throw new LoguxActionError('itemId must be set');
-			if (!fields.listId || fields.listId.length === 0)
-				throw new LoguxActionError('listId must be set');
-			if (!fields.userId || fields.userId.length === 0)
-				throw new LoguxActionError('userId must be set');
-			if (!fields.createTime) throw new LoguxActionError('createTime must be set');
+			if (!fields.itemId || fields.itemId.length === 0) throw new Error('itemId must be set');
+			if (!fields.listId || fields.listId.length === 0) throw new Error('listId must be set');
+			if (!fields.userId || fields.userId.length === 0) throw new Error('userId must be set');
+			if (!fields.createTime) throw new Error('createTime must be set');
 
 			const boost = await boosts.create({ ...fields, id });
 
@@ -112,8 +108,8 @@ export default (
 
 	addSyncMapFilter<Boost>(server, modelName, {
 		access: () => true,
-		initial: (ctx, filter, since) =>
-			boosts
+		initial: async (ctx, filter, since) =>
+			await boosts
 				.filter(filter)
 				.then((boosts) => boosts.filter((boost) => boost.createTime >= (since ?? 0)))
 				.then(async (boosts) => {
@@ -121,8 +117,8 @@ export default (
 					return boosts.filter((_, i) => hasAccess[i]);
 				})
 				.then((picks) => picks.map(toSyncMapValue)),
-		actions: (ctx) => (_, action) =>
-			boosts.find({ id: action.id }).then((boost) => {
+		actions: (ctx) => async (_, action) =>
+			await boosts.find({ id: action.id }).then((boost) => {
 				if (!boost) return false;
 				return canAccess(ctx, boost);
 			})

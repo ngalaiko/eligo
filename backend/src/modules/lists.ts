@@ -4,7 +4,6 @@ import {
 	BaseServer,
 	ChangedAt,
 	Context,
-	LoguxActionError,
 	NoConflictResolution,
 	SyncMapData
 } from '@logux/server';
@@ -72,11 +71,9 @@ export default (server: BaseServer, lists: Lists, memberships: Memberships): voi
 		},
 
 		create: async (_ctx, id, fields, time) => {
-			if (!fields.title || fields.title.length === 0)
-				throw new LoguxActionError('title must be set');
-			if (!fields.userId || fields.userId.length === 0)
-				throw new LoguxActionError('userId must be set');
-			if (!fields.createTime) throw new LoguxActionError('createTime must be set');
+			if (!fields.title || fields.title.length === 0) throw new Error('title must be set');
+			if (!fields.userId || fields.userId.length === 0) throw new Error('userId must be set');
+			if (!fields.createTime) throw new Error('createTime must be set');
 
 			await lists.create({
 				...fields,
@@ -104,7 +101,7 @@ export default (server: BaseServer, lists: Lists, memberships: Memberships): voi
 	addSyncMapFilter<List>(server, modelName, {
 		access: () => true,
 		initial: async (ctx, filter, since) =>
-			lists
+			await lists
 				.filter(filter)
 				.then((lists) =>
 					lists.filter(
@@ -126,7 +123,7 @@ export default (server: BaseServer, lists: Lists, memberships: Memberships): voi
 				})
 				.then((lists) => lists.map(toSyncMapValue)),
 		actions: (ctx) => async (_, action) =>
-			lists.find({ id: action.id }).then((list) => {
+			await lists.find({ id: action.id }).then((list) => {
 				if (!list) return false;
 				return canAccess(ctx, list);
 			})

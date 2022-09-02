@@ -4,8 +4,7 @@ import {
 	BaseServer,
 	NoConflictResolution,
 	Context,
-	SyncMapData,
-	LoguxActionError
+	SyncMapData
 } from '@logux/server';
 import { defineSyncMapActions, LoguxNotFoundError } from '@logux/actions';
 import type { Boost, Pick } from '@eligo/protocol';
@@ -22,15 +21,12 @@ import type {
 import { getWeights } from '@eligo/protocol';
 import { Notifications } from '../notifications/index.js';
 
-const pickNext = (
-	items: (ItemRecord & { id: string })[],
-	picks: Pick[],
-	boosts: Boost[]
-): ItemRecord => {
+const pickNext = (items: (ItemRecord & { id: string })[], picks: Pick[], boosts: Boost[]) => {
+	if (items.length === 0) return undefined;
 	const itemIds = items.map((item) => item.id);
 	const weightByItemId = getWeights(items, picks, boosts);
 	const weights = itemIds.map((itemId) => weightByItemId[itemId]);
-	return items.find(({ id }) => id === itemIds[weightedRandom(weights)])!;
+	return items[weightedRandom(weights)];
 };
 
 const weightedRandom = (weights: number[]) => {
@@ -109,29 +105,23 @@ export default (
 		},
 
 		create: async (_ctx, id, fields, _time, _action) => {
-			if (!fields.listId || fields.listId.length === 0)
-				throw new LoguxActionError('listId must be set');
-			if (!fields.userId || fields.userId.length === 0)
-				throw new LoguxActionError('userId must be set');
-			if (!fields.createTime) throw new LoguxActionError('createTime must be set');
+			if (!fields.listId || fields.listId.length === 0) throw new Error('listId must be set');
+			if (!fields.userId || fields.userId.length === 0) throw new Error('userId must be set');
+			if (!fields.createTime) throw new Error('createTime must be set');
 
-			// create pick in the db
-			const pick = await picks.create({ ...fields, id });
-
-			// actually pick
 			const randomItem = await Promise.all([
 				items.filter({ listId: fields.listId }),
 				picks.filter({ listId: fields.listId }),
 				boosts.filter({ listId: fields.listId })
-			]).then(([items, picks, boosts]) => {
-				if (items.length === 0) throw new LoguxNotFoundError();
-				return pickNext(items, picks, boosts);
-			});
-			const patch = { itemId: randomItem.id };
-			await picks.update(pick.id, patch);
+			]).then(([items, picks, boosts]) => pickNext(items, picks, boosts));
+
+			if (!randomItem) throw new LoguxNotFoundError();
+
+			// create pick in the db
+			const pick = await picks.create({ ...fields, id, itemId: randomItem.id });
 
 			// send back picked item
-			await server.process(changedAction({ id: pick.id, fields: patch }));
+			await server.process(changedAction({ id: pick.id, fields: { itemId: randomItem.id } }));
 
 			Promise.all([
 				users.find({ id: pick.userId }),
@@ -157,8 +147,8 @@ export default (
 
 	addSyncMapFilter<Pick>(server, modelName, {
 		access: () => true,
-		initial: (ctx, filter, since) =>
-			picks
+		initial: async (ctx, filter, since) =>
+			await picks
 				.filter(filter)
 				.then((picks) => picks.filter((pick) => pick.createTime > (since ?? 0)))
 				.then(async (picks) => {
@@ -166,8 +156,8 @@ export default (
 					return picks.filter((_, i) => hasAccess[i]);
 				})
 				.then((picks) => picks.map(toSyncMapValue)),
-		actions: (ctx) => (_, action) =>
-			picks.find({ id: action.id }).then((pick) => {
+		actions: (ctx) => async (_, action) =>
+			await picks.find({ id: action.id }).then((pick) => {
 				if (!pick) return false;
 				return canAccess(ctx, pick);
 			})

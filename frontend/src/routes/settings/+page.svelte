@@ -4,6 +4,9 @@
 	import { updateUser, useUser } from '$lib/users';
 	import { logout as sendLogout, updateUser as sendUpdateUser } from '$lib/api';
 	import { Button as NotificationsButton } from '$lib/pushSubscriptions';
+	import { onMount } from 'svelte';
+	import { browser } from '$app/env';
+	import { page } from '$app/stores';
 
 	const auth = useAuth();
 	const user = useUser($auth.userId);
@@ -34,6 +37,12 @@
 				goto('/');
 			})
 			.catch(console.error);
+
+	onMount(async () => {
+		await client.node.waitFor('disconnected');
+		if (browser && !$auth.isAuthenticated && $page.url.pathname !== '/')
+			goto('/?redirect=' + encodeURIComponent($page.url.pathname));
+	});
 </script>
 
 <svelte:head>

@@ -197,7 +197,8 @@ export default async (
 		'http://127.0.0.1:5173',
 		'http://127.0.0.1:4173',
 		'https://eligo-six.vercel.app',
-		'https://eligo.galaiko.rocks'
+		'https://eligo.galaiko.rocks',
+		'https://eligo.rocks'
 	];
 	const vercelOriginRegexp = new RegExp('https://eligo(-.+)?-ngalaiko.vercel.app');
 

@@ -97,33 +97,27 @@ export default (server: BaseServer, lists: Lists, memberships: Memberships): voi
 	addSyncMapFilter<List>(server, modelName, {
 		access: () => true,
 		initial: async (ctx, filter, since) =>
-			filter && Object.keys(filter).length === 1 && filter?.invitatationId !== undefined // if only invitation id is set
-				? lists
-						.filter(filter)
-						.then((lists) =>
-							lists.filter(
-								(list) =>
-									list.createTime > (since ?? 0) ||
-									list.titleChangeTime > (since ?? 0) ||
-									list.invitationIdChangeTime > (since ?? 0)
-							)
-						)
-						.then((lists) => lists.map(toSyncMapValue)) // return all matching lists, they are public
-				: lists
-						.filter(filter)
-						.then((lists) =>
-							lists.filter(
-								(list) =>
-									list.createTime > (since ?? 0) ||
-									list.titleChangeTime > (since ?? 0) ||
-									list.invitationIdChangeTime > (since ?? 0)
-							)
-						)
-						.then(async (lists) => {
-							const hasAccess = await Promise.all(lists.map((list) => canAccess(ctx, list)));
-							return lists.filter((_, i) => hasAccess[i]);
-						})
-						.then((lists) => lists.map(toSyncMapValue)),
+			lists
+				.filter(filter)
+				.then((lists) =>
+					lists.filter(
+						(list) =>
+							list.createTime > (since ?? 0) ||
+							list.titleChangeTime > (since ?? 0) ||
+							list.invitationIdChangeTime > (since ?? 0)
+					)
+				)
+				.then(async (lists) => {
+					if (filter && Object.keys(filter).length === 1 && filter?.invitatationId !== undefined) {
+						// if only invitation id is set, return all the matching lists, because they all are available to to join
+                        // TODO: should invitations be a separate entity?
+						return lists;
+					} else {
+						const hasAccess = await Promise.all(lists.map((list) => canAccess(ctx, list)));
+						return lists.filter((_, i) => hasAccess[i]);
+					}
+				})
+				.then((lists) => lists.map(toSyncMapValue)),
 		actions: (ctx) => async (_, action) =>
 			lists.find({ id: action.id }).then((list) => {
 				if (!list) return false;

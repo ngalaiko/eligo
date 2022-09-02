@@ -13,5 +13,5 @@
 {#if replaceSelf && userId === $auth.userId}
 	<b id={$user.id}> you </b>
 {:else if $user.isLoading === false}
-	<b id={$user.id}>{$user.name}</b>
+	<b class="whitespace-nowrap" id={$user.id}>{$user.name}</b>
 {/if}

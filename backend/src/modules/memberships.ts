@@ -9,7 +9,8 @@ import {
 import { defineSyncMapActions, LoguxNotFoundError } from '@logux/actions';
 import type { Membership } from '@eligo/protocol';
 
-import { MembershipRecord, Memberships, Lists } from '../db/index.js';
+import { MembershipRecord, Memberships, Lists, Users } from '../db/index.js';
+import { Notifications } from '../notifications/index.js';
 
 const modelName = 'memberships';
 
@@ -23,7 +24,13 @@ const toSyncMapValue = (membership: MembershipRecord): SyncMapData<Membership> =
 	createTime: NoConflictResolution(membership.createTime)
 });
 
-export default (server: BaseServer, memberships: Memberships, lists: Lists): void => {
+export default (
+	server: BaseServer,
+	memberships: Memberships,
+	lists: Lists,
+	users: Users,
+	notifications: Notifications
+): void => {
 	const canAccess = async (ctx: Context, membership: MembershipRecord): Promise<boolean> => {
 		// owner can access
 		if (ctx.userId === membership.userId) return true;
@@ -65,9 +72,31 @@ export default (server: BaseServer, memberships: Memberships, lists: Lists): voi
 		},
 
 		create: async (_ctx, id, fields) => {
-			await memberships.create({
+			const membership = await memberships.create({
 				...fields,
 				id
+			});
+
+			Promise.all([
+				users.find({ id: membership.userId }),
+				lists.find({ id: membership.listId }),
+				memberships.filter({ listId: fields.listId })
+			]).then(([user, list, memberships]) => {
+				if (!list) return;
+				if (!user) return;
+
+				const membersIds = memberships.map(({ userId }) => userId);
+				const userIds = [...membersIds, list.userId].filter(
+					(userId) => userId !== membership.userId
+				);
+				userIds.forEach((userId) =>
+					notifications.notify(userId, {
+						title: `New member`,
+						options: {
+							body: `${user.name} joined ${list.title}`
+						}
+					})
+				);
 			});
 		},
 

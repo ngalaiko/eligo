@@ -15,19 +15,21 @@ import type {
 	Memberships,
 	Lists,
 	ItemRecord,
-	Boosts
+	Boosts,
+	Users
 } from '../db/index.js';
 import { getWeights } from '@eligo/protocol';
+import { Notifications } from '../notifications/index.js';
 
 const pickNext = (
 	items: (ItemRecord & { id: string })[],
 	picks: Pick[],
 	boosts: Boost[]
-): string => {
+): ItemRecord => {
 	const itemIds = items.map((item) => item.id);
 	const weightByItemId = getWeights(items, picks, boosts);
 	const weights = itemIds.map((itemId) => weightByItemId[itemId]);
-	return itemIds[weightedRandom(weights)];
+	return items.find(({ id }) => id === itemIds[weightedRandom(weights)])!;
 };
 
 const weightedRandom = (weights: number[]) => {
@@ -62,7 +64,9 @@ export default (
 	items: Items,
 	boosts: Boosts,
 	memberships: Memberships,
-	lists: Lists
+	lists: Lists,
+	users: Users,
+	notifications: Notifications
 ): void => {
 	const canAccess = async (ctx: Context, pick: PickRecord): Promise<boolean> => {
 		// owner can access
@@ -108,7 +112,7 @@ export default (
 			const pick = await picks.create({ ...fields, id });
 
 			// actually pick
-			const randomItemId = await Promise.all([
+			const randomItem = await Promise.all([
 				items.filter({ listId: fields.listId }),
 				picks.filter({ listId: fields.listId }),
 				boosts.filter({ listId: fields.listId })
@@ -116,11 +120,31 @@ export default (
 				if (items.length === 0) throw new LoguxNotFoundError();
 				return pickNext(items, picks, boosts);
 			});
-			const patch = { itemId: randomItemId };
+			const patch = { itemId: randomItem.id };
 			await picks.update(pick.id, patch);
 
 			// send back picked item
 			await server.process(changedAction({ id: pick.id, fields: patch }));
+
+			Promise.all([
+				users.find({ id: pick.userId }),
+				lists.find({ id: pick.listId }),
+				memberships.filter({ listId: fields.listId })
+			]).then(([user, list, memberships]) => {
+				if (!list) return;
+				if (!user) return;
+
+				const membersIds = memberships.map(({ userId }) => userId);
+				const userIds = [...membersIds, list.userId].filter((userId) => userId !== pick.userId);
+				userIds.forEach((userId) =>
+					notifications.notify(userId, {
+						title: `New pick`,
+						options: {
+							body: `${user.name} picked ${randomItem.text} in ${list.title}`
+						}
+					})
+				);
+			});
 		}
 	});
 
@@ -129,9 +153,7 @@ export default (
 		initial: (ctx, filter, since) =>
 			picks
 				.filter(filter)
-				.then((picks) =>
-					picks.filter((pick) => pick.createTime > (since ?? 0))
-				)
+				.then((picks) => picks.filter((pick) => pick.createTime > (since ?? 0)))
 				.then(async (picks) => {
 					const hasAccess = await Promise.all(picks.map((pick) => canAccess(ctx, pick)));
 					return picks.filter((_, i) => hasAccess[i]);

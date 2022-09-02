@@ -18,9 +18,11 @@ export default (
 	notify: async (userId: string, notification: WebNotification) =>
 		pushSubscriptions.filter({ userId }).then((subscriptions) =>
 			subscriptions.forEach((subscription) => {
-				webpush.sendNotification(subscription, JSON.stringify(notification), {
-					vapidDetails
-				});
+				webpush
+					.sendNotification(subscription, JSON.stringify(notification), {
+						vapidDetails
+					})
+					.catch(console.error);
 			})
 		)
 });

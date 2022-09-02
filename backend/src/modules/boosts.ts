@@ -8,7 +8,8 @@ import {
 } from '@logux/server';
 import { defineSyncMapActions, LoguxNotFoundError } from '@logux/actions';
 import type { Boost } from '@eligo/protocol';
-import type { Items, Memberships, Lists, BoostResord, Boosts } from '../db/index.js';
+import type { Items, Memberships, Lists, BoostResord, Boosts, Users } from '../db/index.js';
+import { Notifications } from '../notifications/index.js';
 
 const modelName = 'boosts';
 
@@ -28,7 +29,9 @@ export default (
 	boosts: Boosts,
 	items: Items,
 	memberships: Memberships,
-	lists: Lists
+	lists: Lists,
+	users: Users,
+	notifications: Notifications
 ): void => {
 	const canAccess = async (ctx: Context, boost: BoostResord): Promise<boolean> => {
 		// owner can access
@@ -72,7 +75,29 @@ export default (
 		},
 
 		create: async (_ctx, id, fields, _time, _action) => {
-			await boosts.create({ ...fields, id });
+			const boost = await boosts.create({ ...fields, id });
+
+			Promise.all([
+				users.find({ id: boost.userId }),
+				lists.find({ id: boost.listId }),
+				items.find({ id: boost.itemId }),
+				memberships.filter({ listId: boost.listId })
+			]).then(([user, list, item, memberships]) => {
+				if (!list) return;
+				if (!user) return;
+				if (!item) return;
+
+				const membersIds = memberships.map(({ userId }) => userId);
+				const userIds = [...membersIds, list.userId].filter((userId) => userId !== boost.userId);
+				userIds.forEach((userId) =>
+					notifications.notify(userId, {
+						title: `New boost`,
+						options: {
+							body: `${user.name} boosted ${item.text} in ${list.title}`
+						}
+					})
+				);
+			});
 		}
 	});
 

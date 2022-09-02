@@ -55,7 +55,7 @@ const { keys, users, items, lists, picks, memberships, boosts, pushSubscriptions
 	argv.database
 );
 
-createNotifications(
+const notifications = createNotifications(
 	{
 		subject: 'mailto:nikita@galaiko.rocks',
 		privateKey: readFileSync(argv.vapidPrivateKeyPath).toString().trim(),
@@ -66,11 +66,11 @@ createNotifications(
 
 await registerAuthModule(server, keys, users, pushSubscriptions);
 
-registerItemsModule(server, items, lists, memberships);
+registerItemsModule(server, items, lists, memberships, users, notifications);
 registerListsModule(server, lists, memberships);
-registerPicksModule(server, picks, items, boosts, memberships, lists);
-registerBoostsModule(server, boosts, items, memberships, lists);
+registerPicksModule(server, picks, items, boosts, memberships, lists, users, notifications);
+registerBoostsModule(server, boosts, items, memberships, lists, users, notifications);
 registerUsersModule(server, users, memberships, lists);
-registerMembershipsModule(server, memberships, lists);
+registerMembershipsModule(server, memberships, lists, users, notifications);
 
 server.listen();

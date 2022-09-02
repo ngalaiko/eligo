@@ -80,6 +80,10 @@
 	});
 </script>
 
+<svelte:head>
+	<title>eligo</title>
+</svelte:head>
+
 <div class="flex flex-col items-center gap-4 h-1/2 text-xl">
 	{#if $auth.isAuthenticated}
 		<a href="/lists/">lists -></a>

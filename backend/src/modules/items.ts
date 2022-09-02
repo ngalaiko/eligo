@@ -4,6 +4,7 @@ import {
 	BaseServer,
 	ChangedAt,
 	Context,
+	LoguxActionError,
 	NoConflictResolution,
 	SyncMapData
 } from '@logux/server';
@@ -81,6 +82,13 @@ export default (
 		},
 
 		create: async (_ctx, id, fields, time) => {
+			if (!fields.text || fields.text.length === 0) throw new LoguxActionError('text must be set');
+			if (!fields.listId || fields.listId.length === 0)
+				throw new LoguxActionError('listId must be set');
+			if (!fields.userId || fields.userId.length === 0)
+				throw new LoguxActionError('userId must be set');
+			if (!fields.createTime) throw new LoguxActionError('createTime must be set');
+
 			const item = await items.create({
 				...fields,
 				id,

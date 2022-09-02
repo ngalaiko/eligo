@@ -4,7 +4,8 @@ import {
 	BaseServer,
 	NoConflictResolution,
 	Context,
-	SyncMapData
+	SyncMapData,
+	LoguxActionError
 } from '@logux/server';
 import { defineSyncMapActions, LoguxNotFoundError } from '@logux/actions';
 import type { Boost } from '@eligo/protocol';
@@ -57,10 +58,10 @@ export default (
 				// can't impersonate another user
 				return ctx.userId === action.fields.userId;
 			} else if (changeAction.match(action)) {
-				// picks are immutable
+				// boosts are immutable
 				return false;
 			} else if (deleteAction.match(action)) {
-				// picks are immutable
+				// boosts are immutable
 				return false;
 			} else {
 				const boost = await boosts.find({ id: id });
@@ -75,6 +76,14 @@ export default (
 		},
 
 		create: async (_ctx, id, fields, _time, _action) => {
+			if (!fields.itemId || fields.itemId.length === 0)
+				throw new LoguxActionError('itemId must be set');
+			if (!fields.listId || fields.listId.length === 0)
+				throw new LoguxActionError('listId must be set');
+			if (!fields.userId || fields.userId.length === 0)
+				throw new LoguxActionError('userId must be set');
+			if (!fields.createTime) throw new LoguxActionError('createTime must be set');
+
 			const boost = await boosts.create({ ...fields, id });
 
 			Promise.all([

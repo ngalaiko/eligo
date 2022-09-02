@@ -3,6 +3,7 @@ import {
 	addSyncMapFilter,
 	BaseServer,
 	Context,
+	LoguxActionError,
 	NoConflictResolution,
 	SyncMapData
 } from '@logux/server';
@@ -72,6 +73,12 @@ export default (
 		},
 
 		create: async (_ctx, id, fields) => {
+			if (!fields.listId || fields.listId.length === 0)
+				throw new LoguxActionError('listId must be set');
+			if (!fields.userId || fields.userId.length === 0)
+				throw new LoguxActionError('userId must be set');
+			if (!fields.createTime) throw new LoguxActionError('createTime must be set');
+
 			const membership = await memberships.create({
 				...fields,
 				id

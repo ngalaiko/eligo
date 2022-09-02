@@ -4,6 +4,7 @@ import {
 	BaseServer,
 	ChangedAt,
 	Context,
+	LoguxActionError,
 	NoConflictResolution,
 	SyncMapData
 } from '@logux/server';
@@ -71,6 +72,12 @@ export default (server: BaseServer, lists: Lists, memberships: Memberships): voi
 		},
 
 		create: async (_ctx, id, fields, time) => {
+			if (!fields.title || fields.title.length === 0)
+				throw new LoguxActionError('title must be set');
+			if (!fields.userId || fields.userId.length === 0)
+				throw new LoguxActionError('userId must be set');
+			if (!fields.createTime) throw new LoguxActionError('createTime must be set');
+
 			await lists.create({
 				...fields,
 				id,
@@ -110,7 +117,7 @@ export default (server: BaseServer, lists: Lists, memberships: Memberships): voi
 				.then(async (lists) => {
 					if (filter && Object.keys(filter).length === 1 && filter?.invitatationId !== undefined) {
 						// if only invitation id is set, return all the matching lists, because they all are available to to join
-                        // TODO: should invitations be a separate entity?
+						// TODO: should invitations be a separate entity?
 						return lists;
 					} else {
 						const hasAccess = await Promise.all(lists.map((list) => canAccess(ctx, list)));

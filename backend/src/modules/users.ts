@@ -49,8 +49,8 @@ export default (server: BaseServer, users: Users, memberships: Memberships, list
 	addSyncMap<User>(server, modelName, {
 		access: async (ctx, id, action) => {
 			if (createAction.match(action)) {
-				// can't impersonate another user
-				return ctx.userId === id;
+				// users are created via http endpoints
+				return false
 			} else if (changeAction.match(action)) {
 				// can only change self
 				return ctx.userId === id;

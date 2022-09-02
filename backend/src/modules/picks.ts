@@ -4,7 +4,8 @@ import {
 	BaseServer,
 	NoConflictResolution,
 	Context,
-	SyncMapData
+	SyncMapData,
+	LoguxActionError
 } from '@logux/server';
 import { defineSyncMapActions, LoguxNotFoundError } from '@logux/actions';
 import type { Boost, Pick } from '@eligo/protocol';
@@ -108,6 +109,12 @@ export default (
 		},
 
 		create: async (_ctx, id, fields, _time, _action) => {
+			if (!fields.listId || fields.listId.length === 0)
+				throw new LoguxActionError('listId must be set');
+			if (!fields.userId || fields.userId.length === 0)
+				throw new LoguxActionError('userId must be set');
+			if (!fields.createTime) throw new LoguxActionError('createTime must be set');
+
 			// create pick in the db
 			const pick = await picks.create({ ...fields, id });
 

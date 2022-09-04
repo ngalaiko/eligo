@@ -11,8 +11,8 @@
 	"type": "module",
 	"dependencies": {
 		"@eligo/protocol": "workspace:*",
-		"@logux/actions": "^0.2.3",
-		"@logux/server": "^0.11.0",
+		"@logux/actions": "^0.3.0",
+		"@logux/server": "^0.12.1",
 		"@types/cookie": "^0.5.1",
 		"bcrypt": "^5.0.1",
 		"cookie": "^0.5.0",

@@ -34,6 +34,7 @@ export type UserRecord = User & {
 	id: string;
 	nameChangeTime: number;
 	hash: string;
+	createTime: number;
 };
 
 export type MembershipRecord = Membership & {

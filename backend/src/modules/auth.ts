@@ -182,8 +182,15 @@ export default async (
 						if (typeof password !== 'string') throw new HTTPError(400, 'Password must be a string');
 						return users.find({ name }).then(async (user) => {
 							if (user) throw new HTTPError(409, 'User already exists');
+							const now = new Date().getTime();
 							return hash(password, 10).then((hash) =>
-								users.create({ id: nanoid(), name, hash, nameChangeTime: new Date().getTime() })
+								users.create({
+									id: nanoid(),
+									name,
+									hash,
+									nameChangeTime: now,
+									createTime: now
+								})
 							);
 						});
 					})

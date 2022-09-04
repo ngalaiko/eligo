@@ -90,7 +90,11 @@ export default (server: BaseServer, users: Users, memberships: Memberships, list
 		initial: async (ctx, filter, since) =>
 			await users
 				.filter(filter)
-				.then((users) => users.filter((user) => user.nameChangeTime > (since ?? 0)))
+				.then((users) =>
+					users.filter(
+						(user) => user.createTime > (since ?? 0) || user.nameChangeTime > (since ?? 0)
+					)
+				)
 				.then(async (users) => {
 					const hasAccess = await Promise.all(users.map((user) => canAccess(ctx, user)));
 					return users.filter((_, i) => hasAccess[i]);

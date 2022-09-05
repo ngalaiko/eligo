@@ -60,7 +60,7 @@ importers:
     specifiers:
       '@eligo/protocol': workspace:*
       '@logux/actions': ^0.3.0
-      '@logux/client': ^0.18.0
+      '@logux/client': github:ngalaiko/client#sync-map-offline
       '@sveltejs/adapter-vercel': 1.0.0-next.68
       '@sveltejs/kit': 1.0.0-next.414
       '@typescript-eslint/eslint-plugin': ^5.27.0
@@ -87,7 +87,7 @@ importers:
     devDependencies:
       '@eligo/protocol': link:../protocol
       '@logux/actions': 0.3.0_@logux+core@0.8.0
-      '@logux/client': 0.18.0_gsvypqk4egb4s2awt355ad3she
+      '@logux/client': github.com/ngalaiko/client/68080e37d8bb74602a82a9e5893fefeca0f51980_gsvypqk4egb4s2awt355ad3she
       '@sveltejs/adapter-vercel': 1.0.0-next.68
       '@sveltejs/kit': 1.0.0-next.414_svelte@3.49.0+vite@3.0.4
       '@typescript-eslint/eslint-plugin': 5.32.0_iosr3hrei2tubxveewluhu5lhy
@@ -204,44 +204,6 @@ packages:
       '@logux/core': ^0.8.0
     dependencies:
       '@logux/core': 0.8.0
-
-  /@logux/client/0.18.0_gsvypqk4egb4s2awt355ad3she:
-    resolution: {integrity: sha512-7aY/QNU7CjV7FQKKyyKWeHRK3Uw4wCYZGiIsXTXTDY38CCkttcnuGLYQLFuXgYVxDniu2KzGV3+q+s9jwu0d/g==}
-    engines: {node: ^14.0.0 || ^16.0.0 || >=18.0.0}
-    peerDependencies:
-      '@logux/core': ^0.8.0
-      '@nanostores/preact': '>=0.0.0'
-      '@nanostores/react': '>=0.0.0'
-      '@nanostores/vue': '>=0.0.0'
-      nanostores: ^0.6.0
-      preact: '>=10.0.0'
-      react: '>=18.0.0'
-      react-dom: '>=16.8.0'
-      vue: '>=3.2.30'
-    peerDependenciesMeta:
-      '@nanostores/preact':
-        optional: true
-      '@nanostores/react':
-        optional: true
-      '@nanostores/vue':
-        optional: true
-      preact:
-        optional: true
-      react:
-        optional: true
-      react-dom:
-        optional: true
-      vue:
-        optional: true
-    dependencies:
-      '@logux/actions': 0.3.0_@logux+core@0.8.0
-      '@logux/core': 0.8.0
-      fast-json-stable-stringify: 2.1.0
-      nanodelay: 2.0.2
-      nanoevents: 7.0.1
-      nanoid: 4.0.0
-      nanostores: 0.6.0
-    dev: true
 
   /@logux/core/0.8.0:
     resolution: {integrity: sha512-jhV0gqAl6Busqh6lZMSYcoFegrUr+rR8yCpFHUrdurtGxla75ryeZ0/8knmotLYuPhxprWuQ2s8mGZ9PxWmn4g==}
@@ -3079,3 +3041,44 @@ packages:
   /yyyy-mm-dd/1.0.2:
     resolution: {integrity: sha512-xHhOFKT1Y29Jc4/6To1hmIUswKhCKplPSbkCyIabAAZ5q/9GmZvlN3WNcafcq3zze3CzYU66XNeSBLCD8Oickw==}
     dev: false
+
+  github.com/ngalaiko/client/68080e37d8bb74602a82a9e5893fefeca0f51980_gsvypqk4egb4s2awt355ad3she:
+    resolution: {tarball: https://codeload.github.com/ngalaiko/client/tar.gz/68080e37d8bb74602a82a9e5893fefeca0f51980}
+    id: github.com/ngalaiko/client/68080e37d8bb74602a82a9e5893fefeca0f51980
+    name: '@logux/client'
+    version: 0.18.0
+    engines: {node: ^14.0.0 || ^16.0.0 || >=18.0.0}
+    peerDependencies:
+      '@logux/core': ^0.8.0
+      '@nanostores/preact': '>=0.0.0'
+      '@nanostores/react': '>=0.0.0'
+      '@nanostores/vue': '>=0.0.0'
+      nanostores: ^0.6.0
+      preact: '>=10.0.0'
+      react: '>=18.0.0'
+      react-dom: '>=16.8.0'
+      vue: '>=3.2.30'
+    peerDependenciesMeta:
+      '@nanostores/preact':
+        optional: true
+      '@nanostores/react':
+        optional: true
+      '@nanostores/vue':
+        optional: true
+      preact:
+        optional: true
+      react:
+        optional: true
+      react-dom:
+        optional: true
+      vue:
+        optional: true
+    dependencies:
+      '@logux/actions': 0.3.0_@logux+core@0.8.0
+      '@logux/core': 0.8.0
+      fast-json-stable-stringify: 2.1.0
+      nanodelay: 2.0.2
+      nanoevents: 7.0.1
+      nanoid: 4.0.0
+      nanostores: 0.6.0
+    dev: true

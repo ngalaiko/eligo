@@ -24,6 +24,9 @@ const toSyncMapValue = (membership: MembershipRecord): SyncMapData<Membership> =
 	createTime: NoConflictResolution(membership.createTime)
 });
 
+const isUpdatesSince = (membership: MembershipRecord, since: number | undefined) =>
+	since === undefined ? true : membership.createTime > since;
+
 export default (
 	server: BaseServer,
 	memberships: Memberships,
@@ -65,10 +68,10 @@ export default (
 			}
 		},
 
-		load: async (_, id) => {
-			const item = await memberships.find({ id });
-			if (!item) throw new LoguxNotFoundError();
-			return toSyncMapValue(item);
+		load: async (_, id, since) => {
+			const membership = await memberships.find({ id });
+			if (!membership) throw new LoguxNotFoundError();
+			return isUpdatesSince(membership, since) ? toSyncMapValue(membership) : false;
 		},
 
 		create: async (_ctx, id, fields) => {
@@ -115,7 +118,7 @@ export default (
 			await memberships
 				.filter(filter)
 				.then((memberships) =>
-					memberships.filter((membership) => membership.createTime > (since ?? 0))
+					memberships.filter((membership) => isUpdatesSince(membership, since))
 				)
 				.then(async (membersips) => {
 					const hasAccess = await Promise.all(membersips.map((list) => canAccess(ctx, list)));

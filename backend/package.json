@@ -12,7 +12,7 @@
 	"dependencies": {
 		"@eligo/protocol": "workspace:*",
 		"@logux/actions": "^0.3.0",
-		"@logux/server": "^0.12.1",
+		"@logux/server": "github:logux/server#87dffaee8b82a1bf21b5183af26493eb84700a4d",
 		"@types/cookie": "^0.5.1",
 		"bcrypt": "^5.0.1",
 		"cookie": "^0.5.0",

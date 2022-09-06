@@ -25,6 +25,13 @@ const toSyncMapValue = (list: ListRecord): SyncMapData<List> => ({
 	invitatationId: ChangedAt(list.invitatationId, list.invitationIdChangeTime)
 });
 
+const isUpdatedSince = (list: ListRecord, since: number | undefined) =>
+	since === undefined
+		? true
+		: list.createTime > since ||
+		  list.titleChangeTime > since ||
+		  list.invitationIdChangeTime > since;
+
 export default (server: BaseServer, lists: Lists, memberships: Memberships): void => {
 	const canAccess = async (ctx: Context, list: ListRecord): Promise<boolean> => {
 		// owner can access
@@ -64,10 +71,10 @@ export default (server: BaseServer, lists: Lists, memberships: Memberships): voi
 			}
 		},
 
-		load: async (_, id) => {
+		load: async (_, id, since) => {
 			const list = await lists.find({ id });
 			if (!list) throw new LoguxNotFoundError();
-			return toSyncMapValue(list);
+			return isUpdatedSince(list, since) ? toSyncMapValue(list) : false;
 		},
 
 		create: async (_ctx, id, fields, time) => {
@@ -103,14 +110,7 @@ export default (server: BaseServer, lists: Lists, memberships: Memberships): voi
 		initial: async (ctx, filter, since) =>
 			await lists
 				.filter(filter)
-				.then((lists) =>
-					lists.filter(
-						(list) =>
-							list.createTime > (since ?? 0) ||
-							list.titleChangeTime > (since ?? 0) ||
-							list.invitationIdChangeTime > (since ?? 0)
-					)
-				)
+				.then((lists) => lists.filter((list) => isUpdatedSince(list, since)))
 				.then(async (lists) => {
 					if (filter && Object.keys(filter).length === 1 && filter?.invitatationId !== undefined) {
 						// if only invitation id is set, return all the matching lists, because they all are available to to join

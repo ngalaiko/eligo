@@ -24,6 +24,9 @@ const toSyncMapValue = (boost: BoostResord): SyncMapData<Boost> => ({
 	createTime: NoConflictResolution(boost.createTime)
 });
 
+const isUpdatedSince = (boost: BoostResord, since: number | undefined) =>
+	since === undefined ? true : boost.createTime >= since;
+
 export default (
 	server: BaseServer,
 	boosts: Boosts,
@@ -68,10 +71,11 @@ export default (
 				return canAccess(ctx, boost);
 			}
 		},
-		load: async (_, id) => {
-			const pick = await boosts.find({ id });
-			if (!pick) throw new LoguxNotFoundError();
-			return toSyncMapValue(pick);
+
+		load: async (_, id, since) => {
+			const boost = await boosts.find({ id });
+			if (!boost) throw new LoguxNotFoundError();
+			return isUpdatedSince(boost, since) ? toSyncMapValue(boost) : false;
 		},
 
 		create: async (_ctx, id, fields, _time, _action) => {
@@ -111,7 +115,7 @@ export default (
 		initial: async (ctx, filter, since) =>
 			await boosts
 				.filter(filter)
-				.then((boosts) => boosts.filter((boost) => boost.createTime >= (since ?? 0)))
+				.then((boosts) => boosts.filter((boost) => isUpdatedSince(boost, since)))
 				.then(async (boosts) => {
 					const hasAccess = await Promise.all(boosts.map((pick) => canAccess(ctx, pick)));
 					return boosts.filter((_, i) => hasAccess[i]);

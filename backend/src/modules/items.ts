@@ -26,6 +26,9 @@ const toSyncMapValue = (item: ItemRecord): SyncMapData<Item> => ({
 	createTime: NoConflictResolution(item.createTime)
 });
 
+const isUpdatedSince = (item: ItemRecord, since: number | undefined) =>
+	since === undefined ? true : item.createTime > since || item.textChangeTime > since;
+
 export default (
 	server: BaseServer,
 	items: Items,
@@ -74,10 +77,10 @@ export default (
 			}
 		},
 
-		load: async (_, id) => {
+		load: async (_, id, since) => {
 			const item = await items.find({ id });
 			if (!item) throw new LoguxNotFoundError();
-			return toSyncMapValue(item);
+			return isUpdatedSince(item, since) ? toSyncMapValue(item) : false;
 		},
 
 		create: async (_ctx, id, fields, time) => {
@@ -133,11 +136,7 @@ export default (
 		initial: async (ctx, filter, since) =>
 			await items
 				.filter(filter)
-				.then((items) =>
-					items.filter(
-						(item) => item.createTime >= (since ?? 0) || item.textChangeTime >= (since ?? 0)
-					)
-				)
+				.then((items) => items.filter((item) => isUpdatedSince(item, since)))
 				.then(async (items) => {
 					const hasAccess = await Promise.all(items.map((list) => canAccess(ctx, list)));
 					return items.filter((_, i) => hasAccess[i]);

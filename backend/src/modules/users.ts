@@ -21,6 +21,9 @@ const toSyncMapValue = (user: UserRecord): SyncMapData<User> => ({
 	name: ChangedAt(user.name, user.nameChangeTime)
 });
 
+const isUpdatedSince = (user: UserRecord, since: number | undefined) =>
+	since === undefined ? true : user.createTime > since || user.nameChangeTime > since;
+
 export default (server: BaseServer, users: Users, memberships: Memberships, lists: Lists): void => {
 	const canAccess = async (ctx: Context, user: UserRecord): Promise<boolean> => {
 		// own can access
@@ -78,10 +81,10 @@ export default (server: BaseServer, users: Users, memberships: Memberships, list
 				nameChangeTime: fields.name ? time : user.nameChangeTime
 			});
 		},
-		load: async (_, id) => {
+		load: async (_, id, since) => {
 			const user = await users.find({ id });
 			if (!user) throw new LoguxNotFoundError();
-			return toSyncMapValue(user);
+			return isUpdatedSince(user, since) ? toSyncMapValue(user) : false;
 		}
 	});
 
@@ -90,11 +93,7 @@ export default (server: BaseServer, users: Users, memberships: Memberships, list
 		initial: async (ctx, filter, since) =>
 			await users
 				.filter(filter)
-				.then((users) =>
-					users.filter(
-						(user) => user.createTime > (since ?? 0) || user.nameChangeTime > (since ?? 0)
-					)
-				)
+				.then((users) => users.filter((user) => isUpdatedSince(user, since)))
 				.then(async (users) => {
 					const hasAccess = await Promise.all(users.map((user) => canAccess(ctx, user)));
 					return users.filter((_, i) => hasAccess[i]);

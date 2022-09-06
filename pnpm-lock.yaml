@@ -9,7 +9,7 @@ importers:
     specifiers:
       '@eligo/protocol': workspace:*
       '@logux/actions': ^0.3.0
-      '@logux/server': ^0.12.1
+      '@logux/server': github:logux/server#87dffaee8b82a1bf21b5183af26493eb84700a4d
       '@types/bcrypt': ^5.0.0
       '@types/cookie': ^0.5.1
       '@types/node': ^18.6.3
@@ -33,7 +33,7 @@ importers:
     dependencies:
       '@eligo/protocol': link:../protocol
       '@logux/actions': 0.3.0_@logux+core@0.8.0
-      '@logux/server': 0.12.1
+      '@logux/server': github.com/logux/server/87dffaee8b82a1bf21b5183af26493eb84700a4d
       '@types/cookie': 0.5.1
       bcrypt: 5.0.1
       cookie: 0.5.0
@@ -248,35 +248,6 @@ packages:
     engines: {node: ^14.0.0 || ^16.0.0 || >=18.0.0}
     dependencies:
       nanoevents: 7.0.1
-
-  /@logux/server/0.12.1:
-    resolution: {integrity: sha512-6BsvTFJQePKddGK0DyOx2mrVuRTHOU09IDkkTqVugRAmnCwiToBqF/HNHnjQiXqDqIYQABPjWQSRTj6XKMC0LA==}
-    engines: {node: ^14.0.0 || ^16.0.0 || >=18.0.0}
-    dependencies:
-      '@logux/actions': 0.3.0_@logux+core@0.8.0
-      '@logux/core': 0.8.0
-      JSONStream: 1.3.5
-      cookie: 0.5.0
-      dotenv: 16.0.2
-      fast-glob: 3.2.11
-      ip: 1.1.8
-      nanodelay: 2.0.2
-      nanoevents: 7.0.1
-      nanoid: 4.0.0
-      node-fetch: 2.6.7
-      picocolors: 1.0.0
-      pino: 8.4.2
-      pino-abstract-transport: 1.0.0
-      semver: 7.3.7
-      strip-ansi: 7.0.1
-      url-pattern: 1.0.3
-      ws: 8.8.1
-      yyyy-mm-dd: 1.0.2
-    transitivePeerDependencies:
-      - bufferutil
-      - encoding
-      - utf-8-validate
-    dev: false
 
   /@mapbox/node-pre-gyp/1.0.9:
     resolution: {integrity: sha512-aDF3S3rK9Q2gey/WAttUlISduDItz5BU3306M9Eyv6/oS40aMprnopshtlKTykxRNIBEZuRMaZAnbrQ4QtKGyw==}
@@ -2179,8 +2150,8 @@ packages:
     resolution: {integrity: sha512-mMMOwSKrmyl+Y12Ri2xhH1lbzQxwwpuru9VjyJpgFIH4asSj88F2csdMwN6+M5g1Ll4rmsYghHLQJw81tgZ7LQ==}
     dev: false
 
-  /pino/8.4.2:
-    resolution: {integrity: sha512-PlXDeGhJZfAuVay+wtlS02s5j8uisQveZExYdAm9MwwxUQSz9R7Q78XtjM2tTa4sa5KJmygimZjZxXXuHgV6ew==}
+  /pino/8.5.0:
+    resolution: {integrity: sha512-PuD6sOti8Y+p9zRoNB5dibmfjfM/OU2tEtJFICxw5ulXi1d0qnq/Rt3CsR6aBEAOeyCXP+ZUfiNWW+tt55pNzg==}
     hasBin: true
     dependencies:
       atomic-sleep: 1.0.0
@@ -3078,4 +3049,35 @@ packages:
 
   /yyyy-mm-dd/1.0.2:
     resolution: {integrity: sha512-xHhOFKT1Y29Jc4/6To1hmIUswKhCKplPSbkCyIabAAZ5q/9GmZvlN3WNcafcq3zze3CzYU66XNeSBLCD8Oickw==}
+    dev: false
+
+  github.com/logux/server/87dffaee8b82a1bf21b5183af26493eb84700a4d:
+    resolution: {tarball: https://codeload.github.com/logux/server/tar.gz/87dffaee8b82a1bf21b5183af26493eb84700a4d}
+    name: '@logux/server'
+    version: 0.12.2
+    engines: {node: ^14.0.0 || ^16.0.0 || >=18.0.0}
+    dependencies:
+      '@logux/actions': 0.3.0_@logux+core@0.8.0
+      '@logux/core': 0.8.0
+      JSONStream: 1.3.5
+      cookie: 0.5.0
+      dotenv: 16.0.2
+      fast-glob: 3.2.11
+      ip: 1.1.8
+      nanodelay: 2.0.2
+      nanoevents: 7.0.1
+      nanoid: 4.0.0
+      node-fetch: 2.6.7
+      picocolors: 1.0.0
+      pino: 8.5.0
+      pino-abstract-transport: 1.0.0
+      semver: 7.3.7
+      strip-ansi: 7.0.1
+      url-pattern: 1.0.3
+      ws: 8.8.1
+      yyyy-mm-dd: 1.0.2
+    transitivePeerDependencies:
+      - bufferutil
+      - encoding
+      - utf-8-validate
     dev: false

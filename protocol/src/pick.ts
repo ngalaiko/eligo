@@ -2,12 +2,19 @@ import type { Pick, Item, Boost } from './api';
 
 const boostMultiplier = 5;
 
+const byCreateTimeDesc = (a: { createTime: number }, b: { createTime: number }) =>
+	b.createTime - a.createTime;
+
 // given a list of items and history of it's picks, returns a list of weights for each item
 export const getWeights = (
 	items: (Item & { id: string })[],
 	picks: Pick[],
 	boosts: Boost[]
 ): Record<string, number> => {
+	items = items.sort(byCreateTimeDesc);
+	picks = picks.sort(byCreateTimeDesc);
+	boosts = boosts.sort(byCreateTimeDesc);
+
 	const itemIds = items.map((item) => item.id);
 	let itemIdsHistory = picks.filter(({ itemId }) => itemId).map(({ itemId }) => itemId!);
 	itemIdsHistory = itemIdsHistory.slice(Math.max(itemIdsHistory.length - itemIds.length, 0));

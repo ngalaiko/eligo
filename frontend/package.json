@@ -11,7 +11,7 @@
 	"devDependencies": {
 		"@eligo/protocol": "workspace:*",
 		"@logux/actions": "^0.3.0",
-		"@logux/client": "github:ngalaiko/client#sync-map-template",
+		"@logux/client": "^0.18.2",
 		"@sveltejs/adapter-vercel": "1.0.0-next.68",
 		"@sveltejs/kit": "1.0.0-next.414",
 		"@typescript-eslint/eslint-plugin": "^5.27.0",

@@ -1,2 +1,2 @@
-export * from './api.js';
+export * from './types.js';
 export * from './pick.js';

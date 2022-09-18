@@ -1,22 +1,18 @@
+import { auth, send, state } from '$lib/api';
+import { boosts } from '@eligo/state';
+import { nanoid } from 'nanoid';
+import { derived, get } from 'svelte/store';
+
 export { default as Button } from './Button.svelte';
 
-import { useFilter, useSync } from '$lib/logux';
-import { createSyncMap, syncMapTemplate, Client } from '@logux/client';
-import type { Filter, FilterOptions } from '@logux/client';
-import type { Boost } from '@eligo/protocol';
-import { nanoid } from 'nanoid';
+export const list = derived(state, (state) => Object.values(state.boosts));
 
-const store = syncMapTemplate<Boost>('boosts', {
-	offline: true
-});
-
-export const createBoost = (client: Client, fields: Omit<Boost, 'id'>) =>
-	createSyncMap(client, store, {
-		...fields,
-		id: nanoid()
-	});
-
-export const useBoosts = (filter?: Filter<Boost>, opts?: FilterOptions) =>
-	useFilter<Boost>(store, filter, opts);
-
-export const useBoost = (id: string) => useSync(store, id);
+export const create = (params: { listId: string; itemId: string }) =>
+	send(
+		boosts.create({
+			...params,
+			id: nanoid(),
+			userId: get(auth).user.id,
+			createTime: new Date().getTime()
+		})
+	);

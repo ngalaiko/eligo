@@ -1,12 +1,10 @@
 <script lang="ts">
-	import { useItem } from '$lib/items';
+	import { list } from '$lib/items';
 
 	export let itemId: string;
-	const item = useItem(itemId);
+	$: item = $list.find(({ id }) => id === itemId);
 </script>
 
-{#if $item.isLoading === false}
-	<span class="whitespace-nowrap overflow-ellipsis overflow-hidden">
-		<b>{$item.text}</b>
-	</span>
-{/if}
+<span class="whitespace-nowrap overflow-ellipsis overflow-hidden">
+	<b>{item.text}</b>
+</span>

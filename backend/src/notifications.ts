@@ -1,7 +1,7 @@
 // @ts-ignore
 import webpush from 'web-push';
-import { PushSubscriptions } from '../db/index.js';
-import { WebNotification } from '@eligo/protocol';
+import type { WebNotification } from '@eligo/protocol';
+import type { Database } from './db.js';
 
 export type Notifications = {
 	notify: (userId: string, notification: WebNotification) => void;
@@ -13,10 +13,10 @@ export default (
 		privateKey: string;
 		publicKey: string;
 	},
-	pushSubscriptions: PushSubscriptions
+	database: Database
 ) => ({
 	notify: async (userId: string, notification: WebNotification) =>
-		pushSubscriptions.filter({ userId }).then((subscriptions) =>
+		database.filter('webPushSuscriptions', { userId }).then((subscriptions) =>
 			subscriptions.forEach((subscription) => {
 				webpush
 					.sendNotification(subscription, JSON.stringify(notification), {

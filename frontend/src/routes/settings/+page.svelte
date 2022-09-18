@@ -1,93 +1,42 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import { useAuth, useClient } from '$lib/logux';
-	import { updateUser, useUser } from '$lib/users';
-	import { logout as sendLogout, updateUser as sendUpdateUser } from '$lib/api';
-	import { Button as NotificationsButton } from '$lib/pushSubscriptions';
-	import { onMount } from 'svelte';
-	import { browser } from '$app/env';
-	import { page } from '$app/stores';
+	import { Button as NotificationsButton } from '$lib/webPushSubscriptions';
 
-	const auth = useAuth();
-	const user = useUser($auth.userId);
-	const client = useClient();
+	import { auth, updateUser } from '$lib/api';
 
 	let form: HTMLFormElement;
 	let passwordInput: HTMLInputElement;
-	const update = async () => {
-		const data = new FormData(form);
-		const username = data.get('username') as string;
-		if (username && username.length > 0 && $user.isLoading === false && $user.name !== username)
-			await updateUser(client, $user.id, {
-				name: username
-			});
 
-		const password = data.get('password') as string;
+	const update = async () => {
+		const formData = new FormData(form);
+		const password = formData.get('password') as string;
 		if (password && password.length !== 0)
-			await sendUpdateUser($user.id, { password })
+			await updateUser($auth.user.id, { password })
 				.then(() => (passwordInput.value = ''))
 				.catch(console.error);
 	};
-
-	const logout = () =>
-		sendLogout()
-			.then(() => {
-				client.changeUser('anonymous');
-				localStorage.removeItem('user-id');
-				goto('/');
-			})
-			.catch(console.error);
-
-	onMount(async () => {
-		await client.node.waitFor('disconnected');
-		if (browser && !$auth.isAuthenticated && $page.url.pathname !== '/')
-			goto('/?redirect=' + encodeURIComponent($page.url.pathname));
-	});
 </script>
 
 <svelte:head>
 	<title>User</title>
 </svelte:head>
 
-<header class="flex gap-6 pb-3 w-full justify-end">
-	<button on:click|preventDefault={logout} class="underline">logout</button>
-</header>
-
 <div class="flex flex-col gap-6">
 	<div class="flex flex-col gap-3">
 		<span>update your profile:</span>
-		{#if $user.isLoading === false}
-			<form
-				class="flex flex-col gap-2 items-end"
-				on:submit|preventDefault={update}
-				bind:this={form}
-			>
-				<fieldset class="grid grid-cols-2 gap-1">
-					<label for="username">username</label>
-					<input
-						id="username"
-						name="username"
-						type="text"
-						placeholder="username"
-						value={$user.name}
-						class="border-2"
-					/>
-
-					<label for="password">password</label>
-					<input
-						bind:this={passwordInput}
-						id="password"
-						name="password"
-						type="password"
-						placeholder="new password"
-						class="border-2"
-					/>
-				</fieldset>
-				<button type="submit" class="underline">update</button>
-			</form>
-		{:else}
-			loading...
-		{/if}
+		<form class="flex flex-col gap-2 items-end" on:submit|preventDefault={update} bind:this={form}>
+			<fieldset class="grid grid-cols-2 gap-1">
+				<label for="password">password</label>
+				<input
+					bind:this={passwordInput}
+					id="password"
+					name="password"
+					type="password"
+					placeholder="new password"
+					class="border-2"
+				/>
+			</fieldset>
+			<button type="submit" class="underline">update</button>
+		</form>
 	</div>
 	<div class="flex justify-between">
 		<span>push notifications:</span>

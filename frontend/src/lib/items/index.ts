@@ -1,24 +1,20 @@
+import { auth, send, state } from '$lib/api';
+import { items } from '@eligo/state';
+import { nanoid } from 'nanoid';
+import { derived, get } from 'svelte/store';
+
 export { default as Card } from './Card.svelte';
 export { default as Form } from './Form.svelte';
 export { default as Single } from './Single.svelte';
 
-import { useFilter, useSync } from '$lib/logux';
-import { createSyncMap, syncMapTemplate } from '@logux/client';
-import type { Filter, FilterOptions, Client } from '@logux/client';
-import type { Item } from '@eligo/protocol';
-import { nanoid } from 'nanoid';
+export const list = derived(state, (state) => Object.values(state.items));
 
-const store = syncMapTemplate<Item>('items', {
-	offline: true
-});
-
-export const createItem = (client: Client, fields: Omit<Item, 'id'>) =>
-	createSyncMap(client, store, {
-		...fields,
-		id: nanoid()
-	});
-
-export const useItems = (filter?: Filter<Item>, opts?: FilterOptions) =>
-	useFilter<Item>(store, filter, opts);
-
-export const useItem = (id: string) => useSync(store, id);
+export const create = (params: { listId: string; text: string }) =>
+	send(
+		items.create({
+			...params,
+			id: nanoid(),
+			userId: get(auth).user.id!,
+			createTime: new Date().getTime()
+		})
+	);

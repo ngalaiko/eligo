@@ -1,20 +1,7 @@
-import { subprotocol } from '@eligo/protocol';
-import { Server } from '@logux/server';
 import yargs from 'yargs';
-import { readFileSync } from 'fs';
-
-import openDB from './db/index.js';
-import createNotifications from './notifications/index.js';
-import registerAuthModule from './modules/auth.js';
-import registerItemsModule from './modules/items.js';
-import registerListsModule from './modules/lists.js';
-import registerPicksModule from './modules/picks.js';
-import registerBoostsModule from './modules/boosts.js';
-import registerUsersModule from './modules/users.js';
-import registerMembershipsModule from './modules/memberships.js';
 
 const argv = yargs(process.argv.slice(2))
-	.usage('Usage: $0 <command> [options]')
+	.usage('Usage: $0 [options]')
 	.option('database', {
 		alias: 'd',
 		describe: 'Database path',
@@ -41,36 +28,35 @@ const argv = yargs(process.argv.slice(2))
 	})
 	.parseSync();
 
-const server = new Server({
-	subprotocol,
-	port: argv.port,
-	host: argv.host,
-	supports: subprotocol,
-	logger: {
-		type: process.env.NODE_ENV === 'production' ? 'json' : 'human'
-	}
+import { createServer } from 'http';
+import openDatabase from './db.js';
+import createNotifications from './notifications.js';
+import setupTokens from './tokens.js';
+import setupHttp from './http/index.js';
+import setupWs from './ws/index.js';
+import polka from 'polka';
+import cors from 'cors';
+import corsOptions from './cors.js';
+import { Server } from 'socket.io';
+import { readFileSync } from 'fs';
+
+openDatabase(argv.database).then(async (database) => {
+	const tokens = await setupTokens(database);
+	const notifications = createNotifications(
+		{
+			subject: 'mailto:nikita@galaiko.rocks',
+			privateKey: readFileSync(argv.vapidPrivateKeyPath).toString().trim(),
+			publicKey: argv.vapidPublicKey
+		},
+		database
+	);
+
+	const server = createServer();
+	const app = polka({ server })
+		.use(cors(corsOptions))
+		.listen(argv.port, argv.host, () => console.log(`listening on ${argv.host}:${argv.port}`));
+	const io = new Server(server, { cors: corsOptions });
+
+	setupHttp(app, database, tokens, io, notifications);
+	setupWs(io, database, tokens, notifications);
 });
-
-const { keys, users, items, lists, picks, memberships, boosts, pushSubscriptions } = openDB(
-	argv.database
-);
-
-const notifications = createNotifications(
-	{
-		subject: 'mailto:nikita@galaiko.rocks',
-		privateKey: readFileSync(argv.vapidPrivateKeyPath).toString().trim(),
-		publicKey: argv.vapidPublicKey
-	},
-	pushSubscriptions
-);
-
-await registerAuthModule(server, keys, users, pushSubscriptions);
-
-registerItemsModule(server, items, lists, memberships, users, notifications);
-registerListsModule(server, lists, memberships);
-registerPicksModule(server, picks, items, boosts, memberships, lists, users, notifications);
-registerBoostsModule(server, boosts, items, memberships, lists, users, notifications);
-registerUsersModule(server, users, memberships, lists);
-registerMembershipsModule(server, memberships, lists, users, notifications);
-
-server.listen();

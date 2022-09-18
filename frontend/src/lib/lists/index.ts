@@ -1,26 +1,22 @@
 export { default as Card } from './Card.svelte';
 export { default as Form } from './Form.svelte';
 
-import { useFilter, useSync } from '$lib/logux';
-import { changeSyncMapById, Client, createSyncMap, syncMapTemplate } from '@logux/client';
-import type { Filter, FilterOptions } from '@logux/client';
-import type { List } from '@eligo/protocol';
+import { auth, send, state } from '$lib/api';
+import { lists } from '@eligo/state';
+import { derived, get } from 'svelte/store';
 import { nanoid } from 'nanoid';
 
-const store = syncMapTemplate<List>('lists', {
-	offline: true
-});
+export const update = (fields: { id: string; invitatationId?: string | null }) =>
+	send(lists.update({ ...fields }));
 
-export const useList = (id: string) => useSync(store, id);
+export const create = (fields: { title: string }) =>
+	send(
+		lists.create({
+			...fields,
+			id: nanoid(),
+			createTime: new Date().getTime(),
+			userId: get(auth).user.id
+		})
+	);
 
-export const useLists = (filter?: Filter<List>, opts?: FilterOptions) =>
-	useFilter<List>(store, filter, opts);
-
-export const updateList = (client: Client, id: string, diff: Partial<Omit<List, 'id'>>) =>
-	changeSyncMapById(client, store, id, diff);
-
-export const createList = (client: Client, fields: Omit<List, 'id'>) =>
-	createSyncMap(client, store, {
-		...fields,
-		id: nanoid()
-	});
+export const list = derived(state, (state) => Object.values(state.lists));

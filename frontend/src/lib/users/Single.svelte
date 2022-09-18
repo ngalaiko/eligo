@@ -1,17 +1,17 @@
 <script lang="ts">
-	import { useAuth } from '$lib/logux';
+	import { auth } from '$lib/api';
 
-	import { useUser } from '$lib/users';
+	import { list } from '$lib/users';
+	import { derived } from 'svelte/store';
 
 	export let userId: string;
 	export let replaceSelf = true;
 
-	const user = useUser(userId);
-	const auth = useAuth();
+	const user = derived(list, (list) => list.find(({ id }) => id === userId));
 </script>
 
-{#if replaceSelf && userId === $auth.userId}
+{#if replaceSelf && userId === $auth.user?.id}
 	<b id={$user.id}> you </b>
-{:else if $user.isLoading === false}
+{:else}
 	<b class="whitespace-nowrap" id={$user.id}>{$user.name}</b>
 {/if}

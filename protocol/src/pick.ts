@@ -1,4 +1,4 @@
-import type { Pick, Item, Boost } from './api';
+import type { Pick, Item, Boost } from './types';
 
 const boostMultiplier = 5;
 
@@ -7,17 +7,14 @@ const byCreateTimeDesc = (a: { createTime: number }, b: { createTime: number }) 
 
 // given a list of items and history of it's picks, returns a list of weights for each item
 export const getWeights = (
-	items: (Item & { id: string })[],
+	items: Item[],
 	picks: Pick[],
 	boosts: Boost[]
 ): Record<string, number> => {
-	items = items.sort(byCreateTimeDesc);
-	picks = picks.sort(byCreateTimeDesc);
-	boosts = boosts.sort(byCreateTimeDesc);
+	items = items.slice().sort(byCreateTimeDesc);
+	picks = picks.slice().sort(byCreateTimeDesc);
+	boosts = boosts.slice().sort(byCreateTimeDesc);
 
-	const itemIds = items.map((item) => item.id);
-	let itemIdsHistory = picks.filter(({ itemId }) => itemId).map(({ itemId }) => itemId!);
-	itemIdsHistory = itemIdsHistory.slice(Math.max(itemIdsHistory.length - itemIds.length, 0));
 	const activeBoosts = boosts
 		.filter((boost) => {
 			if (picks.length === 0) return true;
@@ -31,14 +28,12 @@ export const getWeights = (
 			acc[boost.itemId] = acc[boost.itemId] + 1;
 			return acc;
 		}, {} as Record<string, number>);
-	const weigts = itemIds.map((itemId) => {
-		const pickedAgo = itemIdsHistory.length - itemIdsHistory.lastIndexOf(itemId);
-		const wasPicked = pickedAgo !== -1;
-		let weight = wasPicked
-			? pickedAgo > itemIds.length
-				? itemIds.length
-				: pickedAgo
-			: itemIds.length;
+
+	let itemIdsHistory = picks.filter(({ itemId }) => itemId).map(({ itemId }) => itemId!);
+	itemIdsHistory = itemIdsHistory.slice(Math.max(itemIdsHistory.length - items.length, 0));
+
+	const weigts = items.map(({ id: itemId }) => {
+		let weight = itemIdsHistory.length - itemIdsHistory.lastIndexOf(itemId);
 		for (let i = 0; i < activeBoosts[itemId] ?? 0; i++) {
 			weight *= boostMultiplier;
 		}

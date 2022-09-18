@@ -1,29 +1,26 @@
 <script lang="ts">
 	import type { List } from '@eligo/protocol';
-	import { updateList } from '$lib/lists';
 	import { nanoid } from 'nanoid';
-	import { useClient } from '$lib/logux';
 	import IconX from '$lib/assets/IconX.svelte';
+	import { update } from '$lib/lists';
 
-	export let list: List & { id: string };
-
-	const client = useClient();
+	export let list: List;
 
 	$: inviteLink = `${window.location.origin}/join/${list.invitatationId}/`;
 
 	const createInviteLink = () =>
-		updateList(client, list.id, {
+		update({
+			id: list.id,
 			invitatationId: nanoid()
 		});
 
 	const deleteInviteLink = () =>
-		updateList(client, list.id, {
+		update({
+			id: list.id,
 			invitatationId: null
 		});
 
-	const copyInviteLink = () => {
-		navigator.clipboard.writeText(inviteLink);
-	};
+	const copyInviteLink = () => navigator.clipboard.writeText(inviteLink);
 </script>
 
 <div class="text-sm opacity-50 flex gap-1 whitespace-nowrap overflow-ellipsis">

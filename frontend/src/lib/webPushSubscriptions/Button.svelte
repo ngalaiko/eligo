@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createSubscription, removeSubscription } from '$lib/api';
+	import { create, delete as remove } from '$lib/webPushSubscriptions';
 	import { onMount } from 'svelte';
 
 	let isSupported = false;
@@ -21,7 +21,17 @@
 								'BOf5qTvP_zovZipWAEL9lKsiGJC7nMs6qeTIvWoef05EQdSpGksLXCwVJ147qbAM4DO9tOrs8dAQEkQJCxXV0kc'
 						})
 					)
-					.then(createSubscription);
+					.then((s) => {
+						const sj = s.toJSON();
+						create({
+							endpoint: sj.endpoint,
+							expirationTime: sj.expirationTime,
+							keys: {
+								auth: sj.keys.auth,
+								p256dh: sj.keys.p256dh
+							}
+						});
+					});
 			})
 			.finally(() => ((isEnabled = true), (isSubscribing = false)))
 			.catch(console.error);
@@ -34,7 +44,7 @@
 			.then((registration) => registration.pushManager.getSubscription())
 			.then((subscription) =>
 				Promise.all([
-					removeSubscription(subscription),
+					remove({ id: subscription.endpoint }),
 					subscription.unsubscribe().then(() => (isEnabled = false))
 				])
 					.finally(() => (isUnsubscribing = false))

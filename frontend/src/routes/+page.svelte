@@ -1,11 +1,8 @@
 <script lang="ts">
-	import { browser } from '$app/env';
-	import { goto } from '$app/navigation';
+	import { auth, connect, login, signup } from '$lib/api';
 	import { page } from '$app/stores';
-
-	import { httpHost } from '$lib/api';
-	import { useAuth, useClient } from '$lib/logux';
-	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
+	import { browser } from '$app/environment';
 
 	let username = '';
 	let password = '';
@@ -20,63 +17,33 @@
 			password === passwordRepeat) ||
 		(type === 'login' && username.length > 0 && password.length > 0);
 
-	const client = useClient();
-
-	const auth = useAuth();
-
-	const signup = async () => {
+	const onSignupClick = async () => {
 		error = null;
-		await fetch(new URL('/users', httpHost).toString(), {
-			method: 'POST',
-			body: JSON.stringify({ name: username, password }),
-			credentials: 'include'
-		}).then((res) =>
-			res.status === 200
-				? res.json().then(({ id }) => {
-						client.changeUser(id);
-						client.start();
-						localStorage.setItem('user-id', id);
-						username = '';
-						password = '';
-				  })
-				: res.text().then((text) => {
-						console.error(text);
-						error = text;
-				  })
-		);
+		await signup({ name: username, password })
+			.then((user) => {
+				$auth.user = user;
+				username = '';
+				password = '';
+				connect();
+			})
+			.catch((err) => (error = err.message));
 	};
 
-	const login = async () => {
+	const onLoginClick = async () => {
 		error = null;
-		await fetch(new URL('/auth', httpHost).toString(), {
-			method: 'POST',
-			body: JSON.stringify({ name: username, password }),
-			credentials: 'include'
-		}).then((res) =>
-			res.status === 200
-				? res.json().then(({ id }) => {
-						client.changeUser(id);
-						client.start();
-						localStorage.setItem('user-id', id);
-						username = '';
-						password = '';
-				  })
-				: res.text().then((text) => {
-						console.error(text);
-						error = text;
-				  })
-		);
+		await login({ name: username, password })
+			.then((user) => {
+				$auth.user = user;
+				username = '';
+				password = '';
+				connect();
+			})
+			.catch((err) => (error = err.message));
 	};
 
-	auth.subscribe(({ isAuthenticated }) => {
+	auth.subscribe(({ user }) => {
 		const nextUrl = $page.url.searchParams.get('redirect');
-		if (isAuthenticated) goto(nextUrl ?? '/lists/');
-	});
-
-	onMount(async () => {
-		await client.node.waitFor('disconnected');
-		if (browser && !$auth.isAuthenticated && $page.url.pathname !== '/')
-			goto('/?redirect=' + encodeURIComponent($page.url.pathname));
+		if (browser && user) goto(nextUrl ?? '/lists/');
 	});
 </script>
 
@@ -85,7 +52,7 @@
 </svelte:head>
 
 <div class="flex flex-col items-center gap-4 h-1/2 text-xl">
-	{#if $auth.isAuthenticated}
+	{#if $auth.user}
 		<a href="/lists/">lists -></a>
 	{:else}
 		<form class="flex flex-col gap-2 justify-around m-auto">
@@ -122,11 +89,11 @@
 
 			<div>
 				{#if type === 'login'}
-					<button class="underline" on:click|preventDefault={login} disabled={!isValid}
+					<button class="underline" on:click|preventDefault={onLoginClick} disabled={!isValid}
 						>login</button
 					>
 				{:else if type === 'signup'}
-					<button class="underline" on:click|preventDefault={signup} disabled={!isValid}
+					<button class="underline" on:click|preventDefault={onSignupClick} disabled={!isValid}
 						>signup</button
 					>
 				{/if}

@@ -1,18 +1,16 @@
-import { useFilter } from '$lib/logux';
-import { createSyncMap, syncMapTemplate, Client } from '@logux/client';
-import type { Filter, FilterOptions } from '@logux/client';
-import type { Pick } from '@eligo/protocol';
 import { nanoid } from 'nanoid';
+import { picks } from '@eligo/state';
+import { derived, get } from 'svelte/store';
+import { auth, send, state } from '$lib/api';
 
-const store = syncMapTemplate<Pick>('picks', {
-	offline: true
-});
+export const list = derived(state, (state) => Object.values(state.picks));
 
-export const createPick = (client: Client, fields: Omit<Pick, 'id'>) =>
-	createSyncMap(client, store, {
-		...fields,
-		id: nanoid()
-	});
-
-export const usePicks = (filter?: Filter<Pick>, opts?: FilterOptions) =>
-	useFilter<Pick>(store, filter, opts);
+export const create = (params: { listId: string }) =>
+	send(
+		picks.create({
+			...params,
+			id: nanoid(),
+			userId: get(auth).user.id!,
+			createTime: new Date().getTime()
+		})
+	);

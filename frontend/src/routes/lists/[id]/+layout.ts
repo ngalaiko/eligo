@@ -1,3 +1,5 @@
-import type { PageLoad } from './$types';
+import type { LayoutLoad } from './$types';
 
-export const load: PageLoad = async ({ params }) => ({ listId: params.id });
+export const load: LayoutLoad = ({ params }) => ({
+	listId: params.id
+});

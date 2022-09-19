@@ -14,6 +14,7 @@ import {
 	memberships,
 	webPushSuscriptions
 } from '@eligo/state';
+import type { Error } from '@eligo/protocol';
 
 type User = { id: string; name: string };
 
@@ -52,11 +53,16 @@ const socket = io(wsHost, {
 	withCredentials: true
 });
 
-export const send = async (action: Action) => {
-	socket.emit(action.type, action.payload, (error: any) => {
-		if (error) throw new Error(error);
-	});
-};
+export const send = async (action: Action) =>
+	new Promise<void>((resolve, reject) =>
+		socket.emit(action.type, action.payload, (error: Error) => {
+			if (error) {
+				reject(new Error(error.message));
+			} else {
+				resolve();
+			}
+		})
+	);
 
 if (dev) socket.onAny((event, ...args) => console.debug(event, args));
 

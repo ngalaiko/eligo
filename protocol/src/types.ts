@@ -1,3 +1,8 @@
+export type Error = {
+	code: string;
+	message: string;
+};
+
 export type WebNotification = {
 	title: string;
 	options: {

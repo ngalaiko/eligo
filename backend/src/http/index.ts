@@ -8,16 +8,19 @@ import { addDays } from 'date-fns';
 import { Polka } from 'polka';
 import parse from 'body-parser';
 import { Server } from 'socket.io';
-import { User } from '@eligo/protocol';
+import type { User, Error as APIError } from '@eligo/protocol';
 import { Notifications } from '../notifications.js';
+import { errEmpty, errInvalid, errNotFound, errRequired } from '../validation.js';
 
 const authCookieName = 'token';
 
 class HTTPError extends Error {
 	status: number;
-	constructor(status: number, message: string) {
-		super(message);
+	apiError: APIError;
+	constructor(status: number, apiError: APIError) {
+		super(`${apiError.code}: ${apiError.message}`);
 		this.status = status;
+		this.apiError = apiError;
 	}
 }
 
@@ -40,15 +43,15 @@ export default (
 			res.end();
 		})
 		.get('/health', (_req, res) => {
-            res.statusCode = 200
-            res.end()
-        })
+			res.statusCode = 200;
+			res.end();
+		})
 		.post('/join/:id', async (req, res) => {
 			try {
 				const token = parseCookie(req.headers.cookie ?? '')[authCookieName];
 				const { payload } = await tokens.verify(token);
 				const list = await database.find('lists', { invitatationId: req.params.id });
-				if (!list) throw new HTTPError(404, `Not found`);
+				if (!list) throw new HTTPError(404, errNotFound('Not found'));
 				const existing = await database.find('memberships', {
 					listId: list.id,
 					userId: payload.sub
@@ -124,7 +127,8 @@ export default (
 			} catch (err) {
 				if (err instanceof HTTPError) {
 					res.statusCode = err.status;
-					res.end(err.message);
+					res.setHeader('Content-Type', 'application/json');
+					res.end(JSON.stringify(err.apiError));
 				} else {
 					console.error(err);
 					res.statusCode = 500;
@@ -135,18 +139,22 @@ export default (
 		.post('/auth', async (req, res) => {
 			try {
 				const { name, password } = req.body;
-				if (name === 'undefined') throw new HTTPError(400, 'Missing name');
-				if (typeof name !== 'string') throw new HTTPError(400, 'Name must be a string');
-				if (name.length === 0) throw new HTTPError(400, 'Empty name');
-				if (password === 'undefined') throw new HTTPError(400, 'Missing password');
-				if (typeof password !== 'string') throw new HTTPError(400, 'Password must be a string');
-				if (password.length === 0) throw new HTTPError(400, 'Empty password');
+				if (name === 'undefined') throw new HTTPError(400, errRequired(`'name' is required`));
+				if (typeof name !== 'string')
+					throw new HTTPError(400, errInvalid(`'name' must be a string`));
+				if (name.length === 0) throw new HTTPError(400, errEmpty(`'name' can not be empty`));
+				if (password === 'undefined')
+					throw new HTTPError(400, errRequired(`'pasword' is required`));
+				if (typeof password !== 'string')
+					throw new HTTPError(400, errInvalid(`'password' must be a string`));
+				if (password.length === 0)
+					throw new HTTPError(400, errEmpty(`'password' can not be empty`));
 
 				const user = await database.find('users', { name });
-				if (!user) throw new HTTPError(404, 'User does not exist');
+				if (!user) throw new HTTPError(404, errNotFound('User does not exist'));
 
-				const isPasswordCorrect = compare(password, user.hash!);
-				if (!isPasswordCorrect) throw new HTTPError(403, 'Wrong password');
+				const isPasswordCorrect = await compare(password, user.hash!);
+				if (!isPasswordCorrect) throw new HTTPError(403, errInvalid('Wrong password'));
 
 				const token = await tokens.sign({ sub: user.id });
 				const cookie = serialize(authCookieName, token, {
@@ -159,7 +167,8 @@ export default (
 			} catch (err) {
 				if (err instanceof HTTPError) {
 					res.statusCode = err.status;
-					res.end(err.message);
+					res.setHeader('Content-Type', 'application/json');
+					res.end(JSON.stringify(err.apiError));
 				} else {
 					console.error(err);
 					res.statusCode = 500;
@@ -170,15 +179,19 @@ export default (
 		.post('/users', async (req, res) => {
 			try {
 				const { name, password } = req.body;
-				if (name === undefined) throw new HTTPError(400, 'Missing name');
-				if (typeof name !== 'string') throw new HTTPError(400, 'Name must be a string');
-				if (name.length === 0) throw new HTTPError(400, 'Empty name');
-				if (password === undefined) throw new HTTPError(400, 'Missing password');
-				if (typeof password !== 'string') throw new HTTPError(400, 'Password must be a string');
-				if (password.length === 0) throw new HTTPError(400, 'Empty password');
+				if (name === 'undefined') throw new HTTPError(400, errRequired(`'name' is required`));
+				if (typeof name !== 'string')
+					throw new HTTPError(400, errInvalid(`'name' must be a string`));
+				if (name.length === 0) throw new HTTPError(400, errEmpty(`'name' can not be empty`));
+				if (password === 'undefined')
+					throw new HTTPError(400, errRequired(`'pasword' is required`));
+				if (typeof password !== 'string')
+					throw new HTTPError(400, errInvalid(`'password' must be a string`));
+				if (password.length === 0)
+					throw new HTTPError(400, errEmpty(`'password' can not be empty`));
 
 				const existing = await database.find('users', { name });
-				if (existing) throw new HTTPError(409, 'User already exists');
+				if (existing) throw new HTTPError(409, errInvalid('User already exists'));
 
 				const passwordHash = await hash(password, 10);
 
@@ -200,7 +213,8 @@ export default (
 			} catch (err) {
 				if (err instanceof HTTPError) {
 					res.statusCode = err.status;
-					res.end(err.message);
+					res.setHeader('Content-Type', 'application/json');
+					res.end(JSON.stringify(err.apiError));
 				} else {
 					console.error(err);
 					res.statusCode = 500;
@@ -211,19 +225,22 @@ export default (
 		.patch('/users/:id', async (req, res) => {
 			try {
 				const user = await database.find('users', { id: req.params.id });
-				if (!user) throw new HTTPError(404, 'Not found');
+				if (!user) throw new HTTPError(404, errNotFound('Not found'));
 				try {
 					const token = parseCookie(req.headers.cookie ?? '')[authCookieName];
 					await tokens.verify(token);
 				} catch {
-					throw new HTTPError(404, 'Not found');
+					throw new HTTPError(404, errNotFound('Not found'));
 				}
 
 				const { password } = req.body;
 
-				if (password === undefined) throw new HTTPError(400, 'Missing password');
-				if (typeof password !== 'string') throw new HTTPError(400, 'Password must be a string');
-				if (password.length === 0) throw new HTTPError(400, 'Empty password');
+				if (password === 'undefined')
+					throw new HTTPError(400, errRequired(`'pasword' is required`));
+				if (typeof password !== 'string')
+					throw new HTTPError(400, errInvalid(`'password' must be a string`));
+				if (password.length === 0)
+					throw new HTTPError(400, errEmpty(`'password' can not be empty`));
 
 				await database.append(users.update({ id: user.id, hash: await hash(password, 10) }));
 
@@ -232,7 +249,8 @@ export default (
 			} catch (err) {
 				if (err instanceof HTTPError) {
 					res.statusCode = err.status;
-					res.end(err.message);
+					res.setHeader('Content-Type', 'application/json');
+					res.end(JSON.stringify(err.apiError));
 				} else {
 					console.error(err);
 					res.statusCode = 500;

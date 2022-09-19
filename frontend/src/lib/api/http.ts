@@ -1,4 +1,4 @@
-import type { Membership } from '@eligo/protocol';
+import type { Membership, Error as APIError } from '@eligo/protocol';
 
 const host =
 	process.env.NODE_ENV === 'production' ? 'https://api.eligo.rocks/' : 'http://127.0.0.1:31337/';
@@ -17,8 +17,11 @@ export class HTTPError extends Error {
 const handleResponse = async (res: Response): Promise<any> => {
 	if (res.status === 204) return undefined;
 	if (res.status === 200) return res.json();
-	const msg = await res.text();
-	throw new HTTPError(res.status, msg);
+	if (Math.floor(res.status / 100) === 4) {
+		const error: APIError = await res.json();
+		throw new HTTPError(res.status, error.message);
+	}
+	throw new HTTPError(res.status, 'Something went wrong');
 };
 
 export const join = (params: { invitationId: string }): Promise<Membership> =>

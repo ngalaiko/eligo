@@ -3,6 +3,7 @@ import { picks } from '@eligo/state';
 import type { Socket, Server } from 'socket.io';
 import type { Database } from '../db.js';
 import { Notifications } from '../notifications.js';
+import { validate } from '../validation.js';
 
 const weightedRandom = (weights: number[]) => {
 	const sum = weights.reduce((a, b) => a + b, 0);
@@ -26,48 +27,59 @@ const pickNext = (items: Item[], picks: Pick[], boosts: Boost[]) => {
 };
 
 export default (io: Server, socket: Socket, database: Database, notifications: Notifications) => {
-	socket.on(
-		picks.create.type,
-		async (req: ReturnType<typeof picks.create>['payload'], callback) => {
-			const randomItem = await Promise.all([
-				database.filter('items', { listId: req.listId }),
-				database.filter('picks', { listId: req.listId }),
-				database.filter('boosts', { listId: req.listId })
-			]).then(([items, picks, boosts]) => pickNext(items, picks, boosts));
-			if (!randomItem) {
-				callback(new Error('not found'));
-				return;
-			}
-
-			const pick = { ...req, itemId: randomItem.id };
-
-			await database.append(picks.create(pick));
-			const created = picks.created(pick);
-
-			socket.join(created.payload.id);
-			io.to([created.payload.id, created.payload.listId]).emit(created.type, created.payload);
-
-			Promise.all([
-				database.find('users', { id: pick.userId }),
-				database.find('lists', { id: pick.listId }),
-				database.filter('memberships', { listId: pick.listId })
-			]).then(([user, list, memberships]) => {
-				if (!list) return;
-				if (!user) return;
-
-				const membersIds = memberships.map(({ userId }) => userId);
-				const userIds = [...membersIds, list.userId].filter((userId) => userId !== pick.userId);
-				userIds.forEach((userId) =>
-					notifications.notify(userId, {
-						title: `New pick`,
-						options: {
-							body: `${user.name} picked ${randomItem.text} in ${list.title}`
-						}
-					})
-				);
-			});
-
-			callback(null);
+	socket.on(picks.create.type, async (req: Partial<Pick>, callback) => {
+		const validationErr = validate(req, {
+			id: 'required',
+			listId: 'required',
+			userId: socket.data.userId,
+			itemId: 'empty',
+			createTime: 'required'
+		});
+		if (validationErr) {
+			callback(validationErr);
+			return;
 		}
-	);
+
+		let pick = req as Pick;
+
+		const randomItem = await Promise.all([
+			database.filter('items', { listId: pick.listId }),
+			database.filter('picks', { listId: pick.listId }),
+			database.filter('boosts', { listId: pick.listId })
+		]).then(([items, picks, boosts]) => pickNext(items, picks, boosts));
+		if (!randomItem) {
+			callback(new Error('not found'));
+			return;
+		}
+
+		pick = { ...pick, itemId: randomItem.id };
+
+		await database.append(picks.create(pick));
+		const created = picks.created(pick);
+
+		socket.join(created.payload.id);
+		io.to([created.payload.id, created.payload.listId]).emit(created.type, created.payload);
+
+		Promise.all([
+			database.find('users', { id: pick.userId }),
+			database.find('lists', { id: pick.listId }),
+			database.filter('memberships', { listId: pick.listId })
+		]).then(([user, list, memberships]) => {
+			if (!list) return;
+			if (!user) return;
+
+			const membersIds = memberships.map(({ userId }) => userId);
+			const userIds = [...membersIds, list.userId].filter((userId) => userId !== pick.userId);
+			userIds.forEach((userId) =>
+				notifications.notify(userId, {
+					title: `New pick`,
+					options: {
+						body: `${user.name} picked ${randomItem.text} in ${list.title}`
+					}
+				})
+			);
+		});
+
+		callback(null);
+	});
 };

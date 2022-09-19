@@ -60,12 +60,18 @@ export const send = async (action: Action) => {
 
 if (dev) socket.onAny((event, ...args) => console.debug(event, args));
 
-socket.on('auth', (user: User) => auth.set({ user }));
+socket.on('auth', (user: User) => {
+	stateStore.set(emptyState);
+	auth.set({ user });
+});
+
+auth.subscribe(({ user }) => {
+	if (user && socket.disconnected) socket.connect();
+	if (!user && socket.connected) socket.disconnect();
+});
 
 stateEvents.forEach((eventType) =>
 	socket.on(eventType, (action) =>
 		stateStore.update((stateStore) => reduce(stateStore, { type: eventType, payload: action }))
 	)
 );
-
-export const connect = () => socket.connect();

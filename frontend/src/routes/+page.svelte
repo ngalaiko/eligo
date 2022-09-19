@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { auth, connect, login, signup } from '$lib/api';
+	import { auth, login, signup } from '$lib/api';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
@@ -24,7 +24,6 @@
 				$auth.user = user;
 				username = '';
 				password = '';
-				connect();
 			})
 			.catch((err) => (error = err.message));
 	};
@@ -36,14 +35,12 @@
 				$auth.user = user;
 				username = '';
 				password = '';
-				connect();
 			})
 			.catch((err) => (error = err.message));
 	};
 
 	auth.subscribe(({ user }) => {
-		const nextUrl = $page.url.searchParams.get('redirect');
-		if (browser && user) goto(nextUrl ?? '/lists/');
+		if (browser && user) goto($page.url.searchParams.get('redirect') ?? '/lists/');
 	});
 </script>
 

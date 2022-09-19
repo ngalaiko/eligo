@@ -1,16 +1,14 @@
 # eligo
 
-A small web app to try out [logux][] and [typescript][].
-
-The app allows to create lists and randomly pick an item from those lists.
-I use it on a daily basis to decide where I should have a lunch at.
+The app allows to collaborate on arbitrary lists and randomly pick items from those lists.
+We use it on a daily basis to decide where to get lunch at.
 
 ## architecture
 
-- [backend](./backend/) is a node app that runs [logux][]'s server node.
-  it's used to sync data between client nodes, persist data and pick items from lists.
-- [frontend](./frontend/) is a web app written in [sveltekit][].
-  it renders ui and runs [logux][] client nodes.
+- [protocol](./protocol/) contains definitions of types and functions shared between frontedn and backend.
+- [state](./state/) contains definitions of all possible events and a reducer to reduce event log into state.
+- [backend](./backend/) holds a global app state and synronizes clients' states via websockets.
+- [frontend](./frontend/) renders ui, holds a local state and creates events via websockets.
 
 ## deployment
 
@@ -32,7 +30,6 @@ $ pnpm dev
 
 Local database will be created as [./backend/database.dev.json](./backend/database.dev.json).
 
-[logux]: https://logux.io/
 [sveltekit]: https://sveltekit.io/
 [typescript]: https://www.typescriptlang.org/
 [fly.io]: https://fly.io/

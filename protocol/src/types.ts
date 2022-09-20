@@ -10,64 +10,56 @@ export type WebNotification = {
 	};
 };
 
-export type WebPushSubscription = {
+type Type<T extends any> = T & {
+	id: string;
+	createTime: EpochTimeStamp;
+	updateTime?: EpochTimeStamp;
+	deleteTime?: EpochTimeStamp;
+};
+
+export type WebPushSubscription = Type<{
 	id: string;
 	endpoint: string;
 	userId: string;
 	expirationTime: EpochTimeStamp | null;
 	keys: { p256dh: string; auth: string };
-	createTime: EpochTimeStamp;
-};
+}>;
 
-export type JWTPublicKey = {
-	id: string;
+export type JWTPublicKey = Type<{
 	spki: string;
 	alg: string;
-	createTime: EpochTimeStamp;
-};
+}>;
 
-export type User = {
-	id: string;
+export type User = Type<{
 	name: string;
 	hash?: string;
-	createTime: EpochTimeStamp;
-};
+}>;
 
-export type List = {
-	id: string;
+export type List = Type<{
 	title: string;
 	userId: string;
 	invitatationId?: string;
-	createTime: EpochTimeStamp;
-};
+}>;
 
-export type Membership = {
-	id: string;
+export type Membership = Type<{
 	listId: string;
 	userId: string;
-	createTime: EpochTimeStamp;
-};
+}>;
 
-export type Item = {
-	id: string;
+export type Item = Type<{
 	text: string;
 	listId: string;
 	userId: string;
-	createTime: EpochTimeStamp;
-};
+}>;
 
-export type Pick = {
-	id: string;
+export type Pick = Type<{
 	listId: string;
 	userId: string;
 	itemId?: string;
-	createTime: EpochTimeStamp;
-};
+}>;
 
-export type Boost = {
-	id: string;
+export type Boost = Type<{
 	userId: string;
 	listId: string;
 	itemId: string;
-	createTime: EpochTimeStamp;
-};
+}>;

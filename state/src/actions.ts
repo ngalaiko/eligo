@@ -12,15 +12,28 @@ import {
 	JWTPublicKey
 } from '@eligo/protocol';
 
-const crud = <T extends { id: string }>(name: string) => {
+const c_ud = <
+	T extends {
+		id: string;
+		createTime: EpochTimeStamp;
+		updateTime?: EpochTimeStamp;
+		deleteTime?: EpochTimeStamp;
+	}
+>(
+	name: string
+) => {
 	const creator = actionCreatorFactory(name);
 	const actions = {
 		create: creator<T>('create'),
 		created: creator<T>('created'),
-		update: creator<{ id: string } & Partial<Omit<T, 'id'>>>('update'),
-		updated: creator<{ id: string } & Partial<Omit<T, 'id'>>>('updated'),
-		delete: creator<{ id: string }>('delete'),
-		deleted: creator<{ id: string }>('deleted')
+		update: creator<
+			{ id: string; updateTime: EpochTimeStamp } & Partial<Omit<T, 'id' | 'updateTime'>>
+		>('update'),
+		updated: creator<
+			{ id: string; updateTime: EpochTimeStamp } & Partial<Omit<T, 'id' | 'updateTime'>>
+		>('updated'),
+		delete: creator<{ id: string; deleteTime: EpochTimeStamp } & Omit<T, 'deleteTime'>>('delete'),
+		deleted: creator<{ id: string; deleteTime: EpochTimeStamp } & Omit<T, 'deleteTime'>>('deleted')
 	};
 	const reducer = reducerWithInitialState({} as Record<string, T>)
 		.cases([actions.create, actions.created], (state, payload) => ({
@@ -38,14 +51,14 @@ const crud = <T extends { id: string }>(name: string) => {
 	return { ...actions, reducer };
 };
 
-export const jwtKeys = crud<JWTPublicKey>('jwt-public-keys');
-export const users = crud<User>('users');
-export const lists = crud<List>('lists');
-export const memberships = crud<Membership>('memberships');
-export const items = crud<Item>('items');
-export const picks = crud<Pick>('picks');
-export const boosts = crud<Boost>('boosts');
-export const webPushSuscriptions = crud<WebPushSubscription>('web-push-subscriptions');
+export const jwtKeys = c_ud<JWTPublicKey>('jwt-public-keys');
+export const users = c_ud<User>('users');
+export const lists = c_ud<List>('lists');
+export const memberships = c_ud<Membership>('memberships');
+export const items = c_ud<Item>('items');
+export const picks = c_ud<Pick>('picks');
+export const boosts = c_ud<Boost>('boosts');
+export const webPushSuscriptions = c_ud<WebPushSubscription>('web-push-subscriptions');
 
 export type Action =
 	| ReturnType<typeof jwtKeys[keyof Omit<typeof jwtKeys, 'reducer'>]>

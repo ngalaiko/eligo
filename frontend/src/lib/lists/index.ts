@@ -6,8 +6,11 @@ import { lists } from '@eligo/state';
 import { derived, get } from 'svelte/store';
 import { nanoid } from 'nanoid';
 
-export const update = (fields: { id: string; invitatationId?: string | null }) =>
-	send(lists.update({ ...fields }));
+export const update = (fields: {
+	id: string;
+	updateTime: EpochTimeStamp;
+	invitatationId?: string | null;
+}) => send(lists.update({ ...fields }));
 
 export const create = (fields: { title: string }) =>
 	send(

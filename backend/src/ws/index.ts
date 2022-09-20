@@ -75,13 +75,18 @@ export default (io: Server, database: Database, tokens: Tokens, notifications: N
 			Array.from(userIds.values()).map((id) => database.find('users', { id }))
 		).then((uu) => uu.filter((u) => !!u) as User[]);
 
+		const withUpdateTime = <T extends { updateTime?: EpochTimeStamp }>(v: T) => ({
+			...v,
+			updateTime: v.updateTime ?? new Date().getTime()
+		});
+
 		[
-			...initLists.map((l) => lists.updated(l)),
-			...initBoosts.map((b) => boosts.updated(b)),
-			...initPicks.map((p) => picks.updated(p)),
-			...initItems.map((i) => items.updated(i)),
-			...initUsers.map((u) => users.updated(u)),
-			...memberWith.map((m) => memberships.updated(m))
+			...initLists.map((l) => lists.updated(withUpdateTime(l))),
+			...initBoosts.map((b) => boosts.updated(withUpdateTime(b))),
+			...initPicks.map((p) => picks.updated(withUpdateTime(p))),
+			...initItems.map((i) => items.updated(withUpdateTime(i))),
+			...initUsers.map((u) => users.updated(withUpdateTime(u))),
+			...memberWith.map((m) => memberships.updated(withUpdateTime(m)))
 		].forEach((action) => {
 			socket.join(action.payload.id);
 			socket.emit(action.type, action.payload);

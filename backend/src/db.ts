@@ -14,7 +14,7 @@ const readData = (filepath: string): Action[] => {
 	}
 };
 
-const open = async (filepath: string) => {
+const open = (filepath: string) => {
 	const data = readData(filepath);
 	let state = data.reduce(reduce, emptyState);
 	const writer = createWriteStream(filepath, { flags: 'a' });

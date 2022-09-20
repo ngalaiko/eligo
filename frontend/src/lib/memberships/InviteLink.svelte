@@ -11,12 +11,14 @@
 	const createInviteLink = () =>
 		update({
 			id: list.id,
+			updateTime: new Date().getTime(),
 			invitatationId: nanoid()
 		});
 
 	const deleteInviteLink = () =>
 		update({
 			id: list.id,
+			updateTime: new Date().getTime(),
 			invitatationId: null
 		});
 

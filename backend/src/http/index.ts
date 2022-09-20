@@ -88,13 +88,18 @@ export default (
 					Array.from(userIds.values()).map((userId) => database.find('users', { id: userId }))
 				).then((uu) => uu.filter((u) => !!u) as User[]);
 
+				const withUpdateTime = <T extends { updateTime?: EpochTimeStamp }>(v: T) => ({
+					...v,
+					updateTime: v.updateTime ?? new Date().getTime()
+				});
+
 				[
-					lists.updated(list),
-					...listBoosts.map((b) => boosts.updated(b)),
-					...listPicks.map((p) => picks.updated(p)),
-					...listItems.map((i) => items.updated(i)),
-					...listUsers.map((u) => users.updated(u)),
-					...listMembers.map((m) => memberships.updated(m))
+					lists.updated(withUpdateTime(list)),
+					...listBoosts.map((b) => boosts.updated(withUpdateTime(b))),
+					...listPicks.map((p) => picks.updated(withUpdateTime(p))),
+					...listItems.map((i) => items.updated(withUpdateTime(i))),
+					...listUsers.map((u) => users.updated(withUpdateTime(u))),
+					...listMembers.map((m) => memberships.updated(withUpdateTime(m)))
 				].forEach((action) => {
 					io.in(payload.sub!).socketsJoin(action.payload.id);
 					io.to(payload.sub!).emit(action.type, action.payload);
@@ -242,7 +247,13 @@ export default (
 				if (password.length === 0)
 					throw new HTTPError(400, errEmpty(`'password' can not be empty`));
 
-				await database.append(users.update({ id: user.id, hash: await hash(password, 10) }));
+				await database.append(
+					users.update({
+						id: user.id,
+						hash: await hash(password, 10),
+						updateTime: new Date().getTime()
+					})
+				);
 
 				res.setHeader('Content-Type', 'application/json');
 				res.end(JSON.stringify({ id: user.id, name: user.name }));

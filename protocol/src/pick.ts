@@ -11,9 +11,19 @@ export const getWeights = (
 	picks: Pick[],
 	boosts: Boost[]
 ): Record<string, number> => {
+	const deletedItemIds = new Set(
+		items.filter(({ deleteTime }) => !!deleteTime).map(({ id }) => id)
+	);
+
 	items = items.slice().sort(byCreateTimeDesc);
-	picks = picks.slice().sort(byCreateTimeDesc);
-	boosts = boosts.slice().sort(byCreateTimeDesc);
+	picks = picks
+		.slice()
+		.filter(({ id }) => !deletedItemIds.has(id))
+		.sort(byCreateTimeDesc);
+	boosts = boosts
+		.slice()
+		.filter(({ id }) => !deletedItemIds.has(id))
+		.sort(byCreateTimeDesc);
 
 	const activeBoosts = boosts
 		.filter((boost) => {
@@ -33,6 +43,7 @@ export const getWeights = (
 	itemIdsHistory = itemIdsHistory.slice(Math.max(itemIdsHistory.length - items.length, 0));
 
 	const weigts = items.map(({ id: itemId }) => {
+		if (deletedItemIds.has(itemId)) return { itemId, weight: 0 };
 		let weight = itemIdsHistory.length - itemIdsHistory.lastIndexOf(itemId);
 		for (let i = 0; i < activeBoosts[itemId] ?? 0; i++) {
 			weight *= boostMultiplier;

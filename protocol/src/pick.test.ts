@@ -45,6 +45,11 @@ test('getWeights() with a single item', () => {
 	equal(getWeights(items, [], []), { [items[0].id]: 1 });
 });
 
+test('getWeights() with a deleted item', () => {
+	const items = [{ ...testItem(), deleteTime: 1 }, testItem()];
+	equal(getWeights(items, [], []), { [items[0].id]: 0, [items[1].id]: 1 });
+});
+
 test('getWeights() with two items', () => {
 	const items = [testItem(), testItem()];
 	equal(getWeights(items, [], []), { [items[0].id]: 1, [items[1].id]: 1 });
@@ -53,7 +58,6 @@ test('getWeights() with two items', () => {
 test('getWeights() with two items and pick', () => {
 	const items = [testItem(), testItem()];
 	const picks = [testPick(items[0])];
-	console.log({ items, picks });
 	equal(getWeights(items, picks, []), { [items[0].id]: 1, [items[1].id]: 2 });
 });
 

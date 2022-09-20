@@ -7,11 +7,13 @@
 	export let item: Item & { id: string };
 	export let chance: number;
 
+	$: isDeleted = !!item.deleteTime;
 	$: chancePercentage = (chance * 100).toFixed(0);
 </script>
 
 <div
 	id={item.id}
+	class:opacity-50={isDeleted}
 	class="border-2 px-2 py-1 rounded-2xl bg-gray-300"
 	style:background="linear-gradient(90deg, var(--color-gray-300) {chancePercentage}%,
 	var(--color-white) {chancePercentage}%)"
@@ -26,9 +28,14 @@
 	</div>
 
 	<div class="flex gap-1 opacity-50 text-sm">
-		created
-		<Distance to={item.createTime} />
-		by
-		<User userId={item.userId} />
+		{#if isDeleted}
+			deleted
+			<Distance to={item.deleteTime} />
+		{:else}
+			created
+			<Distance to={item.createTime} />
+			by
+			<User userId={item.userId} />
+		{/if}
 	</div>
 </div>

@@ -44,10 +44,10 @@ const c_ud = <
 			...state,
 			[payload.id]: { ...state[payload.id], ...payload }
 		}))
-		.cases([actions.delete, actions.deleted], (state, payload) => {
-			delete state[payload.id];
-			return state;
-		});
+		.cases([actions.delete, actions.deleted], (state, payload) => ({
+			...state,
+			[payload.id]: { ...state[payload.id], ...payload }
+		}));
 	return { ...actions, reducer };
 };
 

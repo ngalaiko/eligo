@@ -28,7 +28,7 @@ We use it on a daily basis to decide where to get lunch at.
 $ pnpm dev
 ```
 
-Local database will be created as [./backend/database.dev.json](./backend/database.dev.json).
+Local database will be created as [./backend/database.dev.jsonl](./backend/database.dev.jsonl).
 
 [sveltekit]: https://sveltekit.io/
 [typescript]: https://www.typescriptlang.org/

@@ -1,20 +1,27 @@
 import { type Action, reduce, emptyState } from '@eligo/state';
-import { JSONFile, Low } from 'lowdb';
+import { createWriteStream, readFileSync } from 'fs';
+
+const readData = (filepath: string): Action[] => {
+	try {
+		return readFileSync(filepath)
+			.toString()
+			.split('\n')
+			.filter((l) => l.length > 0)
+			.map((line) => JSON.parse(line));
+	} catch (err: any) {
+		if (err.code === 'ENOENT') return [];
+		throw err;
+	}
+};
 
 const open = async (filepath: string) => {
-	const adapter = new JSONFile<Action[]>(filepath);
-	const db = new Low(adapter);
-	await db.read();
-	db.data ||= [];
-	let state = emptyState;
-	for (const action of db.data) {
-		state = reduce(state, action);
-	}
+	const data = readData(filepath);
+	let state = data.reduce(reduce, emptyState);
+	const writer = createWriteStream(filepath, { flags: 'a' });
 	return {
 		append: async (action: Action) => {
 			state = reduce(state, action);
-			db.data!.push(action);
-			await db.write();
+			writer.write(JSON.stringify(action) + '\n');
 		},
 
 		find: async <K extends keyof typeof state>(

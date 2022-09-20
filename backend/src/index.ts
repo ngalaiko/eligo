@@ -5,7 +5,7 @@ const argv = yargs(process.argv.slice(2))
 	.option('database', {
 		alias: 'd',
 		describe: 'Database path',
-		default: './database.dev.json'
+		default: './database.dev.jsonl'
 	})
 	.option('port', {
 		alias: 'p',
@@ -40,23 +40,22 @@ import corsOptions from './cors.js';
 import { Server } from 'socket.io';
 import { readFileSync } from 'fs';
 
-openDatabase(argv.database).then(async (database) => {
-	const tokens = await setupTokens(database);
-	const notifications = createNotifications(
-		{
-			subject: 'mailto:nikita@galaiko.rocks',
-			privateKey: readFileSync(argv.vapidPrivateKeyPath).toString().trim(),
-			publicKey: argv.vapidPublicKey
-		},
-		database
-	);
+const database = openDatabase(argv.database);
+const tokens = await setupTokens(database);
+const notifications = createNotifications(
+	{
+		subject: 'mailto:nikita@galaiko.rocks',
+		privateKey: readFileSync(argv.vapidPrivateKeyPath).toString().trim(),
+		publicKey: argv.vapidPublicKey
+	},
+	database
+);
 
-	const server = createServer();
-	const app = polka({ server })
-		.use(cors(corsOptions))
-		.listen(argv.port, argv.host, () => console.log(`listening on ${argv.host}:${argv.port}`));
-	const io = new Server(server, { cors: corsOptions });
+const server = createServer();
+const app = polka({ server })
+	.use(cors(corsOptions))
+	.listen(argv.port, argv.host, () => console.log(`listening on ${argv.host}:${argv.port}`));
+const io = new Server(server, { cors: corsOptions });
 
-	setupHttp(app, database, tokens, io, notifications);
-	setupWs(io, database, tokens, notifications);
-});
+setupHttp(app, database, tokens, io, notifications);
+setupWs(io, database, tokens, notifications);

@@ -34,4 +34,4 @@ COPY --from=builder /app/backend/node_modules/  ./backend/node_modules/
 COPY --from=builder /app/backend/build/         ./backend/build/
 COPY --from=builder /app/backend/package.json   ./backend/
 VOLUME [ "/data" ]
-CMD [ "node", "/app/backend/build/index.js", "--host", "0.0.0.0", "--port", "8080", "--database", "/data/database.json", "--vapid-private-key-path", "/data/vapid-private-key.txt" ]
+CMD [ "node", "/app/backend/build/index.js", "--host", "0.0.0.0", "--port", "8080", "--database", "/data/database.jsonl", "--vapid-private-key-path", "/data/vapid-private-key.txt" ]

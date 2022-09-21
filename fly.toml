@@ -1,5 +1,8 @@
 app = "eligo-backend"
 
+[build]
+  dockerfile = "Dockerfile.backend"
+
 [deploy]
   strategy = "rolling"
 
@@ -31,6 +34,9 @@ app = "eligo-backend"
     interval = "15s"
     restart_limit = 0
     timeout = "2s"
+
+[experimental]
+  cmd = ["--host", "0.0.0.0", "--port", "8080", "--database", "/data/database.jsonl", "--vapid-private-key-path", "/data/vapid-private-key.txt"] 
 
 [mounts]
   source="database"

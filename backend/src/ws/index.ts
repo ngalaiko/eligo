@@ -37,7 +37,7 @@ export default (io: Server, database: Database, tokens: Tokens, notifications: N
 	});
 
 	io.on('connection', async (socket) => {
-		socket.onAny((event, ...args) => console.debug(event, args));
+		socket.onAny((event, ...args) => console.log(JSON.stringify({ event, args })));
 
 		const userId = socket.data.userId;
 

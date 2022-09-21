@@ -2,8 +2,8 @@ import type { Pick, Item, Boost } from './types';
 
 const boostMultiplier = 5;
 
-const byCreateTimeDesc = (a: { createTime: number }, b: { createTime: number }) =>
-	b.createTime - a.createTime;
+const byCreateTimeAsc = (a: { createTime: number }, b: { createTime: number }) =>
+	a.createTime - b.createTime;
 
 // given a list of items and history of it's picks, returns a list of weights for each item
 export const getWeights = (
@@ -15,20 +15,20 @@ export const getWeights = (
 		items.filter(({ deleteTime }) => !!deleteTime).map(({ id }) => id)
 	);
 
-	items = items.slice().sort(byCreateTimeDesc);
+	items = items.slice().sort(byCreateTimeAsc);
 	picks = picks
 		.slice()
 		.filter(({ id }) => !deletedItemIds.has(id))
-		.sort(byCreateTimeDesc);
+		.sort(byCreateTimeAsc);
 	boosts = boosts
 		.slice()
 		.filter(({ id }) => !deletedItemIds.has(id))
-		.sort(byCreateTimeDesc);
+		.sort(byCreateTimeAsc);
 
 	const activeBoosts = boosts
 		.filter((boost) => {
 			if (picks.length === 0) return true;
-			const latestPick = picks.sort((a, b) => a.createTime - b.createTime).slice(-1)[0];
+			const latestPick = picks.slice(-1)[0];
 			return boost.createTime > latestPick.createTime;
 		})
 		.reduce((acc, boost) => {

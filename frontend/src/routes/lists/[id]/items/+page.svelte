@@ -31,13 +31,13 @@
 
 <Form listId={data.listId} />
 
-<ul class="overflow-y-scroll flex flex-col gap-2">
+<ul class="overflow-y-scroll flex flex-col gap-2 -mr-3">
 	{#each $items
 		.filter(({ deleteTime }) => !deleteTime)
 		.sort(byAlphabet)
 		.sort(byChance) as item}
 		{@const chance = $chances[item.id]}
-		<li>
+		<li class="mr-3">
 			<Card {item} {chance} />
 		</li>
 	{/each}

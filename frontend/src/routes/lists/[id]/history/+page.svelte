@@ -52,9 +52,9 @@
 	);
 </script>
 
-<ul class="overflow-y-scroll flex flex-col gap-2">
+<ul class="overflow-y-scroll flex flex-col gap-2 -mr-3">
 	{#each $entries.sort((a, b) => compareDesc(a.time, b.time)) as entry}
-		<li class="flex gap-1">
+		<li class="flex gap-1 mr-3">
 			<User userId={entry.userId} />
 			{#if entry.type === 'picks/created'}
 				<span>picked</span>

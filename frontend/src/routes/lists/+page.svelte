@@ -11,9 +11,9 @@
 	<figcaption class="text-2xl font-semibold">Lists</figcaption>
 
 	<Form />
-	<ul class="grid grid-cols-1 gap-2">
+	<ul class="grid grid-cols-1 gap-2 -mr-3">
 		{#each $list.sort((a, b) => compareDesc(a.createTime, b.createTime)) as list}
-			<li>
+			<li class="mr-3">
 				<a href="/lists/{list.id}/pick/">
 					<Card {list} />
 				</a>

@@ -12,8 +12,8 @@
 	</span>
 
 	<div class="flex gap-1 opacity-50 text-sm">
+		<User userId={list.userId} />
 		created
 		<Distance to={list.createTime} />
-		by <User userId={list.userId} />
 	</div>
 </div>

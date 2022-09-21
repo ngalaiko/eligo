@@ -32,10 +32,9 @@
 			deleted
 			<Distance to={item.deleteTime} />
 		{:else}
+			<User userId={item.userId} />
 			created
 			<Distance to={item.createTime} />
-			by
-			<User userId={item.userId} />
 		{/if}
 	</div>
 </div>

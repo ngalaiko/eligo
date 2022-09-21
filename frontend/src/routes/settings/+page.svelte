@@ -17,7 +17,7 @@
 </script>
 
 <svelte:head>
-	<title>User</title>
+	<title>settings</title>
 </svelte:head>
 
 <div class="flex flex-col gap-6">

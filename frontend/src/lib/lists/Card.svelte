@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Distance } from '$lib/time';
 	import { Single as User } from '$lib/users';
-	import type { List } from '@eligo/actions';
+	import type { List } from '@eligo/protocol';
 
 	export let list: List & { id: string };
 </script>

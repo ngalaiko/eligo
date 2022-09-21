@@ -47,15 +47,15 @@
 		</figure>
 	{/if}
 
-	<div
-		class="border-2 px-2 py-1 rounded-2xl bg-gray-300 flex w-1/6"
+	<button
+		class="cursor-pointer select-none border-2 px-2 py-1 rounded-2xl bg-gray-300 flex w-1/4"
+		on:mousedown|preventDefault={init}
+		on:touchstart|preventDefault={init}
+		on:mouseup|preventDefault={reset}
+		on:touchend|preventDefault={reset}
 		style:background="linear-gradient(90deg, var(--color-gray-300) {percentage}%, var(--color-white) {percentage}%)"
 	>
 		<div style:width="{percentage}%" class="bg-500 absolute" />
-		<button
-			class="underline flex-1"
-			on:mousedown|preventDefault={init}
-			on:mouseup|preventDefault={reset}>next</button
-		>
-	</div>
+		<span class="underline flex-1">next</span>
+	</button>
 </div>

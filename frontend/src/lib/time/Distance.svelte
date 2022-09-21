@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { differenceInMinutes, differenceInSeconds, formatDistance } from 'date-fns';
+	import { differenceInMinutes, differenceInSeconds, formatDistance, isAfter } from 'date-fns';
 	import { onMount } from 'svelte';
 
 	let className = '';
@@ -7,7 +7,8 @@
 	export { className as class };
 	const datetime = new Date(to).toLocaleString();
 
-	let now = new Date();
+	$: now = new Date();
+	$: if (isAfter(to, now)) now = new Date();
 
 	const nextInterval = (to: number | Date) => {
 		if (differenceInSeconds(new Date(), to) < 30) {

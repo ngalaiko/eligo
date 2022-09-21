@@ -18,7 +18,7 @@
 	style:background="linear-gradient(90deg, var(--color-gray-300) {chancePercentage}%,
 	var(--color-white) {chancePercentage}%)"
 >
-	<div style:width="{chancePercentage}%" class="h-2 bg--500 relative z-1" />
+	<div style:width="{chancePercentage}%" class="h-2 bg-500 relative" />
 	<div class="font-semibold text-lg flex justify-between">
 		<p class="overflow-ellipsis">{item.text}</p>
 		<figure class="text-sm flex items-center gap-1">

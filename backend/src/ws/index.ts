@@ -80,11 +80,13 @@ export default (io: Server, database: Database, tokens: Tokens, notifications: N
 			updateTime: v.updateTime ?? new Date().getTime()
 		});
 
+		const notDeleted = (v: { deleteTime?: EpochTimeStamp }) => v.deleteTime === undefined;
+
 		[
-			...initLists.map((l) => lists.updated(withUpdateTime(l))),
+			...initLists.filter(notDeleted).map((l) => lists.updated(withUpdateTime(l))),
 			...initBoosts.map((b) => boosts.updated(withUpdateTime(b))),
 			...initPicks.map((p) => picks.updated(withUpdateTime(p))),
-			...initItems.map((i) => items.updated(withUpdateTime(i))),
+			...initItems.filter(notDeleted).map((i) => items.updated(withUpdateTime(i))),
 			...initUsers.map((u) => users.updated(withUpdateTime(u))),
 			...memberWith.map((m) => memberships.updated(withUpdateTime(m)))
 		].forEach((action) => {

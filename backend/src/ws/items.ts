@@ -28,13 +28,16 @@ export default (io: Server, socket: Socket, database: Database, notifications: N
 				return;
 			}
 
-			const membership = database.find('memberships', {
-				listId: item.listId,
-				userId: socket.data.userId
-			});
-			if (!membership) {
-				callback(errNotFound('item does not exist'));
-				return;
+			const list = await database.find('lists', { id: item.listId });
+			if (list && list.userId !== socket.data.userId) {
+				const membership = database.find('memberships', {
+					listId: item.listId,
+					userId: socket.data.userId
+				});
+				if (!membership) {
+					callback(errNotFound('item does not exist'));
+					return;
+				}
 			}
 
 			await database.append(

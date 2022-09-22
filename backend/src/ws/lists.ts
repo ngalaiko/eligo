@@ -5,6 +5,52 @@ import type { Database } from '../db';
 import { errNotFound, validate } from '../validation.js';
 
 export default (io: Server, socket: Socket, database: Database) => {
+	socket.on(
+		lists.delete.type,
+		async (req: Partial<{ id: string; deleteTime: EpochTimeStamp }>, callback) => {
+			const validationErr = validate(req, {
+				id: 'required',
+				deleteTime: 'required'
+			});
+			if (validationErr) {
+				callback(validationErr);
+				return;
+			}
+
+			const list = await database.find('lists', { id: req.id });
+			if (!list) {
+				callback(errNotFound('list does not exist'));
+				return;
+			}
+
+			if (list.userId !== socket.data.userId) {
+				const membership = await database.find('memberships', {
+					listId: list.id,
+					userId: socket.data.userId
+				});
+				if (membership === undefined) {
+					callback(errNotFound('list does not exist'));
+					console.log(1);
+				}
+			}
+
+			if (list.deleteTime !== undefined) {
+				callback(null);
+				return;
+			}
+
+			await database.append(
+				socket.data.userId,
+				lists.delete({ id: req.id!, deleteTime: req.deleteTime! })
+			);
+
+			const deleted = lists.deleted({ id: req.id!, deleteTime: req.deleteTime! });
+			io.to(list.id).emit(deleted.type, deleted.payload);
+
+			callback(null);
+		}
+	);
+
 	socket.on(lists.create.type, async (req: Partial<List>, callback) => {
 		const validationErr = validate(req, {
 			id: 'required',

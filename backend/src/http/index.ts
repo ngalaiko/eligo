@@ -51,7 +51,8 @@ export default (
 				const token = parseCookie(req.headers.cookie ?? '')[authCookieName];
 				const { payload } = await tokens.verify(token);
 				const list = await database.find('lists', { invitatationId: req.params.id });
-				if (!list) throw new HTTPError(404, errNotFound('Not found'));
+				if (!list || list.deleteTime !== undefined)
+					throw new HTTPError(404, errNotFound('Not found'));
 				const existing = await database.find('memberships', {
 					listId: list.id,
 					userId: payload.sub
@@ -81,7 +82,9 @@ export default (
 				userIds.add(list.userId);
 				listBoosts.forEach(({ userId }) => userIds.add(userId));
 				listPicks.forEach(({ userId }) => userIds.add(userId));
-				listItems.forEach(({ userId }) => userIds.add(userId));
+				listItems
+					.filter(({ deleteTime }) => deleteTime === undefined)
+					.forEach(({ userId }) => userIds.add(userId));
 				listMembers.forEach(({ userId }) => userIds.add(userId));
 
 				const listUsers = await Promise.all(

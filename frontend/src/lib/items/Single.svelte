@@ -5,9 +5,6 @@
 	$: item = $list.find(({ id }) => id === itemId);
 </script>
 
-<span
-	class="whitespace-nowrap overflow-ellipsis overflow-hidden"
-	class:line-through={!!item.deleteTime}
->
+<span class="whitespace-nowrap overflow-ellipsis overflow-hidden">
 	<b>{item.text}</b>
 </span>

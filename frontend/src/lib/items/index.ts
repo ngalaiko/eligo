@@ -18,3 +18,8 @@ export const create = (params: { listId: string; text: string }) =>
 			createTime: new Date().getTime()
 		})
 	);
+
+const _delete = (params: { id: string }) =>
+	send(items.delete({ ...params, deleteTime: new Date().getTime() }));
+
+export { _delete as delete };

@@ -29,6 +29,7 @@ const stateEvents = [
 
 	items.created.type,
 	items.updated.type,
+	items.deleted.type,
 
 	boosts.created.type,
 	boosts.updated.type,

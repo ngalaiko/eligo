@@ -3,30 +3,11 @@
 	import { create, list as picks } from '$lib/picks';
 	import { list as items } from '$lib/items';
 	import type { PageData } from './$types';
-	import { secondsToMilliseconds } from 'date-fns';
+	import DelayButton from '$lib/components/DelayButton.svelte';
 
 	export let data: PageData;
 
-	const delay = secondsToMilliseconds(0.5);
-	const updateEvery = delay / 100;
-	let timeout: ReturnType<typeof setTimeout>;
-	let interval: ReturnType<typeof setInterval>;
-
-	$: percentage = 0;
-
-	const reset = () => {
-		clearTimeout(timeout);
-		clearInterval(interval);
-		percentage = 0;
-	};
-
-	const init = () => {
-		timeout = setTimeout(() => {
-			create({ listId: data.listId });
-			reset();
-		}, delay);
-		interval = setInterval(() => percentage++, updateEvery);
-	};
+	const onClick = () => create({ listId: data.listId });
 
 	$: latestPick = $picks
 		.filter((p) => p.listId === data.listId)
@@ -47,15 +28,7 @@
 		</figure>
 	{/if}
 
-	<button
-		class="cursor-pointer select-none border-2 px-2 py-1 rounded-2xl bg-gray-300 flex w-1/4"
-		on:mousedown|preventDefault={init}
-		on:touchstart|preventDefault={init}
-		on:mouseup|preventDefault={reset}
-		on:touchend|preventDefault={reset}
-		style:background="linear-gradient(90deg, var(--color-gray-300) {percentage}%, var(--color-white) {percentage}%)"
-	>
-		<div style:width="{percentage}%" class="bg-500 absolute" />
+	<DelayButton on:click={onClick}>
 		<span class="underline flex-1">next</span>
-	</button>
+	</DelayButton>
 </div>

@@ -3,9 +3,53 @@ import { items } from '@eligo/state';
 import type { Socket, Server } from 'socket.io';
 import type { Database } from '../db.js';
 import { Notifications } from '../notifications.js';
-import { validate } from '../validation.js';
+import { errNotFound, validate } from '../validation.js';
 
 export default (io: Server, socket: Socket, database: Database, notifications: Notifications) => {
+	socket.on(
+		items.delete.type,
+		async (req: Partial<{ id: string; deleteTime: EpochTimeStamp }>, callback) => {
+			const validationErr = validate(req, {
+				id: 'required',
+				deleteTime: 'required'
+			});
+			if (validationErr) {
+				callback(validationErr);
+				return;
+			}
+
+			const item = await database.find('items', { id: req.id });
+			if (!item) {
+				callback(errNotFound('item does not exist'));
+				return;
+			}
+			if (item.deleteTime !== undefined) {
+				callback(null);
+				return;
+			}
+
+			const membership = database.find('memberships', {
+				listId: item.listId,
+				userId: socket.data.userId
+			});
+			if (!membership) {
+				callback(errNotFound('item does not exist'));
+				return;
+			}
+
+			await database.append(
+				socket.data.userId,
+				items.delete({ id: req.id!, deleteTime: req.deleteTime! })
+			);
+
+			const deleted = items.deleted({ id: req.id!, deleteTime: req.deleteTime! });
+
+			io.to([item.id, item.listId]).emit(deleted.type, deleted.payload);
+
+			callback(null);
+		}
+	);
+
 	socket.on(items.create.type, async (req: Partial<Item>, callback) => {
 		const validationErr = validate(req, {
 			id: 'required',

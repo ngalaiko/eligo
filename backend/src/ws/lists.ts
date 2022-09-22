@@ -18,7 +18,7 @@ export default (io: Server, socket: Socket, database: Database) => {
 		}
 		const list = req as List;
 
-		await database.append(lists.create(list));
+		await database.append(socket.data.userId, lists.create(list));
 
 		const created = lists.created(list);
 
@@ -52,7 +52,7 @@ export default (io: Server, socket: Socket, database: Database) => {
 			return;
 		}
 
-		await database.append(lists.update(patch));
+		await database.append(socket.data.userId, lists.update(patch));
 
 		const updated = lists.updated(patch);
 

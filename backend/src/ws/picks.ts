@@ -54,7 +54,7 @@ export default (io: Server, socket: Socket, database: Database, notifications: N
 
 		pick = { ...pick, itemId: randomItem.id };
 
-		await database.append(picks.create(pick));
+		await database.append(socket.data.userId, picks.create(pick));
 		const created = picks.created(pick);
 
 		socket.join(created.payload.id);

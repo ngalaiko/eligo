@@ -12,7 +12,7 @@ export const init = async (database: Database) => {
 				alg: 'ES256',
 				createTime: new Date().getTime()
 			};
-			await database.append(jwtKeys.create(key));
+			await database.append(undefined, jwtKeys.create(key));
 			return { keyId: key.id, privateKey, keyAlg: 'ES256' };
 		}
 	);

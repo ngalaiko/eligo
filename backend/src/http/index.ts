@@ -67,7 +67,7 @@ export default (
 					userId: payload.sub!,
 					createTime: new Date().getTime()
 				};
-				await database.append(memberships.create(membership));
+				await database.append(payload.sub!, memberships.create(membership));
 
 				const created = memberships.created(membership);
 				io.in(list.id).emit(created.type, created.payload);
@@ -206,7 +206,7 @@ export default (
 					hash: passwordHash,
 					createTime: new Date().getTime()
 				};
-				await database.append(users.create(user));
+				await database.append(user.id, users.create(user));
 				const token = await tokens.sign({ sub: user.id });
 				const cookie = serialize(authCookieName, token, {
 					httpOnly: true,
@@ -248,6 +248,7 @@ export default (
 					throw new HTTPError(400, errEmpty(`'password' can not be empty`));
 
 				await database.append(
+					user.id,
 					users.update({
 						id: user.id,
 						hash: await hash(password, 10),

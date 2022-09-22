@@ -20,7 +20,7 @@ export default (io: Server, socket: Socket, database: Database, notifications: N
 		}
 		const item = req as Item;
 
-		await database.append(items.create(item));
+		await database.append(socket.data.userId, items.create(item));
 		const created = items.created(item);
 
 		socket.join(created.payload.id);

@@ -20,7 +20,7 @@ export default (io: Server, socket: Socket, database: Database, notifications: N
 		}
 		const boost = req as Boost;
 
-		if (req.id) await database.append(boosts.create(boost));
+		if (req.id) await database.append(socket.data.userId, boosts.create(boost));
 		const created = boosts.created(boost);
 
 		socket.join(created.payload.id);

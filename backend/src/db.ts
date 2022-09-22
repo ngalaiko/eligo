@@ -19,7 +19,8 @@ const open = (filepath: string) => {
 	let state = data.reduce(reduce, emptyState);
 	const writer = createWriteStream(filepath, { flags: 'a' });
 	return {
-		append: async (action: Action) => {
+		append: async (userId: string | undefined, action: Action) => {
+			action.meta ||= { userId, timestamp: new Date().getTime() };
 			state = reduce(state, action);
 			writer.write(JSON.stringify(action) + '\n');
 		},

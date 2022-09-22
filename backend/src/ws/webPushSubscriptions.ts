@@ -6,7 +6,7 @@ export default (io: Server, socket: Socket, database: Database) => {
 	socket.on(
 		webPushSuscriptions.create.type,
 		async (req: ReturnType<typeof webPushSuscriptions.create>['payload'], callback) => {
-			await database.append(webPushSuscriptions.create(req));
+			await database.append(socket.data.userId, webPushSuscriptions.create(req));
 			const created = webPushSuscriptions.created(req);
 
 			socket.join(created.payload.id);
@@ -19,7 +19,7 @@ export default (io: Server, socket: Socket, database: Database) => {
 	socket.on(
 		webPushSuscriptions.delete.type,
 		async (req: ReturnType<typeof webPushSuscriptions.delete>['payload'], callback) => {
-			await database.append(webPushSuscriptions.delete(req));
+			await database.append(socket.data.userId, webPushSuscriptions.delete(req));
 			const deleted = webPushSuscriptions.deleted(req);
 
 			socket.join(deleted.payload.id);

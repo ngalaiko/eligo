@@ -21,6 +21,7 @@ type User = { id: string; name: string };
 const stateEvents = [
 	lists.created.type,
 	lists.updated.type,
+	lists.deleted.type,
 
 	users.updated.type,
 
@@ -38,7 +39,6 @@ const stateEvents = [
 	memberships.updated.type,
 
 	webPushSuscriptions.created.type,
-	webPushSuscriptions.updated.type,
 	webPushSuscriptions.deleted.type
 ];
 

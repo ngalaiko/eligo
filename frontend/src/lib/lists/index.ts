@@ -12,6 +12,11 @@ export const update = (fields: {
 	invitatationId?: string | null;
 }) => send(lists.update({ ...fields }));
 
+const _delete = (params: { id: string }) =>
+	send(lists.delete({ ...params, deleteTime: new Date().getTime() }));
+
+export { _delete as delete };
+
 export const create = (fields: { title: string }) =>
 	send(
 		lists.create({

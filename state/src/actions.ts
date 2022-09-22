@@ -32,8 +32,8 @@ const c_ud = <
 		updated: creator<
 			{ id: string; updateTime: EpochTimeStamp } & Partial<Omit<T, 'id' | 'updateTime'>>
 		>('updated'),
-		delete: creator<{ id: string; deleteTime: EpochTimeStamp } & Omit<T, 'deleteTime'>>('delete'),
-		deleted: creator<{ id: string; deleteTime: EpochTimeStamp } & Omit<T, 'deleteTime'>>('deleted')
+		delete: creator<{ id: string; deleteTime: EpochTimeStamp }>('delete'),
+		deleted: creator<{ id: string; deleteTime: EpochTimeStamp }>('deleted')
 	};
 	const reducer = reducerWithInitialState({} as Record<string, T>)
 		.cases([actions.create, actions.created], (state, payload) => ({

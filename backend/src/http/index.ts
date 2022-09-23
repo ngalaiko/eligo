@@ -116,6 +116,9 @@ export default (
 					if (!list) return;
 					if (!user) return;
 
+					const newUser = users.created(user);
+					io.to(list.id).emit(newUser.type, newUser.payload);
+
 					const membersIds = memberships.map(({ userId }) => userId);
 					const userIds = [...membersIds, list.userId].filter(
 						(userId) => userId !== membership.userId

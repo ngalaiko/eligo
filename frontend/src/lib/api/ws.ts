@@ -23,10 +23,13 @@ const stateEvents = [
 	lists.updated.type,
 	lists.deleted.type,
 
+	users.created.type,
 	users.updated.type,
+	users.deleted.type,
 
 	picks.created.type,
 	picks.updated.type,
+	picks.deleted.type,
 
 	items.created.type,
 	items.updated.type,
@@ -34,11 +37,14 @@ const stateEvents = [
 
 	boosts.created.type,
 	boosts.updated.type,
+	boosts.deleted.type,
 
 	memberships.created.type,
 	memberships.updated.type,
+	memberships.deleted.type,
 
 	webPushSuscriptions.created.type,
+	webPushSuscriptions.updated.type,
 	webPushSuscriptions.deleted.type
 ];
 

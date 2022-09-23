@@ -32,6 +32,7 @@ export type JWTPublicKey = Type<{
 
 export type User = Type<{
 	name: string;
+	displayName?: string;
 	hash?: string;
 }>;
 

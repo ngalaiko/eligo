@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { differenceInMinutes, differenceInSeconds, formatDistance, isAfter } from 'date-fns';
+	import { differenceInMinutes, differenceInSeconds, isAfter } from 'date-fns';
+	import { format } from './distance';
 	import { onMount } from 'svelte';
 
 	let className = '';
@@ -35,5 +36,5 @@
 </script>
 
 <time class="whitespace-nowrap {className}" title={datetime} {datetime}>
-	{formatDistance(to, now, { addSuffix: true })}
+	{format(to, now)}
 </time>

@@ -3,6 +3,7 @@
 	import { Single as User } from '$lib/users';
 	import type { List } from '@eligo/protocol';
 	import { delete as deleteList } from '$lib/lists';
+	import DoubleClickButton from '$lib/components/DoubleClickButton.svelte';
 
 	export let list: List;
 
@@ -14,11 +15,11 @@
 		{list.title}
 	</span>
 
-	<div class="flex gap-1 opacity-50 text-sm">
+	<span class="flex z-1 gap-1 opacity-50 text-sm">
 		<User userId={list.userId} />
 		created
 		<Distance to={list.createTime} />
 		|
-		<button class="underline z-1" on:click|preventDefault={onDeleteClicked}>delete</button>
-	</div>
+		<DoubleClickButton on:click={onDeleteClicked}>delete</DoubleClickButton>
+	</span>
 </div>

@@ -4,6 +4,7 @@
 	import type { Item } from '@eligo/protocol';
 	import { Distance } from '$lib/time';
 	import { delete as deleteItem } from '$lib/items';
+	import DoubleClickButton from '$lib/components/DoubleClickButton.svelte';
 
 	export let item: Item;
 	export let chance: number;
@@ -39,7 +40,7 @@
 			created
 			<Distance to={item.createTime} />
 			|
-			<button on:click={onDeleteClicked} class="underline">delete</button>
+			<DoubleClickButton on:click={onDeleteClicked}>delete</DoubleClickButton>
 		{/if}
 	</div>
 </div>

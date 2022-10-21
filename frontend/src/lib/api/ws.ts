@@ -20,8 +20,16 @@ const actions = writable([] as Action[]);
 export const state = derived(actions, (actions) => actions.reduce(reduce, emptyState));
 
 const socket = io(wsHost, {
-    withCredentials: true
+    withCredentials: true,
+    autoConnect: false,
+    auth: {
+        userId: window.localStorage.getItem('user.id')
+    }
 });
+
+(async () => {
+    socket.connect();
+})();
 
 export const send = async (action: Action) =>
     new Promise<void>((resolve, reject) =>
@@ -43,6 +51,11 @@ export const auth = writable<{ user?: User }>({});
 socket.on('auth', (user: User) => {
     actions.set([]);
     auth.set({ user });
+});
+
+auth.subscribe(({ user }) => {
+    if (user) window.localStorage.setItem('user.id', user.id);
+    if (!user) window.localStorage.removeItem('user.id');
 });
 
 auth.subscribe(({ user }) => {

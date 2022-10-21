@@ -2,6 +2,7 @@ import io from 'socket.io-client';
 import { wsHost } from './http';
 import { dev } from '$app/environment';
 import { writable, derived } from 'svelte/store';
+import { openDB } from 'idb';
 import {
     type Action,
     emptyState,
@@ -27,10 +28,6 @@ const socket = io(wsHost, {
     }
 });
 
-(async () => {
-    socket.connect();
-})();
-
 export const send = async (action: Action) =>
     new Promise<void>((resolve, reject) =>
         socket.emit(action.type, action.payload, (error: Error) => {
@@ -48,26 +45,34 @@ type User = { id: string; name: string };
 
 export const auth = writable<{ user?: User }>({});
 
-socket.on('auth', (user: User) => {
-    actions.set([]);
+socket.on('auth', async (user: User) => {
+    const db = await openDB('eligo', 1, {
+        upgrade: (db) => db.createObjectStore(user.id)
+    });
+
+    // booststrap state from the local db
+    const values = await db.getAll(user.id);
+    actions.set(values);
+    db.close();
+
     auth.set({ user });
 });
 
 auth.subscribe(({ user }) => {
-    if (user) window.localStorage.setItem('user.id', user.id);
-    if (!user) window.localStorage.removeItem('user.id');
-});
-
-auth.subscribe(({ user }) => {
-    if (user && socket.disconnected) socket.connect();
-    if (!user && socket.connected) socket.disconnect();
+    if (user) {
+        if (socket.disconnected) socket.connect();
+        window.localStorage.setItem('user.id', user.id);
+    }
+    if (!user && socket.connected) {
+        socket.disconnect();
+        window.localStorage.removeItem('user.id');
+    }
 });
 
 // debug logs
 if (dev) socket.onAny((event, ...args) => console.debug(event, args));
 
-// subscribe to events
-[
+const eventTypes = [
     lists.created.type,
     lists.updated.type,
     lists.deleted.type,
@@ -95,8 +100,43 @@ if (dev) socket.onAny((event, ...args) => console.debug(event, args));
     webPushSuscriptions.created.type,
     webPushSuscriptions.updated.type,
     webPushSuscriptions.deleted.type
-].forEach((eventType) =>
+];
+
+// subscribe to events
+eventTypes.forEach((eventType) =>
     socket.on(eventType, (action) =>
         actions.update((log) => [...log, { type: eventType, payload: action }])
     )
 );
+
+(async () => {
+    const userId = window.localStorage.getItem('user.id');
+    if (!userId) {
+        socket.connect();
+        return;
+    }
+
+    const db = await openDB('eligo', 1, {
+        upgrade: (db) => db.createObjectStore(userId)
+    });
+
+    const keys = await db.getAllKeys(userId);
+    const lastSynched = keys.reduce((max, key) => (key > max ? key : max), 0);
+
+    // @ts-ignore
+    // i am sure it's a map here
+    socket.auth.lastSynched = lastSynched;
+
+    // save all new events to the store
+    eventTypes.forEach((eventType) => {
+        socket.on(eventType, (action) => {
+            db.put(
+                userId,
+                { type: eventType, payload: action },
+                action.deleteTime ?? action.updateTime ?? action.createTime
+            );
+        });
+    });
+
+    socket.connect();
+})();

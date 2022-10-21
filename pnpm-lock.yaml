@@ -73,6 +73,7 @@ importers:
       eslint: ^8.16.0
       eslint-config-prettier: ^8.3.0
       eslint-plugin-svelte3: ^4.0.0
+      idb: ^7.1.0
       nanoid: ^4.0.0
       postcss: ^8.4.14
       postcss-load-config: ^4.0.1
@@ -99,6 +100,7 @@ importers:
       eslint: 8.21.0
       eslint-config-prettier: 8.5.0_eslint@8.21.0
       eslint-plugin-svelte3: 4.0.0_a7wk4ghvg4hia4trwaglu7p6cq
+      idb: 7.1.0
       nanoid: 4.0.0
       postcss: 8.4.14
       postcss-load-config: 4.0.1_postcss@8.4.14
@@ -1954,6 +1956,10 @@ packages:
     dependencies:
       safer-buffer: 2.1.2
     dev: false
+
+  /idb/7.1.0:
+    resolution: {integrity: sha512-Wsk07aAxDsntgYJY4h0knZJuTxM73eQ4reRAO+Z1liOh8eMCJ/MoDS8fCui1vGT9mnjtl1sOu3I2i/W1swPYZg==}
+    dev: true
 
   /ignore/5.2.0:
     resolution: {integrity: sha512-CmxgYGiEPCLhfLnpPp1MoRmifwEIOgjcHXxOBjv7mY96c+eWScsOP9c112ZyLdWHi0FxHjI+4uVhKYp/gcdRmQ==}

@@ -45,6 +45,7 @@ export default (io: Server, database: Database, tokens: Tokens, notifications: N
         socket.onAny((event, ...args) => console.log(JSON.stringify({ event, args })));
 
         const userId = socket.data.userId;
+        const lastSynched = socket.handshake.auth.lastSynched || 0;
 
         const mms = await database.filter('memberships', { userId });
         const memberOf = (await Promise.all(
@@ -80,9 +81,17 @@ export default (io: Server, database: Database, tokens: Tokens, notifications: N
             Array.from(userIds.values()).map((id) => database.find('users', { id }))
         ).then((uu) => uu.filter((u) => !!u) as User[]);
 
-        const withUpdateTime = <T extends { updateTime?: EpochTimeStamp }>(v: T) => ({
+        const withUpdateTime = <
+            T extends {
+                deleteTime?: EpochTimeStamp;
+                updateTime?: EpochTimeStamp;
+                createTime: EpochTimeStamp;
+            }
+        >(
+            v: T
+        ) => ({
             ...v,
-            updateTime: v.updateTime ?? new Date().getTime()
+            updateTime: v.deleteTime ?? v.updateTime ?? v.createTime
         });
 
         [
@@ -92,10 +101,12 @@ export default (io: Server, database: Database, tokens: Tokens, notifications: N
             ...initItems.map((i) => items.updated(withUpdateTime(i))),
             ...initUsers.map((u) => users.updated(withUpdateTime(u))),
             ...memberWith.map((m) => memberships.updated(withUpdateTime(m)))
-        ].forEach((action) => {
-            socket.join(action.payload.id);
-            socket.emit(action.type, action.payload);
-        });
+        ]
+            .filter((action) => action.payload.updateTime > lastSynched)
+            .forEach((action) => {
+                socket.join(action.payload.id);
+                socket.emit(action.type, action.payload);
+            });
         socket.join(userId);
 
         registerUsers(io, socket, database);

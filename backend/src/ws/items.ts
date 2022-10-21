@@ -6,94 +6,94 @@ import { Notifications } from '../notifications.js';
 import { errNotFound, validate } from '../validation.js';
 
 export default (io: Server, socket: Socket, database: Database, notifications: Notifications) => {
-	socket.on(
-		items.delete.type,
-		async (req: Partial<{ id: string; deleteTime: EpochTimeStamp }>, callback) => {
-			const validationErr = validate(req, {
-				id: 'required',
-				deleteTime: 'required'
-			});
-			if (validationErr) {
-				callback(validationErr);
-				return;
-			}
+    socket.on(
+        items.delete.type,
+        async (req: Partial<{ id: string; deleteTime: EpochTimeStamp }>, callback) => {
+            const validationErr = validate(req, {
+                id: 'required',
+                deleteTime: 'required'
+            });
+            if (validationErr) {
+                callback(validationErr);
+                return;
+            }
 
-			const item = await database.find('items', { id: req.id });
-			if (!item) {
-				callback(errNotFound('item does not exist'));
-				return;
-			}
-			if (item.deleteTime !== undefined) {
-				callback(null);
-				return;
-			}
+            const item = await database.find('items', { id: req.id });
+            if (!item) {
+                callback(errNotFound('item does not exist'));
+                return;
+            }
+            if (item.deleteTime !== undefined) {
+                callback(null);
+                return;
+            }
 
-			const list = await database.find('lists', { id: item.listId });
-			if (list && list.userId !== socket.data.userId) {
-				const membership = database.find('memberships', {
-					listId: item.listId,
-					userId: socket.data.userId
-				});
-				if (!membership) {
-					callback(errNotFound('item does not exist'));
-					return;
-				}
-			}
+            const list = await database.find('lists', { id: item.listId });
+            if (list && list.userId !== socket.data.userId) {
+                const membership = database.find('memberships', {
+                    listId: item.listId,
+                    userId: socket.data.userId
+                });
+                if (!membership) {
+                    callback(errNotFound('item does not exist'));
+                    return;
+                }
+            }
 
-			await database.append(
-				socket.data.userId,
-				items.delete({ id: req.id!, deleteTime: req.deleteTime! })
-			);
+            await database.append(
+                socket.data.userId,
+                items.delete({ id: req.id!, deleteTime: req.deleteTime! })
+            );
 
-			const deleted = items.deleted({ id: req.id!, deleteTime: req.deleteTime! });
+            const deleted = items.deleted({ id: req.id!, deleteTime: req.deleteTime! });
 
-			io.to([item.id, item.listId]).emit(deleted.type, deleted.payload);
+            io.to([item.id, item.listId]).emit(deleted.type, deleted.payload);
 
-			callback(null);
-		}
-	);
+            callback(null);
+        }
+    );
 
-	socket.on(items.create.type, async (req: Partial<Item>, callback) => {
-		const validationErr = validate(req, {
-			id: 'required',
-			text: 'required',
-			userId: socket.data.userId,
-			listId: 'required',
-			createTime: 'required'
-		});
-		if (validationErr) {
-			callback(validationErr);
-			return;
-		}
-		const item = req as Item;
+    socket.on(items.create.type, async (req: Partial<Item>, callback) => {
+        const validationErr = validate(req, {
+            id: 'required',
+            text: 'required',
+            userId: socket.data.userId,
+            listId: 'required',
+            createTime: 'required'
+        });
+        if (validationErr) {
+            callback(validationErr);
+            return;
+        }
+        const item = req as Item;
 
-		await database.append(socket.data.userId, items.create(item));
-		const created = items.created(item);
+        await database.append(socket.data.userId, items.create(item));
+        const created = items.created(item);
 
-		socket.join(created.payload.id);
-		io.to([created.payload.id, created.payload.listId]).emit(created.type, created.payload);
+        socket.join(created.payload.id);
+        io.to([created.payload.id, created.payload.listId]).emit(created.type, created.payload);
 
-		Promise.all([
-			database.find('users', { id: item.userId }),
-			database.find('lists', { id: item.listId }),
-			database.filter('memberships', { listId: item.listId })
-		]).then(([user, list, memberships]) => {
-			if (!list) return;
-			if (!user) return;
-			if (!item) return;
+        Promise.all([
+            database.find('users', { id: item.userId }),
+            database.find('lists', { id: item.listId }),
+            database.filter('memberships', { listId: item.listId })
+        ]).then(([user, list, memberships]) => {
+            if (!list) return;
+            if (!user) return;
+            if (!item) return;
 
-			const membersIds = memberships.map(({ userId }) => userId);
-			const userIds = [...membersIds, list.userId].filter((userId) => userId !== item.userId);
-			userIds.forEach((userId) =>
-				notifications.notify(userId, {
-					title: `New item`,
-					options: {
-						body: `${user.name} added ${item.text} to ${list.title}`
-					}
-				})
-			);
-		});
+            const membersIds = memberships.map(({ userId }) => userId);
+            const userIds = [...membersIds, list.userId].filter((userId) => userId !== item.userId);
+            userIds.forEach((userId) =>
+                notifications.notify(userId, {
+                    title: `New item`,
+                    options: {
+                        body: `${user.name} added ${item.text} to ${list.title}`
+                    }
+                })
+            );
+        });
 
-		callback(null);
-	});
+        callback(null);
+    });
 };

@@ -94,20 +94,25 @@ export default (io: Server, database: Database, tokens: Tokens, notifications: N
             updateTime: v.deleteTime ?? v.updateTime ?? v.createTime
         });
 
-        [
+        const initActions = [
             ...initLists.map((l) => lists.updated(withUpdateTime(l))),
             ...initBoosts.map((b) => boosts.updated(withUpdateTime(b))),
             ...initPicks.map((p) => picks.updated(withUpdateTime(p))),
             ...initItems.map((i) => items.updated(withUpdateTime(i))),
             ...initUsers.map((u) => users.updated(withUpdateTime(u))),
             ...memberWith.map((m) => memberships.updated(withUpdateTime(m)))
-        ]
+        ];
+
+        initActions.forEach((action) => {
+            socket.join(action.payload.id);
+        });
+        socket.join(userId);
+
+        initActions
             .filter((action) => action.payload.updateTime > lastSynched)
             .forEach((action) => {
-                socket.join(action.payload.id);
                 socket.emit(action.type, action.payload);
             });
-        socket.join(userId);
 
         registerUsers(io, socket, database);
         registerLists(io, socket, database);

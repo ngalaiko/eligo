@@ -34,11 +34,11 @@
 			bind:this={form}
 		>
 			<fieldset class="grid grid-cols-2 gap-1">
-				<label for="display-name">name</label>
+				<label for="username">username</label>
 				<input
 					bind:this={passwordInput}
-					id="name"
-					name="name"
+					id="username"
+					name="username"
 					type="text"
 					disabled
 					value={user.name}

@@ -12,7 +12,7 @@
 	"dependencies": {
 		"@eligo/protocol": "workspace:*",
 		"@eligo/state": "workspace:*",
-		"bcrypt": "^5.0.1",
+		"bcrypt": "^5.1.0",
 		"body-parser": "^1.20.0",
 		"cookie": "^0.5.0",
 		"cors": "^2.8.5",

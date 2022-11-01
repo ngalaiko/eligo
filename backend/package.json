@@ -20,7 +20,7 @@
 		"jose": "^4.8.3",
 		"nanoid": "^4.0.0",
 		"polka": "1.0.0-next.22",
-		"socket.io": "^4.5.2",
+		"socket.io": "^4.5.3",
 		"web-push": "^3.5.0",
 		"yargs": "^17.5.1"
 	},

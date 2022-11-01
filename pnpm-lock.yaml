@@ -87,7 +87,7 @@ importers:
       tslib: ^2.3.1
       typescript: ^4.7.4
       vite: ^3.1.0
-      web-vitals: ^3.0.0
+      web-vitals: ^3.0.4
     devDependencies:
       '@eligo/protocol': link:../protocol
       '@eligo/state': link:../state
@@ -114,7 +114,7 @@ importers:
       tslib: 2.4.0
       typescript: 4.7.4
       vite: 3.1.1
-      web-vitals: 3.0.0
+      web-vitals: 3.0.4
 
   protocol:
     specifiers:
@@ -3303,8 +3303,8 @@ packages:
     engines: {node: '>= 8'}
     dev: true
 
-  /web-vitals/3.0.0:
-    resolution: {integrity: sha512-3Gh6rH5aetFYqfkl9V59KCvjj9vp9U2Tkaep9MO+xpAVg+JULmQfi5zEkcPLkE6iU8pNYVwdjHvIU8RFAchYyQ==}
+  /web-vitals/3.0.4:
+    resolution: {integrity: sha512-Yau8qf1AJ/dm6MY180Bi0qpCIuWmAfKAnOqmxLecGfIHn0+ND3H4JOhXeY73Pyi9zjSF5J4SNUewHLNUzU7mmA==}
     dev: true
 
   /webidl-conversions/3.0.1:

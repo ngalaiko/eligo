@@ -79,7 +79,7 @@ importers:
       postcss-load-config: ^4.0.1
       prettier: ^2.6.2
       prettier-plugin-svelte: ^2.7.0
-      socket.io-client: ^4.5.2
+      socket.io-client: ^4.5.3
       svelte: ^3.44.0
       svelte-check: ^2.7.1
       svelte-preprocess: ^4.10.7
@@ -106,7 +106,7 @@ importers:
       postcss-load-config: 4.0.1_postcss@8.4.14
       prettier: 2.7.1
       prettier-plugin-svelte: 2.7.0_o3ioganyptcsrh6x4hnxvjkpqi
-      socket.io-client: 4.5.2
+      socket.io-client: 4.5.3
       svelte: 3.49.0
       svelte-check: 2.8.0_blrkfmplrezk6jx3arz7bdc3pa
       svelte-preprocess: 4.10.7_6avtyouqcdws46kxwsvk4vhxre
@@ -1059,8 +1059,8 @@ packages:
   /emoji-regex/8.0.0:
     resolution: {integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==}
 
-  /engine.io-client/6.2.2:
-    resolution: {integrity: sha512-8ZQmx0LQGRTYkHuogVZuGSpDqYZtCM/nv8zQ68VZ+JkOpazJ7ICdsSpaO6iXwvaU30oFg5QJOJWj8zWqhbKjkQ==}
+  /engine.io-client/6.2.3:
+    resolution: {integrity: sha512-aXPtgF1JS3RuuKcpSrBtimSjYvrbhKW9froICH4s0F3XQWLxsKNxqzG39nnvQZQnva4CMvUK63T7shevxRyYHw==}
     dependencies:
       '@socket.io/component-emitter': 3.1.0
       debug: 4.3.4
@@ -2791,13 +2791,13 @@ packages:
     resolution: {integrity: sha512-W4N+o69rkMEGVuk2D/cvca3uYsvGlMwsySWV447y99gUPghxq42BxqLNMndb+a1mm/5/7NeXVQS7RLa2XyXvYg==}
     dev: false
 
-  /socket.io-client/4.5.2:
-    resolution: {integrity: sha512-naqYfFu7CLDiQ1B7AlLhRXKX3gdeaIMfgigwavDzgJoIUYulc1qHH5+2XflTsXTPY7BlPH5rppJyUjhjrKQKLg==}
+  /socket.io-client/4.5.3:
+    resolution: {integrity: sha512-I/hqDYpQ6JKwtJOf5ikM+Qz+YujZPMEl6qBLhxiP0nX+TfXKhW4KZZG8lamrD6Y5ngjmYHreESVasVCgi5Kl3A==}
     engines: {node: '>=10.0.0'}
     dependencies:
       '@socket.io/component-emitter': 3.1.0
       debug: 4.3.4
-      engine.io-client: 6.2.2
+      engine.io-client: 6.2.3
       socket.io-parser: 4.2.1
     transitivePeerDependencies:
       - bufferutil

@@ -24,7 +24,7 @@ importers:
       nanoid: ^4.0.0
       node-dev: ^7.4.3
       polka: 1.0.0-next.22
-      prettier: ^2.6.2
+      prettier: ^2.7.1
       socket.io: ^4.5.2
       ts-node: ^10.9.1
       tsc-watch: ^5.0.3

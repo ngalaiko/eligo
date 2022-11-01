@@ -19,7 +19,7 @@ importers:
       body-parser: ^1.20.0
       cookie: ^0.5.0
       cors: ^2.8.5
-      date-fns: ^2.29.1
+      date-fns: ^2.29.3
       jose: ^4.8.3
       nanoid: ^4.0.0
       node-dev: ^7.4.3
@@ -39,7 +39,7 @@ importers:
       body-parser: 1.20.0
       cookie: 0.5.0
       cors: 2.8.5
-      date-fns: 2.29.1
+      date-fns: 2.29.3
       jose: 4.8.3
       nanoid: 4.0.0
       polka: 1.0.0-next.22
@@ -915,6 +915,12 @@ packages:
   /date-fns/2.29.1:
     resolution: {integrity: sha512-dlLD5rKaKxpFdnjrs+5azHDFOPEu4ANy/LTh04A1DTzMM7qoajmKCBc8pkKRFT41CNzw+4gQh79X5C+Jq27HAw==}
     engines: {node: '>=0.11'}
+    dev: true
+
+  /date-fns/2.29.3:
+    resolution: {integrity: sha512-dDCnyH2WnnKusqvZZ6+jA1O51Ibt8ZMRNkDZdyAyK4YfbDwa/cEmuztzG5pk6hqlp9aSBPYcjOlktquahGwGeA==}
+    engines: {node: '>=0.11'}
+    dev: false
 
   /dateformat/3.0.3:
     resolution: {integrity: sha512-jyCETtSl3VMZMWeRo7iY1FL19ges1t55hMo5yaam4Jrsm5EPL89UQkoQRyiI+Yf4k8r2ZpdngkV8hr1lIdjb3Q==}

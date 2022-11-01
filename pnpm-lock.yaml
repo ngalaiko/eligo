@@ -14,7 +14,7 @@ importers:
       '@types/cookie': ^0.5.1
       '@types/cors': ^2.8.12
       '@types/node': ^18.6.3
-      '@types/yargs': ^17.0.11
+      '@types/yargs': ^17.0.13
       bcrypt: ^5.0.1
       body-parser: ^1.20.0
       cookie: ^0.5.0
@@ -52,7 +52,7 @@ importers:
       '@types/cookie': 0.5.1
       '@types/cors': 2.8.12
       '@types/node': 18.6.3
-      '@types/yargs': 17.0.11
+      '@types/yargs': 17.0.13
       node-dev: 7.4.3
       prettier: 2.7.1
       ts-node: 10.9.1_e2tlcjkk7tlngjdlhzx5hjlnv4
@@ -407,8 +407,8 @@ packages:
     resolution: {integrity: sha512-iO9ZQHkZxHn4mSakYV0vFHAVDyEOIJQrV2uZ06HxEPcx+mt8swXoZHIbaaJ2crJYFfErySgktuTZ3BeLz+XmFA==}
     dev: true
 
-  /@types/yargs/17.0.11:
-    resolution: {integrity: sha512-aB4y9UDUXTSMxmM4MH+YnuR0g5Cph3FLQBoWoMB21DSvFVAxRVEHEMx3TLh+zUZYMCQtKiqazz0Q4Rre31f/OA==}
+  /@types/yargs/17.0.13:
+    resolution: {integrity: sha512-9sWaruZk2JGxIQU+IhI1fhPYRcQ0UuTNuKuCW9bR5fp7qi2Llf7WDzNa17Cy7TKnh3cdxDOiyTu6gaLS0eDatg==}
     dependencies:
       '@types/yargs-parser': 21.0.0
     dev: true

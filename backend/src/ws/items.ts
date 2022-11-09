@@ -84,7 +84,7 @@ export default (io: Server, socket: Socket, database: Database, notifications: N
 
             const membersIds = memberships.map(({ userId }) => userId);
             const userIds = [...membersIds, list.userId].filter((userId) => userId !== item.userId);
-            userIds.forEach((userId) =>
+            new Set(userIds).forEach((userId) =>
                 notifications.notify(userId, {
                     title: `New item`,
                     options: {

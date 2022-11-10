@@ -14,6 +14,7 @@ importers:
       '@types/cookie': ^0.5.1
       '@types/cors': ^2.8.12
       '@types/node': ^18.6.3
+      '@types/web-push': ^3.3.2
       '@types/yargs': ^17.0.11
       bcrypt: ^5.0.1
       body-parser: ^1.20.0
@@ -52,6 +53,7 @@ importers:
       '@types/cookie': 0.5.1
       '@types/cors': 2.8.12
       '@types/node': 18.6.3
+      '@types/web-push': 3.3.2
       '@types/yargs': 17.0.11
       node-dev: 7.4.3
       prettier: 2.7.1
@@ -399,6 +401,12 @@ packages:
 
   /@types/sass/1.43.1:
     resolution: {integrity: sha512-BPdoIt1lfJ6B7rw35ncdwBZrAssjcwzI5LByIrYs+tpXlj/CAkuVdRsgZDdP4lq5EjyWzwxZCqAoFyHKFwp32g==}
+    dependencies:
+      '@types/node': 18.6.3
+    dev: true
+
+  /@types/web-push/3.3.2:
+    resolution: {integrity: sha512-JxWGVL/m7mWTIg4mRYO+A6s0jPmBkr4iJr39DqJpRJAc+jrPiEe1/asmkwerzRon8ZZDxaZJpsxpv0Z18Wo9gw==}
     dependencies:
       '@types/node': 18.6.3
     dev: true

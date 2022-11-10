@@ -31,8 +31,10 @@
 		const shouldRedirect = redirectTo !== null;
 
 		if (!browser) return;
-		if (isAuthenticated && shouldRedirect) goto(redirectTo);
-		if (!isAuthenticated && pathname !== '/') goto('/?redirect=' + encodeURIComponent(pathname));
+		else if (isAuthenticated && shouldRedirect) goto(redirectTo);
+		else if (isAuthenticated && pathname === '/') goto('/lists/');
+		else if (!isAuthenticated && pathname !== '/')
+			goto('/?redirect=' + encodeURIComponent(pathname));
 	});
 </script>
 

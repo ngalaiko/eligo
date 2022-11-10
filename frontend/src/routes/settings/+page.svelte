@@ -41,7 +41,7 @@
 					name="username"
 					type="text"
 					disabled
-					value={user.name}
+					value={user?.name}
 					class="border-2"
 				/>
 
@@ -51,7 +51,7 @@
 					id="display-name"
 					name="display-name"
 					type="text"
-					value={user.displayName ?? user.name}
+					value={user?.displayName ?? user?.name}
 					class="border-2"
 				/>
 

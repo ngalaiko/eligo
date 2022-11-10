@@ -5,7 +5,7 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { auth, logout } from '$lib/api';
-	import { onMount } from 'svelte';
+	import { writable } from 'svelte/store';
 
 	const analyticsId = import.meta.env.VERCEL_ANALYTICS_ID;
 	$: if (!dev && browser && analyticsId) {
@@ -21,19 +21,30 @@
 			.then(() => ($auth.user = undefined))
 			.then(() => goto('/'));
 
-	onMount(() => {
-		if (browser && !$auth.user && $page.url.pathname !== '/')
-			goto('/?redirect=' + encodeURIComponent($page.url.pathname));
+	const authLoaded = writable(false);
+	auth.subscribe(({ user }) => {
+		authLoaded.set(true);
+
+		const isAuthenticated = user !== undefined;
+		const redirectTo = $page.url.searchParams.get('redirect');
+		const pathname = $page.url.pathname;
+		const shouldRedirect = redirectTo !== null;
+
+		if (!browser) return;
+		if (isAuthenticated && shouldRedirect) goto(redirectTo);
+		if (!isAuthenticated && pathname !== '/') goto('/?redirect=' + encodeURIComponent(pathname));
 	});
 </script>
 
 <main class="flex flex-col max-w-lg h-screen p-4 mx-auto">
-	<header class="flex gap-6 pb-3 w-full justify-end">
-		{#if $auth.user}
-			<a class="underline" href="/settings/">settings</a>
-			<button on:click|preventDefault={onLogoutClick} class="underline">logout</button>
-		{/if}
-	</header>
+	{#if $authLoaded}
+		<header class="flex gap-6 pb-3 w-full justify-end">
+			{#if $auth.user}
+				<a class="underline" href="/settings/">settings</a>
+				<button on:click|preventDefault={onLogoutClick} class="underline">logout</button>
+			{/if}
+		</header>
 
-	<slot />
+		<slot />
+	{/if}
 </main>

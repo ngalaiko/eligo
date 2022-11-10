@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { auth, login, signup } from '$lib/api';
-	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { browser } from '$app/environment';
 
 	let username = '';
 	let password = '';
@@ -35,13 +33,10 @@
 				$auth.user = user;
 				username = '';
 				password = '';
+				goto('/lists/');
 			})
 			.catch((err) => (error = err.message));
 	};
-
-	auth.subscribe(({ user }) => {
-		if (browser && user) goto($page.url.searchParams.get('redirect') ?? '/lists/');
-	});
 </script>
 
 <svelte:head>

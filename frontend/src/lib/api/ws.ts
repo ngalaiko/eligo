@@ -1,7 +1,7 @@
 import io from 'socket.io-client';
 import { wsHost } from './http';
 import { dev } from '$app/environment';
-import { writable, derived, readable, type Readable } from 'svelte/store';
+import { writable, derived } from 'svelte/store';
 import { openDB } from 'idb';
 import {
     type Action,

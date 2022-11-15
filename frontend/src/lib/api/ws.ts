@@ -34,8 +34,6 @@ export const connected = derived(connectedStore, (v) => v);
 socket.on('connect', () => connectedStore.set(true));
 socket.on('disconnect', () => connectedStore.set(false));
 
-connected.subscribe((v) => (v ? console.log('connected') : console.log('disconnected')));
-
 export const send = async (action: Action) =>
     new Promise<void>((resolve, reject) =>
         socket.emit(action.type, action.payload, (error: Error) => {

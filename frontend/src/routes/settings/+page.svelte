@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { Button as NotificationsButton } from '$lib/webPushSubscriptions';
-
 	import { auth, updateUser } from '$lib/api';
 	import { list, update } from '$lib/users';
+	import IconChevronLeft from '$lib/assets/IconChevronLeft.svelte';
 
 	let form: HTMLFormElement;
 	let passwordInput: HTMLInputElement;
@@ -26,6 +26,15 @@
 </svelte:head>
 
 <div class="flex flex-col gap-6">
+	<
+		href="/lists/"
+		on:click|preventDefault={() => window.history.back()}
+		class="hover:opacity-70 flex items-center"
+	>
+		<IconChevronLeft class="w-4 h-4 -ml-2" />
+		<span>back</span>
+	</a>
+
 	<div class="flex flex-col gap-3">
 		<span>update your profile:</span>
 		<form

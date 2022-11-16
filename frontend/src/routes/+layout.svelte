@@ -39,6 +39,16 @@
 	});
 </script>
 
+<svelte:head>
+	{#if !dev}
+		<script
+			async
+			defer
+			data-website-id="96bd2fa8-3fdd-4717-89fe-c6ce9e65a6a9"
+			src="https://umami.eligo.rocks/umami.js"></script>
+	{/if}
+</svelte:head>
+
 <main class="flex flex-col max-w-lg h-screen p-4 mx-auto">
 	{#if $authLoaded}
 		<header class="flex justify-between pb-3 w-full">

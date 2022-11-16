@@ -151,9 +151,11 @@ export const connect = async () => {
         const keys = await db.getAllKeys(user.id);
         const lastSynched = keys.reduce((max, key) => (key > max ? key : max), 0);
 
-        // @ts-ignore
-        // i am sure it's a map here
-        socket.auth.lastSynched = lastSynched;
+        socket.auth = {
+            ...socket.auth,
+            lastSynched,
+            userId: user.id
+        };
 
         // save all new events to the store
         eventTypes.forEach((eventType) => {

@@ -23,6 +23,7 @@ export default (
                     .sendNotification(subscription, JSON.stringify(notification), {
                         vapidDetails
                     })
+                    .then(() => console.info(`${notification} sent to ${userId}`))
                     .catch((error) => {
                         if (error.statusCode === 410) {
                             database.append(
@@ -33,7 +34,7 @@ export default (
                                 })
                             );
                         } else {
-                            throw error;
+                            console.error(error);
                         }
                     });
             })

@@ -44,7 +44,11 @@ export const send = async (action: Action) =>
     );
 
 // debug logs for development
-if (dev) socket.onAny((event, ...args) => console.debug(event, args));
+if (dev) {
+    socket.onAny((event, ...args) => console.debug(event, args));
+    socket.on('disconnect', () => console.debug('disconnected'));
+    socket.on('connect', () => console.debug('connected'));
+}
 
 const eventTypes = [
     lists.created.type,
@@ -132,9 +136,6 @@ socket.on('disconnect', () => connectedStore.set(socket.connected));
 socket.on('connect_error', () => connectedStore.set(socket.connected));
 socket.on('connect_error', () => auth.set({}));
 socket.once('auth', () => connectedStore.set(socket.connected));
-
-socket.on('disconnect', () => console.log('disconnected'));
-socket.on('connect', () => console.log('connected'));
 
 export const connect = async () => {
     const user = get(auth).user;

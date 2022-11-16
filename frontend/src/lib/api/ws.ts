@@ -1,6 +1,6 @@
 import io from 'socket.io-client';
 import { wsHost } from './http';
-import { dev } from '$app/environment';
+import { browser, dev } from '$app/environment';
 import { writable, derived, get } from 'svelte/store';
 import { openDB } from 'idb';
 import {
@@ -24,8 +24,7 @@ const socket = io(wsHost, {
     withCredentials: true,
     autoConnect: false,
     auth: {
-        userId: window.localStorage.getItem('user.id'),
-        userName: window.localStorage.getItem('user.name')
+        userId: browser ? window.localStorage.getItem('user.id') : null
     }
 });
 
@@ -90,6 +89,7 @@ eventTypes.forEach((eventType) =>
 type User = { id: string; name: string };
 
 const getUserFromLocalStorage = () => {
+    if (!browser) return undefined;
     const id = window.localStorage.getItem('user.id');
     const name = window.localStorage.getItem('user.name');
     return !!id && !!name ? { id, name } : undefined;
@@ -101,6 +101,7 @@ const saveUserToLocalStorage = (user: User) => {
 };
 
 const deleteUserFromLocalStorage = () => {
+    if (!browser) return;
     window.localStorage.removeItem('user.id');
     window.localStorage.removeItem('user.name');
 };
@@ -154,8 +155,7 @@ export const connect = async () => {
 
         socket.auth = {
             ...socket.auth,
-            lastSynched,
-            userId: user.id
+            lastSynched
         };
 
         // save all new events to the store

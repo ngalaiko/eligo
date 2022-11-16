@@ -26,7 +26,7 @@
 </svelte:head>
 
 <div class="flex flex-col gap-6">
-	<
+	<a
 		href="/lists/"
 		on:click|preventDefault={() => window.history.back()}
 		class="hover:opacity-70 flex items-center"

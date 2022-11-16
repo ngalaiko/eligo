@@ -1,8 +1,17 @@
 name: ci
 on:
+  workflow_dispatch: {}
   push:
     branches:
       - 'master'
+    paths:
+      - 'backend/**/*'
+      - 'protocol/**/*'
+      - 'state/**/*'
+      - '.dockerignore'
+      - 'Dockerfile.backend'
+      - 'fly.toml'
+      - 'pnpm-lock.yaml'
 env:
   FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 jobs:

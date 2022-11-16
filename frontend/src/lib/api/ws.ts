@@ -1,7 +1,7 @@
 import io from 'socket.io-client';
 import { wsHost } from './http';
 import { dev } from '$app/environment';
-import { writable, derived } from 'svelte/store';
+import { writable, derived, get } from 'svelte/store';
 import { openDB } from 'idb';
 import {
     type Action,
@@ -24,15 +24,13 @@ const socket = io(wsHost, {
     withCredentials: true,
     autoConnect: false,
     auth: {
-        userId: window.localStorage.getItem('user.id')
+        userId: window.localStorage.getItem('user.id'),
+        userName: window.localStorage.getItem('user.name')
     }
 });
 
-const connectedStore = writable(false);
+const connectedStore = writable(true);
 export const connected = derived(connectedStore, (v) => v);
-
-socket.on('connect', () => connectedStore.set(true));
-socket.on('disconnect', () => connectedStore.set(false));
 
 export const send = async (action: Action) =>
     new Promise<void>((resolve, reject) =>
@@ -45,37 +43,7 @@ export const send = async (action: Action) =>
         })
     );
 
-// auth
-
-type User = { id: string; name: string };
-
-export const auth = writable<{ user?: User }>({});
-
-socket.on('auth', async (user: User) => {
-    const db = await openDB('eligo', 1, {
-        upgrade: (db) => db.createObjectStore(user.id)
-    });
-
-    // booststrap state from the local db
-    const values = await db.getAll(user.id);
-    actions.set(values);
-    db.close();
-
-    auth.set({ user });
-});
-
-auth.subscribe(({ user }) => {
-    if (user) {
-        if (socket.disconnected) socket.connect();
-        window.localStorage.setItem('user.id', user.id);
-    }
-    if (!user && socket.connected) {
-        socket.disconnect();
-        window.localStorage.removeItem('user.id');
-    }
-});
-
-// debug logs
+// debug logs for development
 if (dev) socket.onAny((event, ...args) => console.debug(event, args));
 
 const eventTypes = [
@@ -108,41 +76,98 @@ const eventTypes = [
     webPushSuscriptions.deleted.type
 ];
 
-// subscribe to events
+// subscribe to all events
 eventTypes.forEach((eventType) =>
     socket.on(eventType, (action) =>
         actions.update((log) => [...log, { type: eventType, payload: action }])
     )
 );
 
-(async () => {
-    const userId = window.localStorage.getItem('user.id');
-    if (!userId) {
-        socket.connect();
-        return;
+type User = { id: string; name: string };
+
+const getUserFromLocalStorage = () => {
+    const id = window.localStorage.getItem('user.id');
+    const name = window.localStorage.getItem('user.name');
+    return !!id && !!name ? { id, name } : undefined;
+};
+
+const saveUserToLocalStorage = (user: User) => {
+    window.localStorage.setItem('user.id', user.id);
+    window.localStorage.setItem('user.name', user.name);
+};
+
+const deleteUserFromLocalStorage = () => {
+    window.localStorage.removeItem('user.id');
+    window.localStorage.removeItem('user.name');
+};
+
+export const auth = writable<{ user?: User }>({
+    user: getUserFromLocalStorage()
+});
+
+auth.subscribe(({ user }) => {
+    if (user) {
+        // keep user in the local storage
+        saveUserToLocalStorage(user);
+    } else {
+        // cleanup user from the local storage if disconnected
+        if (socket.connected) socket.disconnect();
+        deleteUserFromLocalStorage();
     }
+});
 
+auth.subscribe(async ({ user }) => {
+    if (!user) return;
+
+    // boststrap state from the local db
     const db = await openDB('eligo', 1, {
-        upgrade: (db) => db.createObjectStore(userId)
+        upgrade: (db) => db.createObjectStore(user.id)
     });
+    actions.set(await db.getAll(user.id));
+    db.close();
+});
 
-    const keys = await db.getAllKeys(userId);
-    const lastSynched = keys.reduce((max, key) => (key > max ? key : max), 0);
+socket.on('connect', () => connectedStore.set(socket.connected));
+socket.on('disconnect', () => connectedStore.set(socket.connected));
+socket.on('connect_error', () => connectedStore.set(socket.connected));
+socket.on('connect_error', () => auth.set({}));
+socket.once('auth', () => connectedStore.set(socket.connected));
 
-    // @ts-ignore
-    // i am sure it's a map here
-    socket.auth.lastSynched = lastSynched;
+socket.on('disconnect', () => console.log('disconnected'));
+socket.on('connect', () => console.log('connected'));
 
-    // save all new events to the store
-    eventTypes.forEach((eventType) => {
-        socket.on(eventType, (action) => {
-            db.put(
-                userId,
-                { type: eventType, payload: action },
-                action.deleteTime ?? action.updateTime ?? action.createTime
-            );
+export const connect = async () => {
+    const user = get(auth).user;
+    const isAuthenticated = !!user;
+    if (!isAuthenticated) {
+        socket.once('auth', async (user: User) => auth.set({ user }));
+        socket.connect();
+    } else {
+        const db = await openDB('eligo', 1, {
+            upgrade: (db) => db.createObjectStore(user.id)
         });
-    });
+        socket.on('disconnect', () => db.close());
 
-    socket.connect();
-})();
+        const keys = await db.getAllKeys(user.id);
+        const lastSynched = keys.reduce((max, key) => (key > max ? key : max), 0);
+
+        // @ts-ignore
+        // i am sure it's a map here
+        socket.auth.lastSynched = lastSynched;
+
+        // save all new events to the store
+        eventTypes.forEach((eventType) => {
+            socket.on(eventType, (action) => {
+                db.put(
+                    user.id,
+                    { type: eventType, payload: action },
+                    action.deleteTime ?? action.updateTime ?? action.createTime
+                );
+            });
+        });
+
+        socket.connect();
+    }
+};
+
+connect();

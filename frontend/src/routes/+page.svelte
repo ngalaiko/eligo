@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { auth, login, signup } from '$lib/api';
+	import { auth, login, signup, connect } from '$lib/api';
 	import { goto } from '$app/navigation';
 
 	let username = '';
@@ -19,7 +19,8 @@
 		error = null;
 		await signup({ name: username, password })
 			.then((user) => {
-				$auth.user = user;
+				auth.set({ user });
+				connect();
 				username = '';
 				password = '';
 			})
@@ -30,7 +31,8 @@
 		error = null;
 		await login({ name: username, password })
 			.then((user) => {
-				$auth.user = user;
+				auth.set({ user });
+				connect();
 				username = '';
 				password = '';
 				goto('/lists/');

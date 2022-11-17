@@ -66,8 +66,8 @@ importers:
     specifiers:
       '@eligo/protocol': workspace:*
       '@eligo/state': workspace:*
-      '@sveltejs/adapter-vercel': ^1.0.0-next.81
-      '@sveltejs/kit': ^1.0.0-next.546
+      '@sveltejs/adapter-vercel': next
+      '@sveltejs/kit': next
       '@typescript-eslint/eslint-plugin': ^5.27.0
       '@typescript-eslint/parser': ^5.27.0
       autoprefixer: ^10.4.7
@@ -95,7 +95,7 @@ importers:
       '@eligo/protocol': link:../protocol
       '@eligo/state': link:../state
       '@sveltejs/adapter-vercel': 1.0.0-next.81
-      '@sveltejs/kit': 1.0.0-next.546_svelte@3.49.0+vite@3.2.3
+      '@sveltejs/kit': 1.0.0-next.551_svelte@3.49.0+vite@3.2.3
       '@typescript-eslint/eslint-plugin': 5.32.0_iosr3hrei2tubxveewluhu5lhy
       '@typescript-eslint/parser': 5.32.0_qugx7qdu5zevzvxaiqyxfiwquq
       autoprefixer: 10.4.8_postcss@8.4.14
@@ -410,8 +410,8 @@ packages:
       - supports-color
     dev: true
 
-  /@sveltejs/kit/1.0.0-next.546_svelte@3.49.0+vite@3.2.3:
-    resolution: {integrity: sha512-QEA8fIdgRdjf9e0ti+EuEPG3SopyhA9/B4VuWqkT8W6A2q+jb5v2ZvImDRbpOnXJ0G55hlnFq9Mp2hHQ4DYYbQ==}
+  /@sveltejs/kit/1.0.0-next.551_svelte@3.49.0+vite@3.2.3:
+    resolution: {integrity: sha512-pZXPoKHFcEXCEN64bw87Xv3cZO7sGztPKYXyLuzceie4qNzAQOMejxewm1xSYcaublleYXLdBWcrWwGlaSWnyw==}
     engines: {node: '>=16.14'}
     hasBin: true
     requiresBuild: true

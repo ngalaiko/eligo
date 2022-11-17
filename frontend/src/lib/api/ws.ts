@@ -135,13 +135,13 @@ auth.subscribe(async ({ user }) => {
 socket.on('connect', () => connectedStore.set(socket.connected));
 socket.on('disconnect', () => connectedStore.set(socket.connected));
 socket.on('connect_error', () => connectedStore.set(socket.connected));
-socket.once('auth', () => connectedStore.set(socket.connected));
+socket.on('auth', () => connectedStore.set(socket.connected));
+socket.on('auth', async (user: User) => auth.set({ user }));
 
 export const connect = async () => {
     const user = get(auth).user;
     const isAuthenticated = !!user;
     if (!isAuthenticated) {
-        socket.once('auth', async (user: User) => auth.set({ user }));
         socket.connect();
     } else {
         const db = await openDB('eligo', 1, {

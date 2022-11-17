@@ -135,7 +135,6 @@ auth.subscribe(async ({ user }) => {
 socket.on('connect', () => connectedStore.set(socket.connected));
 socket.on('disconnect', () => connectedStore.set(socket.connected));
 socket.on('connect_error', () => connectedStore.set(socket.connected));
-socket.on('connect_error', () => auth.set({}));
 socket.once('auth', () => connectedStore.set(socket.connected));
 
 export const connect = async () => {

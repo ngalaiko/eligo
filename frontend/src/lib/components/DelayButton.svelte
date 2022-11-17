@@ -2,6 +2,7 @@
 	import { createEventDispatcher } from 'svelte';
 
 	export let delayMs = 500;
+	export let disabled = true;
 
 	const updateEvery = delayMs / 100;
 	let timeout: ReturnType<typeof setTimeout>;
@@ -28,6 +29,8 @@
 
 <button
 	class="cursor-pointer select-none border-2 px-2 py-1 rounded-2xl bg-gray-300 flex w-1/4"
+	class:opacity-50={disabled}
+	{disabled}
 	on:mousedown|preventDefault={init}
 	on:touchstart|preventDefault={init}
 	on:mouseup|preventDefault={reset}

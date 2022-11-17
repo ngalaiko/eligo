@@ -1,7 +1,11 @@
 {
 	"name": "eligo",
-	"display": "browser",
-	"start_url": "https://eligo.rocks",
+	"short_name": "eligo",
+	"display": "standalone",
+	"start_url": "/",
+	"scope": "/",
+	"theme_color": "#ffffff",
+	"background_color": "#ffffff",
 	"icons": [
 		{
 			"src": "/android-chrome-192x192.png",

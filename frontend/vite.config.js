@@ -4,7 +4,10 @@ import mkcert from 'vite-plugin-mkcert';
 /** @type {import('vite').UserConfig} */
 const config = {
     server: { https: true },
-    plugins: [sveltekit(), mkcert()]
+    plugins: [sveltekit(), mkcert()],
+    define: {
+        'process.env': {}
+    }
 };
 
 export default config;

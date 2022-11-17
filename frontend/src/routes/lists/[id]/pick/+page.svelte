@@ -6,6 +6,7 @@
 	import DelayButton from '$lib/components/DelayButton.svelte';
 	import { scale } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
+	import { connected } from '$lib/api';
 
 	export let data: PageData;
 
@@ -35,7 +36,7 @@
 		{/key}
 	{/if}
 
-	<DelayButton on:click={onClick}>
+	<DelayButton on:click={onClick} disabled={!$connected}>
 		<span class="underline flex-1">next</span>
 	</DelayButton>
 </div>

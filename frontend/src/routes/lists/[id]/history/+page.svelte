@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { compareDesc } from 'date-fns';
 	import { Distance } from '$lib/time';
 	import { Single as User } from '$lib/users';
 	import { list as itemsList, Single as Item } from '$lib/items';
@@ -48,12 +47,12 @@
 					time: boost.createTime,
 					itemId: boost.itemId
 				}))
-			].sort((a, b) => compareDesc(a.time, b.time))
+			].sort((a, b) => b.time - a.time)
 	);
 </script>
 
 <ul class="overflow-y-scroll flex flex-col gap-2 -mr-3">
-	{#each $entries.sort((a, b) => compareDesc(a.time, b.time)) as entry}
+	{#each $entries.sort((a, b) => b.time - a.time) as entry}
 		<li class="flex gap-1 mr-3">
 			<User userId={entry.userId} />
 			{#if entry.type === 'picks/created'}

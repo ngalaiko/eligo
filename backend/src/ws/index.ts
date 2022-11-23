@@ -12,34 +12,53 @@ import { boosts, items, lists, memberships, picks, users } from '@eligo/state';
 import type { List, User } from '@eligo/protocol';
 import { Notifications } from '../notifications.js';
 
-export default (io: Server, database: Database, tokens: Tokens, notifications: Notifications) => {
-    io.use(async (socket, next) => {
-        if (!socket.handshake.headers.cookie) {
-            next(new Error('unauthorized: token missing'));
-            return;
-        }
-        const cookies = parse(socket.handshake.headers.cookie);
-        const token = cookies['token'];
-        try {
-            const { payload } = await tokens.verify(token);
-            if (!!socket.handshake.auth.userId && payload.sub !== socket.handshake.auth.userId) {
+type Middleware = Parameters<Server['use']>[0];
+
+const authentication =
+    (database: Database, tokens: Tokens): Middleware =>
+        async (socket, next) => {
+            if (!socket.handshake.headers.cookie) {
+                next(new Error('unauthorized: token missing'));
+                return;
+            }
+            const cookies = parse(socket.handshake.headers.cookie);
+            const token = cookies['token'];
+            try {
+                const { payload } = await tokens.verify(token);
+                if (!!socket.handshake.auth.userId && payload.sub !== socket.handshake.auth.userId) {
+                    next(new Error('unauthorized: invalid token'));
+                    return;
+                }
+
+                const user = await database.find('users', { id: payload.sub });
+                if (!user) {
+                    next(new Error('user not found'));
+                } else {
+                    socket.emit('auth', { id: user.id, name: user.name });
+                    socket.data.userId = user.id;
+                    next();
+                }
+            } catch {
                 next(new Error('unauthorized: invalid token'));
                 return;
             }
+        };
 
-            const user = await database.find('users', { id: payload.sub });
-            if (!user) {
-                next(new Error('user not found'));
-            } else {
-                socket.emit('auth', { id: user.id, name: user.name });
-                socket.data.userId = user.id;
-                next();
-            }
-        } catch {
-            next(new Error('unauthorized: invalid token'));
-            return;
-        }
-    });
+const withUpdateTime = <
+    T extends {
+        deleteTime?: EpochTimeStamp;
+        updateTime?: EpochTimeStamp;
+        createTime: EpochTimeStamp;
+    }
+>(
+    v: T
+) => ({
+    ...v,
+    updateTime: v.deleteTime ?? v.updateTime ?? v.createTime
+});
+
+export default (io: Server, database: Database, tokens: Tokens, notifications: Notifications) => {
+    io.use(authentication(database, tokens));
 
     io.on('connection', async (socket) => {
         socket.onAny((event, ...args) => console.log(JSON.stringify({ event, args })));
@@ -81,19 +100,6 @@ export default (io: Server, database: Database, tokens: Tokens, notifications: N
             Array.from(userIds.values()).map((id) => database.find('users', { id }))
         ).then((uu) => uu.filter((u) => !!u) as User[]);
 
-        const withUpdateTime = <
-            T extends {
-                deleteTime?: EpochTimeStamp;
-                updateTime?: EpochTimeStamp;
-                createTime: EpochTimeStamp;
-            }
-        >(
-            v: T
-        ) => ({
-            ...v,
-            updateTime: v.deleteTime ?? v.updateTime ?? v.createTime
-        });
-
         const initActions = [
             ...initLists.map((l) => lists.updated(withUpdateTime(l))),
             ...initBoosts.map((b) => boosts.updated(withUpdateTime(b))),
@@ -103,14 +109,12 @@ export default (io: Server, database: Database, tokens: Tokens, notifications: N
             ...memberWith.map((m) => memberships.updated(withUpdateTime(m)))
         ];
 
-        initActions.forEach((action) => {
-            socket.join(action.payload.id);
-        });
         socket.join(userId);
 
         initActions
             .filter((action) => action.payload.updateTime > lastSynched)
             .forEach((action) => {
+                socket.join(action.payload.id);
                 socket.emit(action.type, action.payload);
             });
 

@@ -136,7 +136,7 @@ export default (
                             title: `New member`,
                             options: {
                                 body: `${user.name} joined ${list.title}`,
-                                timestamp: new Date().getTime(),
+                                timestamp: new Date().getTime()
                             }
                         })
                     );

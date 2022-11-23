@@ -23,10 +23,4 @@
 		bind:this={input}
 		on:blur={onClose}
 	/>
-
-	<div class="flex gap-1 opacity-50 text-sm">
-		<input class="underline" type="submit" value="create" />
-		|
-		<button class="underline" on:click|preventDefault={onClose}>close</button>
-	</div>
 </form>

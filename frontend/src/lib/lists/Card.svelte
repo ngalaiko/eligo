@@ -10,7 +10,7 @@
 	const onDeleteClicked = () => deleteList({ id: list.id });
 </script>
 
-<div id={list.id} class="border-2 px-2 py-1 rounded-2xl hover:bg-yellow-100">
+<div id={list.id} class="border-2 px-2 py-1 rounded-2xl hover:bg-gray-100">
 	<span class="font-semibold whitespace-nowrap text-lg text-ellipsis overflow-hidden">
 		{list.title}
 	</span>

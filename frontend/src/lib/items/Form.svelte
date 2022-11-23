@@ -24,6 +24,6 @@
 		class="w-full focus:ring-none focus:outline-none"
 		name="title"
 		bind:value={text}
-		placeholder="add item"
+		placeholder="new item"
 	/>
 </form>

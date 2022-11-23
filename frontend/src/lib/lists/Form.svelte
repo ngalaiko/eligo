@@ -1,23 +1,32 @@
 <script lang="ts">
-	import IconPlus from '$lib/assets/IconPlus.svelte';
-	import { create } from '$lib/lists';
+	import { createEventDispatcher, onMount } from 'svelte';
 
-	let title: string = '';
-	const onCreateClick = async () => {
-		if (!title) return;
-		await create({ title: title });
-		title = '';
-	};
+	const dispatch = createEventDispatcher<{
+		close: {};
+		create: { title: string };
+	}>();
+
+	let value = '';
+	let input: HTMLInputElement;
+	onMount(() => input.focus());
+	const onCreate = () => dispatch('create', { title: value });
+	const onClose = () => dispatch('close');
 </script>
 
-<form on:submit|preventDefault={onCreateClick} class="flex gap-2 border-2 px-2 py-1 rounded-2xl">
-	<IconPlus class="opacity-50" />
-	<input type="submit" hidden />
+<form on:submit|preventDefault={onCreate} class="gap-2 border-2 px-2 py-1 rounded-2xl">
 	<input
 		type="text"
-		class="w-full focus:ring-none focus:outline-none"
+		class="font-semibold whitespace-nowrap text-lg text-ellipsis overflow-hidden w-full focus:ring-none focus:outline-none"
 		name="title"
-		bind:value={title}
-		placeholder="add list"
+		required
+		bind:value
+		bind:this={input}
+		on:blur={onClose}
 	/>
+
+	<div class="flex gap-1 opacity-50 text-sm">
+		<input class="underline" type="submit" value="create" />
+		|
+		<button class="underline" on:click|preventDefault={onClose}>close</button>
+	</div>
 </form>

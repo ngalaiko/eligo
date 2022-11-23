@@ -1,6 +1,13 @@
 <script lang="ts">
-	import { Card, Form, list } from '$lib/lists';
+	import { Button } from '$lib';
+	import IconPlus from '$lib/assets/IconPlus.svelte';
+	import { Card, create, Form, list } from '$lib/lists';
 	import { compareDesc } from 'date-fns';
+
+	let formVisible = false;
+	const showForm = () => (formVisible = true);
+	const hideForm = () => (formVisible = false);
+	const onCreate = (params: { title: string }) => create(params).then(hideForm);
 </script>
 
 <svelte:head>
@@ -8,9 +15,17 @@
 </svelte:head>
 
 <figure class="grid gap-2">
-	<figcaption class="text-2xl font-semibold">Lists</figcaption>
+	<figcaption class="flex justify-between items-center">
+		<span class="font-semibold text-2xl">Lists</span>
+		<Button on:click={showForm}>
+			<IconPlus class="w-5 h-5" />
+		</Button>
+	</figcaption>
 
-	<Form />
+	{#if formVisible}
+		<Form on:close={hideForm} on:create={({ detail }) => onCreate(detail)} />
+	{/if}
+
 	<ul class="grid grid-cols-1 gap-2 -mr-3">
 		{#each $list
 			.filter(({ deleteTime }) => deleteTime === undefined)

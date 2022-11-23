@@ -7,6 +7,21 @@
 	import { auth, logout } from '$lib/api';
 	import { writable } from 'svelte/store';
 	import { ConnectedIndicator } from '$lib';
+	import { onMount } from 'svelte';
+	import { pwaInfo } from 'virtual:pwa-info';
+
+	onMount(async () => {
+		if (pwaInfo) {
+			const { registerSW } = await import('virtual:pwa-register');
+			registerSW({
+				immediate: true,
+				onRegistered: () => console.log(`SW Registered`),
+				onRegisterError: (error) => console.log('SW registration error', error)
+			});
+		}
+	});
+
+	$: webManifest = pwaInfo ? pwaInfo.webManifest.linkTag : '';
 
 	const analyticsId = import.meta.env.VERCEL_ANALYTICS_ID;
 	$: if (!dev && browser && analyticsId) {
@@ -40,12 +55,15 @@
 </script>
 
 <svelte:head>
+	{@html webManifest}
+
 	{#if !dev}
 		<script
 			async
 			defer
 			data-website-id="96bd2fa8-3fdd-4717-89fe-c6ce9e65a6a9"
-			src="https://umami.eligo.rocks/umami.js"></script>
+			src="https://umami.eligo.rocks/umami.js"
+		></script>
 	{/if}
 </svelte:head>
 

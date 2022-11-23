@@ -1,10 +1,5 @@
 import type { WebNotification } from '@eligo/protocol';
-import { build, files, version } from '$service-worker';
-import {
-	cleanupOutdatedCaches,
-	createHandlerBoundToURL,
-	precacheAndRoute
-} from 'workbox-precaching';
+import { createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching';
 import { clientsClaim } from 'workbox-core';
 import { NavigationRoute, registerRoute } from 'workbox-routing';
 
@@ -26,25 +21,12 @@ self.addEventListener('message', (event) => {
 	}
 });
 
-precacheAndRoute(
-	[
-		...build.map((f) => ({
-			url: f,
-			revision: null
-		})),
-		...files.map((f) => ({
-			url: f,
-			revision: version
-		}))
-	],
-	{
-		ignoreURLParametersMatching: [/.*/]
-	}
-);
-cleanupOutdatedCaches();
+precacheAndRoute(self.__WB_MANIFEST);
+
+const allowlist = [/^\/$/];
 
 // to allow work offline
-registerRoute(new NavigationRoute(createHandlerBoundToURL('/')));
+registerRoute(new NavigationRoute(createHandlerBoundToURL('/'), { allowlist }));
 
 self.skipWaiting();
 clientsClaim();

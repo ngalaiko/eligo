@@ -2,7 +2,7 @@
 	"name": "@eligo/frontend",
 	"private": true,
 	"scripts": {
-		"dev": "vite dev",
+		"dev": "NODE_EXTRA_CA_CERTS=$(mkcert -CAROOT)/rootCA.pem vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
 		"lint": "prettier --check . --config ../.prettierrc --ignore-path ./.gitignore --ignore-path .gitignore --plugin prettier-plugin-svelte --plugin-search-dir=.",

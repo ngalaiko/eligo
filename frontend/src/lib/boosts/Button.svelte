@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Button } from '$lib';
 	import IconArrowBigUpLine from '$lib/assets/IconArrowBigUpLine.svelte';
 	import { create } from '$lib/boosts';
 
@@ -12,6 +13,6 @@
 		});
 </script>
 
-<button on:click|preventDefault={onBoostClick} class="items-center underline">
+<Button on:click={onBoostClick}>
 	<IconArrowBigUpLine />
-</button>
+</Button>

@@ -111,12 +111,13 @@ export default (io: Server, database: Database, tokens: Tokens, notifications: N
 
         socket.join(userId);
 
+        // join all the channels
+        initActions.forEach((action) => socket.join(action.payload.id));
+
+        // only send new events
         initActions
             .filter((action) => action.payload.updateTime > lastSynched)
-            .forEach((action) => {
-                socket.join(action.payload.id);
-                socket.emit(action.type, action.payload);
-            });
+            .forEach((action) => socket.emit(action.type, action.payload));
 
         registerUsers(io, socket, database);
         registerLists(io, socket, database);

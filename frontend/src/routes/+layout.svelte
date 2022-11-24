@@ -62,8 +62,7 @@
 			async
 			defer
 			data-website-id="96bd2fa8-3fdd-4717-89fe-c6ce9e65a6a9"
-			src="https://umami.eligo.rocks/umami.js"
-		></script>
+			src="https://umami.eligo.rocks/umami.js"></script>
 	{/if}
 </svelte:head>
 
@@ -77,7 +76,7 @@
 				</div>
 				<div class="flex gap-6 w-full justify-end">
 					<a class="underline" href="/settings/">settings</a>
-					<button on:click|preventDefault={onLogoutClick} class="underline">logout</button>
+					<a class="underline" on:click={onLogoutClick} href="/">logout</a>
 				</div>
 			{/if}
 		</header>

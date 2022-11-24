@@ -1,7 +1,7 @@
+import { dev } from '$app/environment';
 import type { Membership, Error as APIError } from '@eligo/protocol';
 
-const host =
-    process.env.NODE_ENV === 'production' ? 'https://api.eligo.rocks/' : 'https://localhost:31337/';
+const host = dev ? 'https://localhost:31337/' : 'https://api.eligo.rocks/';
 
 export const httpHost = host;
 export const wsHost = host.replace('http', 'ws');
@@ -24,53 +24,73 @@ const handleResponse = async (res: Response): Promise<any> => {
     throw new HTTPError(res.status, 'Something went wrong');
 };
 
-export const join = (params: { invitationId: string }): Promise<Membership> =>
-    fetch(new URL(`/join/${params.invitationId}`, httpHost).toString(), {
-        method: 'POST',
-        credentials: 'include'
-    }).then(handleResponse);
+const handleError = (err: any) => {
+    if (err instanceof HTTPError && err.status % 100 === 5) {
+        console.error(err);
+        throw err;
+    } else {
+        throw err;
+    }
+};
 
-export const signup = (params: {
-    name: string;
-    password: string;
-}): Promise<{ id: string; name: string }> =>
-    fetch(new URL('/users', httpHost).toString(), {
-        method: 'POST',
-        body: JSON.stringify(params),
-        headers: {
-            'content-type': 'application/json'
-        },
-        credentials: 'include'
-    }).then(handleResponse);
+type Fetch = typeof fetch;
 
-export const login = (params: {
-    name: string;
-    password: string;
-}): Promise<{ id: string; name: string }> =>
-    fetch(new URL('/auth', httpHost).toString(), {
-        method: 'POST',
-        body: JSON.stringify(params),
-        headers: {
-            'content-type': 'application/json'
-        },
-        credentials: 'include'
-    }).then(handleResponse);
+export default ({ fetch }: { fetch: Fetch }) => ({
+    join: (params: { invitationId: string }): Promise<Membership> =>
+        fetch(new URL(`/join/${params.invitationId}`, httpHost).toString(), {
+            method: 'POST',
+            credentials: 'include'
+        })
+            .then(handleResponse)
+            .catch(handleError),
 
-export const logout = () =>
-    fetch(new URL('/auth', httpHost).toString(), {
-        method: 'DELETE',
-        credentials: 'include'
-    }).then(handleResponse);
+    auth: {
+        create: (params: { name: string; password: string }): Promise<{ id: string; name: string }> =>
+            fetch(new URL('/auth', httpHost).toString(), {
+                method: 'POST',
+                body: JSON.stringify(params),
+                headers: {
+                    'content-type': 'application/json'
+                },
+                credentials: 'include'
+            })
+                .then(handleResponse)
+                .catch(handleError),
+        delete: () =>
+            fetch(new URL('/auth', httpHost).toString(), {
+                method: 'DELETE',
+                credentials: 'include'
+            })
+                .then(handleResponse)
+                .catch(handleError)
+    },
 
-export const updateUser = (
-    id: string,
-    fields: Partial<{ password: string }>
-): Promise<{ id: string; name: string }> =>
-    fetch(new URL(`/users/${id}`, httpHost).toString(), {
-        method: 'PATCH',
-        credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(fields)
-    }).then(handleResponse);
+    users: {
+        create: (params: { name: string; password: string }): Promise<{ id: string; name: string }> =>
+            fetch(new URL('/users', httpHost).toString(), {
+                method: 'POST',
+                body: JSON.stringify(params),
+                headers: {
+                    'content-type': 'application/json'
+                },
+                credentials: 'include'
+            })
+                .then(handleResponse)
+                .catch(handleError),
+
+        update: (
+            id: string,
+            fields: Partial<{ password: string }>
+        ): Promise<{ id: string; name: string }> =>
+            fetch(new URL(`/users/${id}`, httpHost).toString(), {
+                method: 'PATCH',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(fields)
+            })
+                .then(handleResponse)
+                .catch(handleError)
+    }
+});

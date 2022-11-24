@@ -3,12 +3,13 @@ import { errEmpty, errInvalid, errNotFound, errRequired } from '../validation.js
 import { hash } from 'bcrypt';
 import { users } from '@eligo/state';
 import { nanoid } from 'nanoid';
-import { serialize, parse as parseCookie } from 'cookie';
+import { serialize } from 'cookie';
 import { addDays } from 'date-fns';
 import { HTTPError } from './error.js';
 import type { Database } from '../db.js';
 import type { Tokens } from '../tokens.js';
 import { authCookieName } from './auth.js';
+import { Request } from './request.js';
 
 export default (database: Database, tokens: Tokens) => ({
     handler: polka()
@@ -60,16 +61,10 @@ export default (database: Database, tokens: Tokens) => ({
                 }
             }
         })
-        .patch('/:id', async (req, res) => {
+        .patch('/:id', async (req: Request, res) => {
             try {
-                const user = await database.find('users', { id: req.params.id });
-                if (!user) throw new HTTPError(404, errNotFound('Not found'));
-                try {
-                    const token = parseCookie(req.headers.cookie ?? '')[authCookieName];
-                    await tokens.verify(token);
-                } catch {
+                if (!req.userId || req.userId !== req.params.id)
                     throw new HTTPError(404, errNotFound('Not found'));
-                }
 
                 const { password } = req.body;
 
@@ -79,6 +74,9 @@ export default (database: Database, tokens: Tokens) => ({
                     throw new HTTPError(400, errInvalid(`'password' must be a string`));
                 if (password.length === 0)
                     throw new HTTPError(400, errEmpty(`'password' can not be empty`));
+
+                const user = await database.find('users', { id: req.params.id });
+                if (!user) throw new HTTPError(404, errNotFound('Not found'));
 
                 await database.append(
                     user.id,

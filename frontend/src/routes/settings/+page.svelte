@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Button as NotificationsButton } from '$lib/webPushSubscriptions';
-	import { auth, updateUser } from '$lib/api';
+	import { auth, http } from '$lib/api';
 	import { list, update } from '$lib/users';
 	import IconChevronLeft from '$lib/assets/IconChevronLeft.svelte';
 
@@ -13,7 +13,8 @@
 		const displayName = formData.get('display-name') as string;
 		if (displayName && displayName.length !== 0) update({ displayName });
 		if (password && password.length !== 0)
-			await updateUser($auth.user.id, { password })
+			await http({ fetch })
+				.users.update($auth.user.id, { password })
 				.then(() => (passwordInput.value = ''))
 				.catch(console.error);
 	};

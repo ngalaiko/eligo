@@ -1,11 +1,12 @@
-import { HTTPError, join } from '$lib/api';
+import { http, HTTPError } from '$lib/api';
 import type { PageLoad } from '.svelte-kit/types/src/routes/lists/[id]/history/$types';
 import { redirect } from '@sveltejs/kit';
 
 export const prerender = false;
 
-export const load: PageLoad = ({ params }) =>
-    join({ invitationId: params.id })
+export const load: PageLoad = ({ params, fetch }) =>
+    http({ fetch })
+        .join({ invitationId: params.id })
         .then((membership) => {
             throw redirect(301, `/lists/${membership.listId}/items/`);
         })

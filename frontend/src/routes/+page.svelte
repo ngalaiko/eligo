@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { auth, login, signup, connect } from '$lib/api';
+	import { auth, connect, http } from '$lib/api';
 	import { goto } from '$app/navigation';
 
 	let username = '';
@@ -17,7 +17,8 @@
 
 	const onSignupClick = async () => {
 		error = null;
-		await signup({ name: username, password })
+		await http({ fetch })
+			.users.create({ name: username, password })
 			.then((user) => {
 				auth.set({ user });
 				connect();
@@ -29,7 +30,8 @@
 
 	const onLoginClick = async () => {
 		error = null;
-		await login({ name: username, password })
+		await http({ fetch })
+			.auth.create({ name: username, password })
 			.then((user) => {
 				auth.set({ user });
 				connect();

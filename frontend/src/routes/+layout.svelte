@@ -4,11 +4,12 @@
 	import { browser, dev } from '$app/environment';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { auth, logout } from '$lib/api';
+	import { auth } from '$lib/api';
 	import { writable } from 'svelte/store';
 	import { ConnectedIndicator } from '$lib';
 	import { onMount } from 'svelte';
 	import { pwaInfo } from 'virtual:pwa-info';
+	import http from '$lib/api/http';
 
 	onMount(async () => {
 		if (pwaInfo) {
@@ -33,7 +34,8 @@
 	}
 
 	const onLogoutClick = () =>
-		logout()
+		http({ fetch })
+			.auth.delete()
 			.then(() => ($auth.user = undefined))
 			.then(() => goto('/'));
 

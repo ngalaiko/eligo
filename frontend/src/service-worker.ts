@@ -25,12 +25,6 @@ precacheAndRoute(self.__WB_MANIFEST);
 
 // to allow work offline
 registerRoute(new NavigationRoute(createHandlerBoundToURL('/'), { allowlist: [/^\/$/] }));
-registerRoute(
-    new NavigationRoute(createHandlerBoundToURL('/settings'), { allowlist: [/^\/settings\/?$/] })
-);
-registerRoute(
-    new NavigationRoute(createHandlerBoundToURL('/lists'), { allowlist: [/^\/lists\/?$/] })
-);
 
 self.skipWaiting();
 clientsClaim();

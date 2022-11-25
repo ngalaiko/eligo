@@ -2,7 +2,7 @@ import io from 'socket.io-client';
 import { wsHost } from './http';
 import { browser, dev } from '$app/environment';
 import { writable, derived, get } from 'svelte/store';
-import { openDB } from 'idb';
+import { deleteDB, openDB } from 'idb';
 import {
     type Action,
     emptyState,
@@ -78,13 +78,6 @@ const eventTypes = [
     webPushSuscriptions.deleted.type
 ];
 
-// subscribe to all events
-eventTypes.forEach((eventType) =>
-    socket.on(eventType, (action) =>
-        state.update((state) => reduce(state, { type: eventType, payload: action }))
-    )
-);
-
 type User = { id: string; name: string };
 
 const getUserFromLocalStorage = () => {
@@ -132,7 +125,8 @@ export const connect = async () => {
     if (!isAuthenticated) {
         socket.connect();
     } else {
-        const db = await openDB('eligo', 1, {
+        deleteDB('eligo');
+        const db = await openDB('eligo.2', 1, {
             upgrade: (db) => db.createObjectStore(user.id)
         });
         socket.on('disconnect', () => db.close());
@@ -141,10 +135,6 @@ export const connect = async () => {
         await db
             .getAll(user.id)
             .then((actions) => actions.reduce(reduce, emptyState))
-            .then((state) => {
-                console.log(state);
-                return state;
-            })
             .then(state.set);
 
         const keys = await db.getAllKeys(user.id);
@@ -157,6 +147,13 @@ export const connect = async () => {
 
         // save all new events to the store
         eventTypes.forEach((eventType) => {
+            // subscribe to all events
+            eventTypes.forEach((eventType) =>
+                socket.on(eventType, (action) =>
+                    state.update((state) => reduce(state, { type: eventType, payload: action }))
+                )
+            );
+
             socket.on(eventType, (action) =>
                 db.put(
                     user.id,

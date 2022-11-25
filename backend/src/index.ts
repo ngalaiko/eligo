@@ -15,14 +15,6 @@ import { argv } from './cmd.js';
 
 const database = openDatabase(argv.database);
 const tokens = await Tokens(database);
-const notifications = Notifications(
-    {
-        subject: 'mailto:nikita@galaiko.rocks',
-        privateKey: readFileSync(argv.vapidPrivateKeyPath).toString().trim(),
-        publicKey: argv.vapidPublicKey
-    },
-    database
-);
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
@@ -42,6 +34,16 @@ const app = polka({ server })
     );
 
 const io = new Server(server, { cors: corsOptions });
+
+const notifications = Notifications(
+    {
+        subject: 'mailto:nikita@galaiko.rocks',
+        privateKey: readFileSync(argv.vapidPrivateKeyPath).toString().trim(),
+        publicKey: argv.vapidPublicKey
+    },
+    database,
+    io
+);
 
 setupHttp(app, database, tokens, io, notifications);
 setupWs(io, database, tokens, notifications);

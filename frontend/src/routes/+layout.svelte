@@ -1,5 +1,6 @@
 <script lang="ts">
 	import '../app.postcss';
+	import { inject } from '@vercel/analytics';
 	import { webVitals } from '$lib/vitals';
 	import { browser, dev } from '$app/environment';
 	import { page } from '$app/stores';
@@ -11,6 +12,7 @@
 	import { pwaInfo } from 'virtual:pwa-info';
 	import http from '$lib/api/http';
 
+	onMount(inject);
 	onMount(async () => {
 		if (pwaInfo) {
 			const { registerSW } = await import('virtual:pwa-register');
@@ -64,7 +66,8 @@
 			async
 			defer
 			data-website-id="96bd2fa8-3fdd-4717-89fe-c6ce9e65a6a9"
-			src="https://umami.eligo.rocks/umami.js"></script>
+			src="https://umami.eligo.rocks/umami.js"
+		></script>
 	{/if}
 </svelte:head>
 

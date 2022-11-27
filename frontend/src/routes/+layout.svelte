@@ -12,7 +12,7 @@
 	import { pwaInfo } from 'virtual:pwa-info';
 	import http from '$lib/api/http';
 
-	onMount(inject);
+	if (!dev) onMount(inject);
 	onMount(async () => {
 		if (pwaInfo) {
 			const { registerSW } = await import('virtual:pwa-register');
@@ -60,15 +60,6 @@
 
 <svelte:head>
 	{@html webManifest}
-
-	{#if !dev}
-		<script
-			async
-			defer
-			data-website-id="96bd2fa8-3fdd-4717-89fe-c6ce9e65a6a9"
-			src="https://umami.eligo.rocks/umami.js"
-		></script>
-	{/if}
 </svelte:head>
 
 <main class="flex flex-col max-w-lg h-screen p-4 mx-auto">

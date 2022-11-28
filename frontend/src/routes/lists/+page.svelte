@@ -11,7 +11,7 @@
 </script>
 
 <svelte:head>
-	<title>Lists</title>
+	<title>lists</title>
 </svelte:head>
 
 <figure class="flex flex-col min-h-0 flex-1 gap-2">

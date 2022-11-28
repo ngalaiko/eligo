@@ -26,15 +26,18 @@
 	<title>settings</title>
 </svelte:head>
 
-<div class="flex flex-col gap-6">
-	<a
-		href="/lists/"
-		on:click|preventDefault={() => window.history.back()}
-		class="hover:opacity-70 flex items-center"
-	>
-		<IconChevronLeft class="w-4 h-4 -ml-2" />
-		<span>back</span>
-	</a>
+<figure class="flex flex-col min-h-0 flex-1 gap-2">
+	<figcaption>
+		<a
+			href="/lists/"
+			on:click|preventDefault={() => window.history.back()}
+			class="hover:opacity-70 flex items-center"
+		>
+			<IconChevronLeft class="w-4 h-4 -ml-2" />
+			<span>back</span>
+		</a>
+		<h2 class="whitespace-nowrap text-2xl font-semibold">settings</h2>
+	</figcaption>
 
 	<div class="flex flex-col gap-3">
 		<span>update your profile:</span>
@@ -82,4 +85,4 @@
 		<span>push notifications:</span>
 		<NotificationsButton />
 	</div>
-</div>
+</figure>

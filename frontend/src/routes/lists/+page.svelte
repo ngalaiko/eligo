@@ -14,7 +14,7 @@
 	<title>Lists</title>
 </svelte:head>
 
-<figure class="grid gap-2">
+<figure class="flex flex-col min-h-0 flex-1 gap-2">
 	<figcaption class="flex justify-between items-center">
 		<span class="font-semibold text-2xl">Lists</span>
 		<Button on:click={showForm}>
@@ -26,7 +26,7 @@
 		<Form on:close={hideForm} on:create={({ detail }) => onCreate(detail)} />
 	{/if}
 
-	<ul class="grid grid-cols-1 gap-2 -mr-3">
+	<ul class="overflow-y-scroll flex flex-col gap-2 -mr-3">
 		{#each $list
 			.filter(({ deleteTime }) => deleteTime === undefined)
 			.sort((a, b) => compareDesc(a.createTime, b.createTime)) as list}

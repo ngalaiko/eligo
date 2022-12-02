@@ -52,7 +52,7 @@
 </script>
 
 <ul class="overflow-y-scroll flex flex-col gap-2 -mr-3">
-	{#each $entries.sort((a, b) => b.time - a.time) as entry}
+	{#each $entries.sort((a, b) => b.time - a.time) as entry (entry.time)}
 		<li class="flex gap-1 mr-3">
 			<User userId={entry.userId} />
 			{#if entry.type === 'picks/created'}

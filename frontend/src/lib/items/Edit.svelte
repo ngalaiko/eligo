@@ -16,7 +16,7 @@
 		await update({
 			id: item.id,
 			text: text,
-			coordinates: coordinates && coordinates.length > 0 ? coordinates : null,
+			coordinates: coordinates && coordinates.length > 0 ? coordinates.split(",").map(parseFloat) : null,
 			url: url && url.length > 0 ? url : null
 		});
 		emitClose();

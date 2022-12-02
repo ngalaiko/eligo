@@ -52,7 +52,7 @@ export type Item = Type<{
 	text: string;
 	listId: string;
 	userId: string;
-	coordinates?: string;
+	coordinates?: number[];
 	url?: string;
 }>;
 

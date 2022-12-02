@@ -16,9 +16,8 @@
 	};
 
 	const createMarker = (item: Item) => {
-		const coords = item.coordinates.split(',').map(parseFloat);
 		const icon = markerIcon();
-		const marker = L.marker(coords, { icon });
+		const marker = L.marker(item.coordinates, { icon });
 		bindPopup(marker, (m) => {
 			return new Popup({
 				target: m,
@@ -64,7 +63,7 @@
 	};
 
 	const mapAction = (container) => {
-		const locaitonItems = items.filter((i) => i.coordinates);
+		const locaitonItems = items.filter((i) => i.coordinates && i.coordinates.length === 2);
 
 		// no locations, no map
 		if (locaitonItems.length === 0) {

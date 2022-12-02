@@ -97,4 +97,29 @@ export default (io: Server, socket: Socket, database: Database, notifications: N
 
 		callback(null);
 	});
+
+	socket.on(items.update.type, async (req: Partial<Item>, callback) => {
+		const validationErr = validate(req, {
+			id: 'required',
+			updateTime: 'required'
+		});
+		if (validationErr) {
+			callback(validationErr);
+			return;
+		}
+
+		const item = await database.find('items', { id: req.id });
+		if (!item) {
+			callback(errNotFound('item not found'));
+			return;
+		}
+
+		const patch = { text: req.text, updateTime: req.updateTime! };
+		await database.append(req.id, items.update({ id: item.id, ...patch }));
+
+		const updated = items.updated({ id: item.id, ...patch });
+		io.to([item.id, item.listId]).emit(updated.type, updated.payload);
+
+		callback(null);
+	});
 };

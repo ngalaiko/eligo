@@ -6,6 +6,7 @@ import { derived, get } from 'svelte/store';
 export { default as Card } from './Card.svelte';
 export { default as Form } from './Form.svelte';
 export { default as Single } from './Single.svelte';
+export { default as Edit } from './Edit.svelte';
 
 export const list = derived(state, (state) => Object.values(state.items));
 
@@ -23,3 +24,11 @@ const _delete = (params: { id: string }) =>
 	send(items.delete({ ...params, deleteTime: new Date().getTime() }));
 
 export { _delete as delete };
+
+export const update = (params: { id: string; text?: string }) =>
+	send(
+		items.update({
+			...params,
+			updateTime: new Date().getTime()
+		})
+	);

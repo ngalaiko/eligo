@@ -21,31 +21,31 @@ const isDevelopment = process.env.NODE_ENV === 'development';
 const pwd = dirname(process.argv[1]);
 
 const server = isDevelopment
-    ? createHttps({
-        cert: readFileSync(`${pwd}/../.cert/localhost.pem`),
-        key: readFileSync(`${pwd}/../.cert/localhost-key.pem`)
-    })
-    : createHttp();
+	? createHttps({
+			cert: readFileSync(`${pwd}/../.cert/localhost.pem`),
+			key: readFileSync(`${pwd}/../.cert/localhost-key.pem`)
+	  })
+	: createHttp();
 
 const app = polka({ server })
-    .use(cors(corsOptions))
-    .listen(argv.port, argv.host, () =>
-        console.log(`listening on ${isDevelopment ? 'https' : 'http'}://${argv.host}:${argv.port}`)
-    );
+	.use(cors(corsOptions))
+	.listen(argv.port, argv.host, () =>
+		console.log(`listening on ${isDevelopment ? 'https' : 'http'}://${argv.host}:${argv.port}`)
+	);
 
 const io = new Server(server, { cors: corsOptions });
 
 const notifications = argv.vapidPublicKey
-    ? Notifications(
-        {
-            subject: 'mailto:nikita@galaiko.rocks',
-            privateKey: readFileSync(argv.vapidPrivateKeyPath).toString().trim(),
-            publicKey: argv.vapidPublicKey
-        },
-        database,
-        io
-    )
-    : noop;
+	? Notifications(
+			{
+				subject: 'mailto:nikita@galaiko.rocks',
+				privateKey: readFileSync(argv.vapidPrivateKeyPath).toString().trim(),
+				publicKey: argv.vapidPublicKey
+			},
+			database,
+			io
+	  )
+	: noop;
 
 setupHttp(app, database, tokens, io, notifications);
 setupWs(io, database, tokens, notifications);

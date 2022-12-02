@@ -15,7 +15,9 @@
 	const onUpdateClicked = async () => {
 		await update({
 			id: item.id,
-			text: text
+			text: text,
+			coordinates: coordinates && coordinates.length > 0 ? coordinates : null,
+			url: url && url.length > 0 ? url : null
 		});
 		emitClose();
 	};
@@ -25,6 +27,8 @@
 	};
 
 	let text = item.text;
+	let url = item.url;
+	let coordinates = item.coordinates;
 </script>
 
 <div id={item.id} class="border-2 px-2 py-1 rounded-2xl bg-gray-300">
@@ -42,6 +46,12 @@
 				<fieldset class="grid grid-cols-3 gap-1  w-full">
 					<label for="text">name</label>
 					<input id="text" type="text" class="col-span-2" bind:value={text} />
+
+					<label for="url">url</label>
+					<input id="url" type="text" class="col-span-2" bind:value={url} />
+
+					<label for="coordinates">coordinates</label>
+					<input id="coordinates" type="text" class="col-span-2" bind:value={coordinates} />
 				</fieldset>
 
 				<button type="submit" class="underline">save</button>

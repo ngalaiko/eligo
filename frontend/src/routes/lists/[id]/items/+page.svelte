@@ -35,7 +35,7 @@
 	{#each $items
 		.filter(({ deleteTime }) => !deleteTime)
 		.sort(byAlphabet)
-		.sort(byChance) as item}
+		.sort(byChance) as item (item.id)}
 		{@const chance = $chances[item.id]}
 		<li class="mr-3">
 			<Card {item} {chance} />

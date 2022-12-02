@@ -7,6 +7,7 @@
 	import { scale } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import { connected } from '$lib/api';
+	import { Map } from '$lib/items/map';
 
 	export let data: PageData;
 
@@ -16,9 +17,9 @@
 		.filter((p) => p.listId === data.listId)
 		.reduce((latest, pick) => (pick.createTime <= latest.createTime ? latest : pick), $picks[0]);
 
-	$: item = $items
-		.filter((i) => i.listId === data.listId)
-		.find(({ id }) => id === latestPick?.itemId);
+	$: item = listItems.find(({ id }) => id === latestPick?.itemId);
+
+	$: listItems = $items.filter((i) => i.listId === data.listId);
 </script>
 
 <div class="flex flex-col gap-2 items-center">
@@ -40,3 +41,5 @@
 		<span class="underline flex-1">next</span>
 	</DelayButton>
 </div>
+
+<Map items={listItems} />

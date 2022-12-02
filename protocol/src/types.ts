@@ -52,6 +52,8 @@ export type Item = Type<{
 	text: string;
 	listId: string;
 	userId: string;
+	coordinates?: string;
+	url?: string;
 }>;
 
 export type Pick = Type<{

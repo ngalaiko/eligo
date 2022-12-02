@@ -101,7 +101,9 @@ export default (io: Server, socket: Socket, database: Database, notifications: N
 	socket.on(items.update.type, async (req: Partial<Item>, callback) => {
 		const validationErr = validate(req, {
 			id: 'required',
-			updateTime: 'required'
+			updateTime: 'required',
+			url: 'optional',
+			coordinates: 'optional'
 		});
 		if (validationErr) {
 			callback(validationErr);
@@ -114,7 +116,12 @@ export default (io: Server, socket: Socket, database: Database, notifications: N
 			return;
 		}
 
-		const patch = { text: req.text, updateTime: req.updateTime! };
+		const patch = {
+			text: req.text,
+			updateTime: req.updateTime!,
+			url: req.url,
+			coordinates: req.coordinates
+		};
 		await database.append(req.id, items.update({ id: item.id, ...patch }));
 
 		const updated = items.updated({ id: item.id, ...patch });

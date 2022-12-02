@@ -36,7 +36,7 @@ app = "eligo-backend"
     timeout = "2s"
 
 [experimental]
-  cmd = ["--host", "0.0.0.0", "--port", "8080", "--database", "/data/database.jsonl", "--vapid-private-key-path", "/data/vapid-private-key.txt"] 
+  cmd = ["--host", "0.0.0.0", "--port", "8080", "--database", "/data/database.jsonl", "--vapid-private-key-path", "/data/vapid-private-key.txt", "--vapid-public-key", "BOf5qTvP_zovZipWAEL9lKsiGJC7nMs6qeTIvWoef05EQdSpGksLXCwVJ147qbAM4DO9tOrs8dAQEkQJCxXV0kc"] 
 
 [mounts]
   source="database"

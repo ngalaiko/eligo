@@ -7,7 +7,7 @@
 	import { goto } from '$app/navigation';
 	import { auth } from '$lib/api';
 	import { writable } from 'svelte/store';
-	import { ConnectedIndicator } from '$lib';
+	import { ConnectedIndicator } from '$lib/components';
 	import { onMount } from 'svelte';
 	import { pwaInfo } from 'virtual:pwa-info';
 	import http from '$lib/api/http';

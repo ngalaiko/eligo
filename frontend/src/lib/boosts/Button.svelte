@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button } from '$lib';
+	import { Button } from '$lib/components';
 	import IconArrowBigUpLine from '$lib/assets/IconArrowBigUpLine.svelte';
 	import { ws } from '$lib/api';
 

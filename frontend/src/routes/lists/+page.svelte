@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button } from '$lib';
+	import { Button } from '$lib/components';
 	import IconPlus from '$lib/assets/IconPlus.svelte';
 	import { Card, Form } from '$lib/lists';
 	import { compareDesc } from 'date-fns';

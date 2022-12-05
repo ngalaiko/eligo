@@ -1,5 +1,5 @@
 <script>
-	import { connected } from './api';
+	import { connected } from '$lib/api';
 </script>
 
 <svg

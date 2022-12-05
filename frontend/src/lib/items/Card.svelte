@@ -4,7 +4,7 @@
 	import type { Item } from '@eligo/protocol';
 	import { Distance } from '$lib/time';
 	import { ws } from '$lib/api';
-	import DoubleClickButton from '$lib/components/DoubleClickButton.svelte';
+	import { DoubleClickButton } from '$lib/components';
 	import { Edit } from './index';
 
 	export let item: Item;

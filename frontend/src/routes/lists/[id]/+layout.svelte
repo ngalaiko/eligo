@@ -9,10 +9,9 @@
 	export let data: LayoutData;
 
 	const list = derived(ws.lists.list, (lists) => lists.find(({ id }) => id === data.listId));
-	const hasItems = derived(ws.items.list, (items) =>
-		items.some((item) => item.listId === data.listId)
+	const mapEnabled = derived(ws.items.list, (items) =>
+		items.some((item) => item.listId === data.listId && item.coordinates !== undefined)
 	);
-	$: disabled = !$hasItems;
 </script>
 
 <svelte:head>
@@ -44,8 +43,8 @@
 				href="/lists/{$list.id}/history">history</a
 			>
 			<a
-				class:pointer-events-none={!$hasItems}
-				class:opacity-50={!$hasItems}
+				class:pointer-events-none={!$mapEnabled}
+				class:opacity-50={!$mapEnabled}
 				class:font-bold={$page.url.pathname.startsWith(`/lists/${$list.id}/map`)}
 				href="/lists/{$list.id}/map">map</a
 			>

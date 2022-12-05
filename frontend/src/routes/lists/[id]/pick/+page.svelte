@@ -7,6 +7,7 @@
 	import { connected } from '$lib/api';
 	import { ws } from '$lib/api';
 	import { derived } from 'svelte/store';
+	import { Map } from '$lib/components';
 
 	export let data: PageData;
 
@@ -46,3 +47,7 @@
 		<span class="underline flex-1">next</span>
 	</DelayButton>
 </div>
+
+{#if $item && $item?.coordinates}
+	<Map items={[{ title: $item.text, coordinates: $item.coordinates }]} />
+{/if}

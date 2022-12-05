@@ -48,7 +48,7 @@
 			// remove non existent markers
 			Object.entries(markers).forEach(([id, marker]) => {
 				if (!ids.has(id)) {
-					marker.removeFrom(map);
+					marker.remove();
 					delete markers[id];
 				}
 			});
@@ -56,6 +56,7 @@
 			// add new markers
 			items.forEach(async (item) => {
 				const id = itemId(item);
+				if (markers[id]) return;
 				const m = await marker(item);
 				m.addTo(map);
 				markers[id] = m;

@@ -9,6 +9,10 @@
 	export let data: LayoutData;
 
 	const list = derived(ws.lists.list, (lists) => lists.find(({ id }) => id === data.listId));
+	const hasItems = derived(ws.items.list, (items) =>
+		items.some((item) => item.listId === data.listId)
+	);
+	$: disabled = !$hasItems;
 </script>
 
 <svelte:head>
@@ -28,16 +32,22 @@
 
 		<nav class="flex gap-4 w-full border-b-2">
 			<a
-				class:font-bold={$page.url.pathname === `/lists/${$list.id}/pick`}
-				href="/lists/{$list.id}/pick/">pick</a
+				class:font-bold={$page.url.pathname.startsWith(`/lists/${$list.id}/pick`)}
+				href="/lists/{$list.id}/pick">pick</a
 			>
 			<a
-				class:font-bold={$page.url.pathname === `/lists/${$list.id}/items`}
-				href="/lists/{$list.id}/items/">items</a
+				class:font-bold={$page.url.pathname.startsWith(`/lists/${$list.id}/items`)}
+				href="/lists/{$list.id}/items">items</a
 			>
 			<a
-				class:font-bold={$page.url.pathname === `/lists/${$list.id}/history`}
-				href="/lists/{$list.id}/history/">history</a
+				class:font-bold={$page.url.pathname.startsWith(`/lists/${$list.id}/history`)}
+				href="/lists/{$list.id}/history">history</a
+			>
+			<a
+				class:pointer-events-none={!$hasItems}
+				class:opacity-50={!$hasItems}
+				class:font-bold={$page.url.pathname.startsWith(`/lists/${$list.id}/map`)}
+				href="/lists/{$list.id}/map">map</a
 			>
 		</nav>
 	{/if}

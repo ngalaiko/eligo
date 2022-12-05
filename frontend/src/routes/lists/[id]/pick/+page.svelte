@@ -5,7 +5,6 @@
 	import { scale } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import { connected } from '$lib/api';
-	import { Map } from '$lib/items/map';
 	import { ws } from '$lib/api';
 	import { derived } from 'svelte/store';
 
@@ -47,5 +46,3 @@
 		<span class="underline flex-1">next</span>
 	</DelayButton>
 </div>
-
-<Map items={$listItems} />

@@ -26,7 +26,7 @@
 
 			const markerIcon = () =>
 				L.divIcon({
-					html: `<div class="bg-orange-500 h-4 w-4 opacity-50 rounded-full" />`,
+					html: `<div class="bg-green-900 h-2 w-2 rounded-full" />`,
 					className: 'map-marker'
 				});
 

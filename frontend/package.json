@@ -12,7 +12,7 @@
 		"@eligo/protocol": "workspace:*",
 		"@eligo/state": "workspace:*",
 		"@sveltejs/adapter-vercel": "next",
-		"@sveltejs/kit": "next",
+		"@sveltejs/kit": "1.0.0-next.562",
 		"@types/leaflet": "^1.9.0",
 		"@typescript-eslint/eslint-plugin": "^5.27.0",
 		"@typescript-eslint/parser": "^5.27.0",
@@ -45,10 +45,5 @@
 		"workbox-routing": "^6.5.4",
 		"workbox-window": "^6.5.4"
 	},
-	"type": "module",
-	"dependencies": {
-		"@types/workbox-build": "^5.0.1",
-		"react": "^16.8||^17||^18",
-		"vite-plugin-pwa": "^0.13.3"
-	}
+	"type": "module"
 }

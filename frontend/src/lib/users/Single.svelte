@@ -1,13 +1,12 @@
 <script lang="ts">
-	import { auth } from '$lib/api';
+	import { auth, ws } from '$lib/api';
 
-	import { list } from '$lib/users';
 	import { derived } from 'svelte/store';
 
 	export let userId: string;
 	export let replaceSelf = true;
 
-	const user = derived(list, (list) => list.find(({ id }) => id === userId));
+	const user = derived(ws.users.list, (list) => list.find(({ id }) => id === userId));
 </script>
 
 {#if replaceSelf && userId === $auth.user?.id}

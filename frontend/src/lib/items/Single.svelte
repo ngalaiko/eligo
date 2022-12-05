@@ -1,10 +1,11 @@
 <script lang="ts">
-	import { list } from '$lib/items';
+	import { ws } from '$lib/api';
+	import { derived } from 'svelte/store';
 
 	export let itemId: string;
-	$: item = $list.find(({ id }) => id === itemId);
+	const item = derived(ws.items.list, (list) => list.find(({ id }) => id === itemId));
 </script>
 
 <span class="whitespace-nowrap overflow-ellipsis overflow-hidden">
-	<b>{item.text}</b>
+	<b>{$item.text}</b>
 </span>

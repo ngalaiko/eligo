@@ -1,14 +1,14 @@
 <script lang="ts">
-	import { list as lists } from '$lib/lists';
 	import { InviteLink } from '$lib/memberships';
 	import { page } from '$app/stores';
 	import IconChevronLeft from '$lib/assets/IconChevronLeft.svelte';
 	import { derived } from 'svelte/store';
 	import type { LayoutData } from './$types';
+	import { ws } from '$lib/api';
 
 	export let data: LayoutData;
 
-	const list = derived(lists, (lists) => lists.find(({ id }) => id === data.listId));
+	const list = derived(ws.lists.list, (lists) => lists.find(({ id }) => id === data.listId));
 </script>
 
 <svelte:head>

@@ -1,6 +1,6 @@
 <script lang="ts">
+	import type { Item } from '@eligo/protocol';
 	import L from 'leaflet';
-	import { onMount } from 'svelte';
 	import Popup from './Popup.svelte';
 
 	export let items: Array<Item>;

@@ -2,12 +2,12 @@
 	import { Distance } from '$lib/time';
 	import { Single as User } from '$lib/users';
 	import type { List } from '@eligo/protocol';
-	import { delete as deleteList } from '$lib/lists';
+	import { ws } from '$lib/api';
 	import DoubleClickButton from '$lib/components/DoubleClickButton.svelte';
 
 	export let list: List;
 
-	const onDeleteClicked = () => deleteList({ id: list.id });
+	const onDeleteClicked = () => ws.lists.delete({ id: list.id });
 </script>
 
 <div id={list.id} class="border-2 px-2 py-1 rounded-2xl hover:bg-gray-100">

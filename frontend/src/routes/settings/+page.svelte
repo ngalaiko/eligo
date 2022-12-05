@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { Button as NotificationsButton } from '$lib/webPushSubscriptions';
-	import { auth, http } from '$lib/api';
-	import { list, update } from '$lib/users';
+	import { auth, http, ws } from '$lib/api';
 	import IconChevronLeft from '$lib/assets/IconChevronLeft.svelte';
+	import { derived } from 'svelte/store';
 
 	let form: HTMLFormElement;
 	let passwordInput: HTMLInputElement;
@@ -11,7 +11,7 @@
 		const formData = new FormData(form);
 		const password = formData.get('password') as string;
 		const displayName = formData.get('display-name') as string;
-		if (displayName && displayName.length !== 0) update({ displayName });
+		if (displayName && displayName.length !== 0) ws.users.update({ displayName });
 		if (password && password.length !== 0)
 			await http({ fetch })
 				.users.update($auth.user.id, { password })
@@ -19,7 +19,7 @@
 				.catch(console.error);
 	};
 
-	$: user = $list.find(({ id }) => id === $auth.user.id);
+	const user = derived(ws.users.list, (list) => list.find(({ id }) => id === $auth.user.id));
 </script>
 
 <svelte:head>
@@ -54,7 +54,7 @@
 					name="username"
 					type="text"
 					disabled
-					value={user?.name}
+					value={$user?.name}
 					class="border-2"
 				/>
 
@@ -64,7 +64,7 @@
 					id="display-name"
 					name="display-name"
 					type="text"
-					value={user?.displayName ?? user?.name}
+					value={$user?.displayName ?? $user?.name}
 					class="border-2"
 				/>
 

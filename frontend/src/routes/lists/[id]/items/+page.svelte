@@ -1,18 +1,21 @@
 <script lang="ts">
-	import { Card, Form, list as itemsList } from '$lib/items';
-	import { list as picksList } from '$lib/picks';
+	import { Card, Form } from '$lib/items';
 	import { getWeights, type Item } from '@eligo/protocol';
-	import { list as boostsList } from '$lib/boosts';
 	import { derived } from 'svelte/store';
 	import type { PageData } from './$types';
+	import { ws } from '$lib/api';
 
 	export let data: PageData;
 
-	const items = derived(itemsList, (items) => items.filter(({ listId }) => listId === data.listId));
-	const boosts = derived(boostsList, (boosts) =>
+	const items = derived(ws.items.list, (items) =>
+		items.filter(({ listId }) => listId === data.listId)
+	);
+	const boosts = derived(ws.boosts.list, (boosts) =>
 		boosts.filter(({ listId }) => listId === data.listId)
 	);
-	const picks = derived(picksList, (picks) => picks.filter(({ listId }) => listId === data.listId));
+	const picks = derived(ws.picks.list, (picks) =>
+		picks.filter(({ listId }) => listId === data.listId)
+	);
 	const chances = derived([items, picks, boosts], ([items, picks, boosts]) => {
 		const weights = getWeights(
 			items.filter(({ deleteTime }) => !deleteTime),

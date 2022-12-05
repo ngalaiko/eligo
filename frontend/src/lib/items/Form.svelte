@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { create } from '$lib/items';
+	import { ws } from '$lib/api';
 	import IconPlus from '$lib/assets/IconPlus.svelte';
 
 	export let listId: string;
@@ -8,7 +8,7 @@
 
 	const onCreateClicked = async () => {
 		if (!text) return;
-		await create({
+		await ws.items.create({
 			listId,
 			text
 		});

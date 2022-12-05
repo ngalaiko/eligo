@@ -1,10 +1,6 @@
 <script lang="ts">
-	import { Single as User } from '$lib/users';
-	import { Button as Boost } from '$lib/boosts';
 	import type { Item } from '@eligo/protocol';
-	import { Distance } from '$lib/time';
-	import { delete as deleteItem, update } from '$lib/items';
-	import DoubleClickButton from '$lib/components/DoubleClickButton.svelte';
+	import { ws } from '$lib/api';
 	import IconChevronLeft from '$lib/assets/IconChevronLeft.svelte';
 	import { createEventDispatcher } from 'svelte';
 
@@ -13,10 +9,11 @@
 	const dispatch = createEventDispatcher();
 
 	const onUpdateClicked = async () => {
-		await update({
+		await ws.items.update({
 			id: item.id,
 			text: text,
-			coordinates: coordinates && coordinates.length > 0 ? coordinates.split(",").map(parseFloat) : null,
+			coordinates:
+				coordinates && coordinates.length > 0 ? coordinates.split(',').map(parseFloat) : null,
 			url: url && url.length > 0 ? url : null
 		});
 		emitClose();

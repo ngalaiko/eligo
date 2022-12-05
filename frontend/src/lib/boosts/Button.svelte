@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { Button } from '$lib';
 	import IconArrowBigUpLine from '$lib/assets/IconArrowBigUpLine.svelte';
-	import { create } from '$lib/boosts';
+	import { ws } from '$lib/api';
 
 	export let itemId: string;
 	export let listId: string;
 
 	const onBoostClick = () =>
-		create({
+		ws.boosts.create({
 			itemId,
 			listId
 		});

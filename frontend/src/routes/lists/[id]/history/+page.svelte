@@ -1,21 +1,25 @@
 <script lang="ts">
 	import { Distance } from '$lib/time';
 	import { Single as User } from '$lib/users';
-	import { list as itemsList, Single as Item } from '$lib/items';
+	import { Single as Item } from '$lib/items';
 	import { derived } from 'svelte/store';
-	import { list as boostsList } from '$lib/boosts';
-	import { list as picksList } from '$lib/picks';
 	import type { PageData } from './$types';
-	import { list as membershipsList } from '$lib/memberships';
+	import { ws } from '$lib/api';
 
 	export let data: PageData;
 
-	const items = derived(itemsList, (list) => list.filter(({ listId }) => listId === data.listId));
-	const memberships = derived(membershipsList, (list) =>
+	const items = derived(ws.items.list, (list) =>
 		list.filter(({ listId }) => listId === data.listId)
 	);
-	const picks = derived(picksList, (list) => list.filter(({ listId }) => listId === data.listId));
-	const boosts = derived(boostsList, (list) => list.filter(({ listId }) => listId === data.listId));
+	const memberships = derived(ws.memberships.list, (list) =>
+		list.filter(({ listId }) => listId === data.listId)
+	);
+	const picks = derived(ws.picks.list, (list) =>
+		list.filter(({ listId }) => listId === data.listId)
+	);
+	const boosts = derived(ws.boosts.list, (list) =>
+		list.filter(({ listId }) => listId === data.listId)
+	);
 
 	const entries = derived(
 		[items, picks, memberships, boosts],

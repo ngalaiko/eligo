@@ -1,13 +1,21 @@
 <script lang="ts">
 	import { Button } from '$lib';
 	import IconPlus from '$lib/assets/IconPlus.svelte';
-	import { Card, create, Form, list } from '$lib/lists';
+	import { Card, Form } from '$lib/lists';
 	import { compareDesc } from 'date-fns';
+	import { ws } from '$lib/api';
+	import { derived } from 'svelte/store';
 
 	let formVisible = false;
 	const showForm = () => (formVisible = true);
 	const hideForm = () => (formVisible = false);
-	const onCreate = (params: { title: string }) => create(params).then(hideForm);
+	const onCreate = (params: { title: string }) => ws.lists.create(params).then(hideForm);
+
+	const lists = derived(ws.lists.list, (lists) =>
+		lists
+			.filter(({ deleteTime }) => deleteTime === undefined)
+			.sort((a, b) => compareDesc(a.createTime, b.createTime))
+	);
 </script>
 
 <svelte:head>
@@ -27,9 +35,7 @@
 	{/if}
 
 	<ul class="overflow-y-scroll flex flex-col gap-2 -mr-3">
-		{#each $list
-			.filter(({ deleteTime }) => deleteTime === undefined)
-			.sort((a, b) => compareDesc(a.createTime, b.createTime)) as list}
+		{#each $lists as list}
 			<li class="mr-3">
 				<a href="/lists/{list.id}/pick/">
 					<Card {list} />

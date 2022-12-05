@@ -3,7 +3,7 @@
 	import { Button as Boost } from '$lib/boosts';
 	import type { Item } from '@eligo/protocol';
 	import { Distance } from '$lib/time';
-	import { delete as deleteItem } from '$lib/items';
+	import { ws } from '$lib/api';
 	import DoubleClickButton from '$lib/components/DoubleClickButton.svelte';
 	import { Edit } from './index';
 
@@ -12,7 +12,7 @@
 
 	let isEditing = false;
 
-	const onDeleteClicked = () => deleteItem({ id: item.id });
+	const onDeleteClicked = () => ws.items.delete({ id: item.id });
 	const onStartEditClicked = () => (isEditing = true);
 	const stopEditing = () => (isEditing = false);
 

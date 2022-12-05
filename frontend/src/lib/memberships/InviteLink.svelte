@@ -2,21 +2,21 @@
 	import type { List } from '@eligo/protocol';
 	import { nanoid } from 'nanoid';
 	import IconX from '$lib/assets/IconX.svelte';
-	import { update } from '$lib/lists';
+	import { ws } from '$lib/api';
 
 	export let list: List;
 
 	$: inviteLink = `${window.location.origin}/join/${list.invitatationId}/`;
 
 	const createInviteLink = () =>
-		update({
+		ws.lists.update({
 			id: list.id,
 			updateTime: new Date().getTime(),
 			invitatationId: nanoid()
 		});
 
 	const deleteInviteLink = () =>
-		update({
+		ws.lists.update({
 			id: list.id,
 			updateTime: new Date().getTime(),
 			invitatationId: null

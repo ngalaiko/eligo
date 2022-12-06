@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Distance } from '$lib/time';
+	import { Distance } from '$lib/components';
 	import { Single as User } from '$lib/users';
 	import { Single as Item } from '$lib/items';
 	import { derived } from 'svelte/store';

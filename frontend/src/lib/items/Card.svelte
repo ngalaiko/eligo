@@ -2,9 +2,8 @@
 	import { Single as User } from '$lib/users';
 	import { Button as Boost } from '$lib/boosts';
 	import type { Item } from '@eligo/protocol';
-	import { Distance } from '$lib/time';
 	import { ws } from '$lib/api';
-	import { DoubleClickButton } from '$lib/components';
+	import { DoubleClickButton, Distance } from '$lib/components';
 	import { Edit } from './index';
 
 	export let item: Item;

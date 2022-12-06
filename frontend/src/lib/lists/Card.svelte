@@ -1,9 +1,8 @@
 <script lang="ts">
-	import { Distance } from '$lib/time';
+	import { Distance, DoubleClickButton } from '$lib/components';
 	import { Single as User } from '$lib/users';
 	import type { List } from '@eligo/protocol';
 	import { ws } from '$lib/api';
-	import DoubleClickButton from '$lib/components/DoubleClickButton.svelte';
 
 	export let list: List;
 

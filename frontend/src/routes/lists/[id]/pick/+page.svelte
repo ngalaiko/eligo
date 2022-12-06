@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { Distance } from '$lib/time';
 	import type { PageData } from './$types';
-	import { DelayButton } from '$lib/components';
+	import { DelayButton, Distance } from '$lib/components';
 	import { scale } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import { connected } from '$lib/api';

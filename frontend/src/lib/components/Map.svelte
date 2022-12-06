@@ -13,8 +13,11 @@
 		average(items.map(({ coordinates }) => coordinates[1]))
 	] as [number, number];
 
+	const sleep = async (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 	const map = (container: HTMLElement, items: Item[]) => {
 		let map: Map;
+		const shouldSleep = container.parentElement.id === 'animation';
 
 		let done: () => void;
 		const init = new Promise<void>((resolve) => (done = resolve));
@@ -67,31 +70,33 @@
 			});
 		};
 
-		import('leaflet/dist/leaflet.css').then(async () => {
-			const L = await l;
-			map = L.map(container, { zoom: 12, center });
+		import('leaflet/dist/leaflet.css')
+			.then(() => (shouldSleep ? sleep(150) : undefined))
+			.then(async () => {
+				const L = await l;
+				map = L.map(container, { zoom: 12, center });
 
-			// use carto maps as a base layer
-			L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-				attribution: `&copy;<a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>, &copy;<a href="https://carto.com/attributions" target="_blank">CARTO</a>`,
-				subdomains: 'abcd',
-				maxZoom: 16
-			}).addTo(map);
+				// use carto maps as a base layer
+				L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+					attribution: `&copy;<a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>, &copy;<a href="https://carto.com/attributions" target="_blank">CARTO</a>`,
+					subdomains: 'abcd',
+					maxZoom: 16
+				}).addTo(map);
 
-			done();
+				done();
 
-			syncMarkers(items);
-		});
+				syncMarkers(items);
+			});
 
 		return {
 			update: (items: Item[]) =>
 				init.then(() => {
 					syncMarkers(items);
-					map.flyTo(center, undefined, { animate: false });
+					map.setView(center, undefined, { animate: false });
 				}),
 			destroy: () => map.remove()
 		};
 	};
 </script>
 
-<div class="h-full w-full" use:map={items} />
+<div class="h-1/2 w-full" use:map={items} />

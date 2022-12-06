@@ -5,13 +5,36 @@
 	import { derived } from 'svelte/store';
 	import type { LayoutData } from './$types';
 	import { ws } from '$lib/api';
+	import { beforeNavigate } from '$app/navigation';
+	import { horizontalSlide } from '$lib';
 
 	export let data: LayoutData;
 
 	const list = derived(ws.lists.list, (lists) => lists.find(({ id }) => id === data.listId));
-	const mapEnabled = derived(ws.items.list, (items) =>
-		items.some((item) => item.listId === data.listId && item.coordinates !== undefined)
+
+	let mapEnabled = false;
+	ws.items.list.subscribe(
+		(items) =>
+			(mapEnabled = items.some(
+				(item) => item.listId === data.listId && item.coordinates !== undefined
+			))
 	);
+
+	$: links = [
+		{ href: `/lists/${$list?.id}/pick`, name: 'pick' },
+		{ href: `/lists/${$list?.id}/items`, name: 'items' },
+		{ href: `/lists/${$list?.id}/history`, name: 'history' },
+		{ href: `/lists/${$list?.id}/map`, name: 'map', disabled: !mapEnabled }
+	];
+
+	let direction: 'left' | 'right' | undefined;
+	let hey;
+	beforeNavigate(({ from, to }) => {
+		hey = to;
+		const fromIndex = links.findIndex((link) => from.url.pathname.startsWith(link.href));
+		const toIndex = links.findIndex((link) => to.url.pathname.startsWith(link.href));
+		if (toIndex > -1 && fromIndex > -1) direction = fromIndex - toIndex > 0 ? 'right' : 'left';
+	});
 </script>
 
 <svelte:head>
@@ -30,26 +53,35 @@
 		</figcaption>
 
 		<nav class="flex gap-4 w-full border-b-2">
-			<a
-				class:font-bold={$page.url.pathname.startsWith(`/lists/${$list.id}/pick`)}
-				href="/lists/{$list.id}/pick">pick</a
-			>
-			<a
-				class:font-bold={$page.url.pathname.startsWith(`/lists/${$list.id}/items`)}
-				href="/lists/{$list.id}/items">items</a
-			>
-			<a
-				class:font-bold={$page.url.pathname.startsWith(`/lists/${$list.id}/history`)}
-				href="/lists/{$list.id}/history">history</a
-			>
-			<a
-				class:pointer-events-none={!$mapEnabled}
-				class:opacity-50={!$mapEnabled}
-				class:font-bold={$page.url.pathname.startsWith(`/lists/${$list.id}/map`)}
-				href="/lists/{$list.id}/map">map</a
-			>
+			{#each links as { href, name, disabled }}
+				<a
+					class:pointer-events-none={disabled}
+					class:cursor-not-allowed={disabled}
+					class:opacity-50={disabled}
+					class:font-bold={$page.url.pathname.startsWith(href)}
+					{href}>{name}</a
+				>
+			{/each}
 		</nav>
 	{/if}
 
-	<slot />
+	<div class="relative w-full h-full">
+		{#if direction}
+			{#key data.key}
+				<div
+					id="animation"
+					in:horizontalSlide|local={{
+						duration: 150,
+						direction: direction === 'right' ? 'left' : 'right'
+					}}
+					out:horizontalSlide|local={{ duration: 150, direction }}
+					class="absolute w-full h-full"
+				>
+					<slot />
+				</div>
+			{/key}
+		{:else}
+			<slot />
+		{/if}
+	</div>
 </figure>

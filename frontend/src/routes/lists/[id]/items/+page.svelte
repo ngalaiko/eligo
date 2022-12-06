@@ -32,16 +32,18 @@
 	const byChance = (a: Item, b: Item) => $chances[b.id] - $chances[a.id];
 </script>
 
-<Form listId={data.listId} />
+<div class="flex flex-col gap-2">
+	<Form listId={data.listId} />
 
-<ul class="overflow-y-scroll flex flex-col gap-2 -mr-3">
-	{#each $items
-		.filter(({ deleteTime }) => !deleteTime)
-		.sort(byAlphabet)
-		.sort(byChance) as item (item.id)}
-		{@const chance = $chances[item.id]}
-		<li class="mr-3">
-			<Card {item} {chance} />
-		</li>
-	{/each}
-</ul>
+	<ul class="overflow-y-scroll flex flex-col gap-2 -mr-3">
+		{#each $items
+			.filter(({ deleteTime }) => !deleteTime)
+			.sort(byAlphabet)
+			.sort(byChance) as item (item.id)}
+			{@const chance = $chances[item.id]}
+			<li class="mr-3">
+				<Card {item} {chance} />
+			</li>
+		{/each}
+	</ul>
+</div>

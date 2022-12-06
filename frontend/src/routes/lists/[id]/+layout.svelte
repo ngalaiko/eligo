@@ -65,7 +65,7 @@
 		</nav>
 	{/if}
 
-	<div class="relative w-full h-full">
+	<div class="flex flex-col relative w-full h-full">
 		{#if direction}
 			{#key data.key}
 				<div
@@ -75,7 +75,7 @@
 						direction: direction === 'right' ? 'left' : 'right'
 					}}
 					out:horizontalSlide|local={{ duration: 150, direction }}
-					class="absolute w-full h-full"
+					class="flex flex-col absolute w-full h-full"
 				>
 					<slot />
 				</div>

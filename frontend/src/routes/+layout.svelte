@@ -9,31 +9,18 @@
 	import { writable } from 'svelte/store';
 	import { ConnectedIndicator } from '$lib/components';
 	import { onMount } from 'svelte';
-	import { pwaInfo } from 'virtual:pwa-info';
 	import http from '$lib/api/http';
+	import { ReloadServiceWorker } from '$lib/components';
 
 	if (!dev) onMount(inject);
-	onMount(async () => {
-		if (pwaInfo) {
-			const { registerSW } = await import('virtual:pwa-register');
-			registerSW({
-				immediate: true,
-				onRegistered: () => console.log(`SW Registered`),
-				onRegisterError: (error) => console.log('SW registration error', error)
-			});
-		}
-	});
-
-	$: webManifest = pwaInfo ? pwaInfo.webManifest.linkTag : '';
 
 	const analyticsId = import.meta.env.VERCEL_ANALYTICS_ID;
-	$: if (!dev && browser && analyticsId) {
+	$: if (!dev && browser && analyticsId)
 		webVitals({
 			path: $page.url.pathname,
 			params: $page.params,
 			analyticsId
 		});
-	}
 
 	const onLogoutClick = () =>
 		http({ fetch })
@@ -58,9 +45,7 @@
 	});
 </script>
 
-<svelte:head>
-	{@html webManifest}
-</svelte:head>
+<ReloadServiceWorker />
 
 <main class="flex flex-col max-w-lg h-screen p-4 mx-auto">
 	{#if $authLoaded}

@@ -8,22 +8,25 @@ import { handler as healthHandler } from './health.js';
 import Auth from './auth.js';
 import Join from './join.js';
 import Users from './users.js';
+import Lists from './lists.js';
 
 export default (
-	app: Polka,
-	database: Database,
-	tokens: Tokens,
-	io: Server,
-	notifications: Notifications
+    app: Polka,
+    database: Database,
+    tokens: Tokens,
+    io: Server,
+    notifications: Notifications
 ) => {
-	const auth = Auth(database, tokens);
-	const join = Join(database, io, notifications);
-	const users = Users(database, tokens);
-	app
-		.use(parse.json())
-		.use('health', healthHandler)
-		.use(auth.middleware)
-		.use('auth', auth.handler)
-		.use('join', join.handler)
-		.use('users', users.handler);
+    const auth = Auth(database, tokens);
+    const join = Join(database, io, notifications);
+    const users = Users(database, tokens);
+    const lists = Lists(database);
+    app
+        .use(parse.json())
+        .use('health', healthHandler)
+        .use(auth.middleware)
+        .use('auth', auth.handler)
+        .use('join', join.handler)
+        .use('users', users.handler)
+        .use('lists', lists.handler);
 };

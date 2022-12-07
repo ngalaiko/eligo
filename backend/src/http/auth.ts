@@ -34,6 +34,9 @@ export default (database: Database, tokens: Tokens) => ({
     },
 
     handler: polka()
+        //
+        // returns logged in user
+        //
         .get('/', async (req: Request, res) => {
             try {
                 if (req.userId === undefined) throw new HTTPError(404, errNotFound('Not found.'));
@@ -55,6 +58,9 @@ export default (database: Database, tokens: Tokens) => ({
                 }
             }
         })
+        //
+        // deleted auth cookie
+        //
         .delete('/', async (_req, res) => {
             const cookie = serialize(authCookieName, '', {
                 httpOnly: true,
@@ -64,6 +70,9 @@ export default (database: Database, tokens: Tokens) => ({
             res.statusCode = 204;
             res.end();
         })
+        //
+        // returns a user by name + password and sets auth cookie
+        //
         .post('/', async (req, res) => {
             try {
                 const { name, password } = req.body;

@@ -13,8 +13,7 @@
 			id: item.id,
 			text: text,
 			coordinates:
-				coordinates && coordinates.length > 0 ? coordinates.split(',').map(parseFloat) : null,
-			url: url && url.length > 0 ? url : null
+				coordinates && coordinates.length > 0 ? coordinates.split(',').map(parseFloat) : null
 		});
 		emitClose();
 	};
@@ -24,7 +23,6 @@
 	};
 
 	let text = item.text;
-	let url = item.url;
 	let coordinates = item.coordinates;
 </script>
 
@@ -43,9 +41,6 @@
 				<fieldset class="grid grid-cols-3 gap-1  w-full">
 					<label for="text">name</label>
 					<input id="text" type="text" class="col-span-2" bind:value={text} />
-
-					<label for="url">url</label>
-					<input id="url" type="text" class="col-span-2" bind:value={url} />
 
 					<label for="coordinates">coordinates</label>
 					<input id="coordinates" type="text" class="col-span-2" bind:value={coordinates} />

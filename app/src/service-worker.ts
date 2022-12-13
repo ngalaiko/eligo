@@ -1,5 +1,5 @@
 import type { WebNotification } from '@eligo/protocol';
-import { precacheAndRoute } from 'workbox-precaching';
+import { precacheAndRoute, cleanupOutdatedCaches } from 'workbox-precaching';
 
 declare let self: ServiceWorkerGlobalScope;
 
@@ -21,3 +21,5 @@ self.addEventListener('message', (event) => {
 });
 
 precacheAndRoute(self.__WB_MANIFEST);
+
+cleanupOutdatedCaches();

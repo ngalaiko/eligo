@@ -8,7 +8,7 @@ import {
 	picks,
 	boosts,
 	webPushSuscriptions,
-	Action
+	type Action
 } from './actions.js';
 import type {
 	Boost,

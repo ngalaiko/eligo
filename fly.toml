@@ -1,13 +1,13 @@
-app = "eligo-backend"
+app = "eligo-app"
 
 [build]
-  dockerfile = "Dockerfile.backend"
+  dockerfile = "Dockerfile"
 
 [deploy]
   strategy = "rolling"
 
 [[services]]
-  internal_port = 8080
+  internal_port = 3000
   protocol = "tcp"
 
   [[services.http_checks]]
@@ -35,9 +35,9 @@ app = "eligo-backend"
     restart_limit = 0
     timeout = "2s"
 
-[experimental]
-  cmd = ["--host", "0.0.0.0", "--port", "8080", "--database", "/data/database.jsonl", "--vapid-private-key-path", "/data/vapid-private-key.txt", "--vapid-public-key", "BOf5qTvP_zovZipWAEL9lKsiGJC7nMs6qeTIvWoef05EQdSpGksLXCwVJ147qbAM4DO9tOrs8dAQEkQJCxXV0kc"] 
+[env]
+  NODE_ENV = "production"
 
 [mounts]
-  source="database"
+  source="data"
   destination="/data"

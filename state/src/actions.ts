@@ -1,7 +1,7 @@
 import { actionCreatorFactory } from './vendor/typescript-fsa/index.js';
 import { reducerWithInitialState } from './vendor/typescript-fsa-reducers/index.js';
 
-import {
+import type {
 	User,
 	List,
 	Pick,
@@ -25,26 +25,21 @@ const c_ud = <
 	const creator = actionCreatorFactory(name);
 	const actions = {
 		create: creator<T>('create'),
-		created: creator<T>('created'),
 		update: creator<
 			{ id: string; updateTime: EpochTimeStamp } & Partial<Omit<T, 'id' | 'updateTime'>>
 		>('update'),
-		updated: creator<
-			{ id: string; updateTime: EpochTimeStamp } & Partial<Omit<T, 'id' | 'updateTime'>>
-		>('updated'),
-		delete: creator<{ id: string; deleteTime: EpochTimeStamp }>('delete'),
-		deleted: creator<{ id: string; deleteTime: EpochTimeStamp }>('deleted')
+		delete: creator<{ id: string; deleteTime: EpochTimeStamp }>('delete')
 	};
 	const reducer = reducerWithInitialState({} as Record<string, T>)
-		.cases([actions.create, actions.created], (state, payload) => ({
+		.cases([actions.create], (state, payload) => ({
 			...state,
 			[payload.id]: payload
 		}))
-		.cases([actions.update, actions.updated], (state, payload) => ({
+		.cases([actions.update], (state, payload) => ({
 			...state,
 			[payload.id]: { ...state[payload.id], ...payload }
 		}))
-		.cases([actions.delete, actions.deleted], (state, payload) => ({
+		.cases([actions.delete], (state, payload) => ({
 			...state,
 			[payload.id]: { ...state[payload.id], ...payload }
 		}));

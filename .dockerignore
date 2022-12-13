@@ -1,2 +1,16 @@
 .git
 node_modules
+
+server/node_modules
+server/build
+
+app/node_modules
+app/build
+app/.svelte-kit
+app/database.dev.jsonl
+
+protocol/node_modules
+protocol/build
+
+state/node_modules
+state/build

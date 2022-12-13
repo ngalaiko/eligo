@@ -1,0 +1,53 @@
+{
+	"name": "@eligo/app",
+	"private": true,
+	"scripts": {
+		"dev": "NODE_ENV=development vite dev",
+		"build": "vite build",
+		"preview": "vite preview",
+		"test": "tsm node_modules/uvu/bin.js src \\.test\\.ts$",
+		"check": "svelte-kit sync && svelte-check",
+		"check:watch": "svelte-kit sync && svelte-check --watch",
+		"lint": "prettier --plugin-search-dir . --check .",
+		"format": "prettier --plugin-search-dir . --write ."
+	},
+	"dependencies": {
+		"@eligo/protocol": "workspace:*",
+		"@eligo/server": "workspace:*",
+		"@eligo/state": "workspace:*",
+		"bcrypt": "^5.0.1",
+		"date-fns": "^2.29.1",
+		"idb": "^7.1.0",
+		"leaflet": "^1.9.3",
+		"nanoid": "^4.0.0",
+		"polka": "1.0.0-next.22",
+		"socket.io-client": "^4.5.2",
+		"svelte": "^3.44.0",
+		"workbox-core": "^6.5.4",
+		"workbox-precaching": "^6.5.4",
+		"workbox-routing": "^6.5.4",
+		"workbox-window": "^6.5.4"
+	},
+	"devDependencies": {
+		"@sveltejs/adapter-node": "1.0.0-next.102",
+		"@sveltejs/kit": "1.0.0-next.572",
+		"@types/bcrypt": "^5.0.0",
+		"@types/leaflet": "^1.9.0",
+		"@vite-pwa/sveltekit": "^0.0.1",
+		"autoprefixer": "^10.4.7",
+		"postcss": "^8.4.14",
+		"postcss-load-config": "^4.0.1",
+		"prettier": "^2.6.2",
+		"prettier-plugin-svelte": "^2.7.0",
+		"svelte-check": "^2.7.1",
+		"svelte-preprocess": "^4.10.7",
+		"tailwindcss": "^3.2.4",
+		"tslib": "^2.3.1",
+		"typescript": "^4.7.4",
+		"typescript-fsa": "^3.0.0",
+		"typescript-fsa-reducers": "^1.2.2",
+		"vite": "^3.2.0",
+		"vite-plugin-mkcert": "^1.10.1"
+	},
+	"type": "module"
+}

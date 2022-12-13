@@ -4,14 +4,6 @@ on:
   push:
     branches:
       - 'master'
-    paths:
-      - 'backend/**/*'
-      - 'protocol/**/*'
-      - 'state/**/*'
-      - '.dockerignore'
-      - 'Dockerfile.backend'
-      - 'fly.toml'
-      - 'pnpm-lock.yaml'
 env:
   FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 jobs:
@@ -21,4 +13,4 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy --remote-only
+      - run: fly deploy --remote-only

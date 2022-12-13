@@ -10,12 +10,15 @@
 
 	export let data: PageData;
 
-	$: list = derived(ws.lists.list, (lists) =>
-		merge(lists, [data.list]).find((list) => list.id === data.list.id)
+	$: list = derived(
+		ws.lists.list,
+		(lists) => lists.find((list) => list.id === data.list.id) ?? data.list
 	);
 
-	$: memberships = derived(ws.memberships.list, (memberships) =>
-		merge(memberships, data.memberships)
+	$: memberships = derived([ws.memberships.list, list], ([memberships, list]) =>
+		merge(memberships, data.memberships, [
+			{ id: 'owner', userId: list.userId, listId: list.id, createTime: list.createTime }
+		])
 			.filter(notDeleted)
 			.filter(({ listId }) => listId === data.list.id)
 			.sort((a, b) => b.createTime - a.createTime)

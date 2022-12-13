@@ -46,7 +46,7 @@ const init = (
 		send,
 		notify: async (userId: string, notification: WebNotification) =>
 			database
-				.filter('webPushSubscriptions', { userId })
+				.filter('webPushSuscriptions', { userId })
 				.then((subscriptions) =>
 					subscriptions.forEach((subscription) => send(subscription, notification))
 				)

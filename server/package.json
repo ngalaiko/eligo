@@ -6,7 +6,8 @@
 	"scripts": {
 		"build": "rm -rf build && tsc",
 		"lint": "prettier --check . --config ../.prettierrc --ignore-path ./.gitignore --ignore-path .gitignore",
-		"format": "prettier --write . --config ../.prettierrc --ignore-path ./.gitignore --ignore-path .gitignore"
+		"format": "prettier --write . --config ../.prettierrc --ignore-path ./.gitignore --ignore-path .gitignore",
+		"dev": "tsc-watch -p ./tsconfig.json"
 	},
 	"type": "module",
 	"devDependencies": {

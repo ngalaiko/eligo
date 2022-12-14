@@ -6,9 +6,12 @@
 	import { ws } from '$lib/api';
 	import { merge, notDeleted } from '$lib';
 	import { Button, Distance, List } from '$lib/components';
-	import { IconArrowBigUpLine, IconPlus } from '$lib/assets';
+	import { IconArrowBigUpLine, IconPlus, IconCircleMinus } from '$lib/assets';
+	import { page } from '$app/stores';
 
 	export let data: PageData;
+
+	$: editing = $page.url.searchParams.get('editing') === 'true';
 
 	$: items = derived(ws.items.list, (items) =>
 		merge(items, data.items)
@@ -51,61 +54,74 @@
 </script>
 
 <div class="flex flex-col gap-2 h-full">
-	<form
-		method="POST"
-		action="?/create"
-		class="flex gap-2 border-2 px-2 py-1 rounded-2xl items-center"
-		use:enhance
-	>
-		<Button type="submit">
-			<IconPlus />
-		</Button>
+	<div class="flex items-center gap-2">
+		<form
+			method="POST"
+			action="?/create"
+			class="flex flex-1 gap-2 border-2 px-2 py-1 rounded-2xl items-center"
+			use:enhance
+		>
+			<Button type="submit">
+				<IconPlus />
+			</Button>
 
-		<fieldset class="w-full">
-			<input
-				type="text"
-				name="text"
-				class="font-semibold whitespace-nowrap text-lg text-ellipsis overflow-hidden w-full focus:ring-none focus:outline-none"
-				placeholder="new item"
-				required
-			/>
-		</fieldset>
-	</form>
+			<fieldset class="w-full">
+				<input
+					type="text"
+					name="text"
+					class="font-semibold whitespace-nowrap text-lg text-ellipsis overflow-hidden w-full focus:ring-none focus:outline-none"
+					placeholder="new item"
+					required
+				/>
+			</fieldset>
+		</form>
+
+		{#if editing}
+			<a href="?" class="underline w-[5ch] text-center">done</a>
+		{:else}
+			<a href="?editing=true" class="underline w-[5ch] text-center">edit</a>
+		{/if}
+	</div>
 
 	<List items={$items.sort(byAlphabet).sort(byChance)} let:item>
 		{@const chance = $chances[item.id]}
 		{@const chancePercentage = (chance * 100).toFixed(0)}
 		{@const uname = userName(item.userId)}
-		<div
-			id={item.id}
-			class="border-2 px-2 rounded-2xl bg-gray-300"
-			style:background="linear-gradient(90deg, var(--color-gray-300) {chancePercentage}%,
-			var(--color-white) {chance}%)"
-		>
-			<div style:width="{chance}%" class="h-2 bg-500 relative" />
-			<div class="font-semibold text-lg flex justify-between">
-				<p class="overflow-ellipsis">{item.text}</p>
-				<figure class="text-sm flex items-center gap-1">
-					<figcaption>{(chance * 100).toFixed(2)}%</figcaption>
-					<form
-						method="POST"
-						use:enhance
-						action="/lists/{data.list.id}/items/{item.id}/boosts?/create&redirect=%2Flists%2F{data
-							.list.id}%2Fitems%2F"
-					>
-						<Button type="submit">
-							<IconArrowBigUpLine />
-						</Button>
-					</form>
-				</figure>
+		<div class="flex w-full items-center gap-1">
+			<div
+				id={item.id}
+				class="border-2 flex-1 px-2 rounded-2xl bg-gray-300"
+				style:background="linear-gradient(90deg, var(--color-gray-300) {chancePercentage}%,
+				var(--color-white) {chance}%)"
+			>
+				<div style:width="{chance}%" class="h-2 bg-500 relative" />
+				<div class="font-semibold text-lg flex justify-between">
+					<p class="overflow-ellipsis">{item.text}</p>
+					<figure class="text-sm flex items-center gap-1">
+						<figcaption>{(chance * 100).toFixed(2)}%</figcaption>
+						<form
+							method="POST"
+							use:enhance
+							action="/lists/{data.list.id}/items/{item.id}/boosts?/create&redirect=%2Flists%2F{data
+								.list.id}%2Fitems%2F"
+						>
+							<Button type="submit">
+								<IconArrowBigUpLine />
+							</Button>
+						</form>
+					</figure>
+				</div>
+				<div class="flex gap-1 opacity-50 text-sm">
+					<b>{uname}</b>
+					created
+					<Distance to={item.createTime} />
+				</div>
 			</div>
-
-			<div class="flex gap-1 opacity-50 text-sm">
-				<b>{uname}</b>
-				created
-				<Distance to={item.createTime} />
-				|
+			{#if editing}
 				<form
+					action="/lists/{data.list.id}/items/{item.id}?/delete&redirect={encodeURIComponent(
+						$page.url.pathname + $page.url.search
+					)}"
 					method="POST"
 					use:enhance={({ cancel }) => {
 						if (!confirm(`are you sure you want to delete ${item.text}?`)) {
@@ -113,12 +129,12 @@
 							return;
 						}
 					}}
-					action="/lists/{data.list.id}/items/{item.id}?/delete&redirect=%2Flists%2F{data.list
-						.id}%2Fitems%2F"
 				>
-					<button type="submit" class="hover:underline">delete</button>
+					<Button type="submit">
+						<IconCircleMinus class="fill-red-500 stroke-white w-8 h-8" />
+					</Button>
 				</form>
-			</div>
+			{/if}
 		</div>
 	</List>
 </div>

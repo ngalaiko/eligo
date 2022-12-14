@@ -76,11 +76,10 @@
 				const L = await l;
 				map = L.map(container, { zoom: 12, center });
 
-				// use carto maps as a base layer
-				L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-					attribution: `&copy;<a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>, &copy;<a href="https://carto.com/attributions" target="_blank">CARTO</a>`,
-					subdomains: 'abcd',
-					maxZoom: 16
+				L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+					attribution:
+						'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+					maxZoom: 20
 				}).addTo(map);
 
 				done();
@@ -99,4 +98,4 @@
 	};
 </script>
 
-<div class="h-1/2 w-full" use:map={items} />
+<div class="h-full w-full" use:map={items} />

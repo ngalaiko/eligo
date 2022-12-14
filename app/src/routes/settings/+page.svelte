@@ -27,7 +27,7 @@
 			method="POST"
 			class="flex flex-col gap-2 items-end"
 			use:enhance={() =>
-				async ({ update }) =>
+				({ update }) =>
 					update({ reset: false })}
 		>
 			<fieldset class="grid grid-cols-2 gap-1">

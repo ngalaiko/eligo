@@ -84,7 +84,9 @@
 			<form
 				method="POST"
 				action="?/update"
-				use:enhance
+				use:enhance={() =>
+					({ update }) =>
+						update({ reset: false })}
 				disabled={!isEditing}
 				class="border-2 flex-1 p-1 px-2 rounded-2xl bg-gray-300"
 				style:background="linear-gradient(90deg, var(--color-gray-300) {chancePercentage}%,

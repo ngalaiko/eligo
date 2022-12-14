@@ -2,16 +2,17 @@
 	import { getWeights, type Item } from '@eligo/protocol';
 	import { enhance } from '$app/forms';
 	import { derived } from 'svelte/store';
-	import type { PageData } from './$types';
+	import type { PageData, ActionData } from './$types';
 	import { ws } from '$lib/api';
 	import { merge, notDeleted } from '$lib';
-	import { Button, Distance, List } from '$lib/components';
-	import { IconArrowBigUpLine, IconPlus, IconCircleMinus } from '$lib/assets';
+	import { Button, List } from '$lib/components';
+	import { IconArrowBigUpLine, IconPlus, IconCircleMinus, IconCurrentLocation } from '$lib/assets';
 	import { page } from '$app/stores';
 
 	export let data: PageData;
+	export let form: ActionData;
 
-	$: editing = $page.url.searchParams.get('editing') === 'true';
+	$: isEditing = $page.url.searchParams.get('editing') === 'true';
 
 	$: items = derived(ws.items.list, (items) =>
 		merge(items, data.items)
@@ -42,15 +43,8 @@
 		);
 	});
 
-	$: users = derived(ws.users.list, (users) => merge(users, data.users).filter(notDeleted));
-
 	const byAlphabet = (a: Item, b: Item) => a.text.localeCompare(b.text);
 	const byChance = (a: Item, b: Item) => $chances[b.id] - $chances[a.id];
-
-	const userName = (id: string) => {
-		const user = $users.find((user) => user.id === id);
-		return user?.id === data.user.id ? 'you' : user?.displayName ?? user?.name ?? '';
-	};
 </script>
 
 <div class="flex flex-col gap-2 h-full">
@@ -76,7 +70,7 @@
 			</fieldset>
 		</form>
 
-		{#if editing}
+		{#if isEditing}
 			<a href="?" class="underline w-[5ch] text-center">done</a>
 		{:else}
 			<a href="?editing=true" class="underline w-[5ch] text-center">edit</a>
@@ -86,42 +80,73 @@
 	<List items={$items.sort(byAlphabet).sort(byChance)} let:item>
 		{@const chance = $chances[item.id]}
 		{@const chancePercentage = (chance * 100).toFixed(0)}
-		{@const uname = userName(item.userId)}
 		<div class="flex w-full items-center gap-1">
-			<div
-				id={item.id}
-				class="border-2 flex-1 px-2 rounded-2xl bg-gray-300"
+			<form
+				method="POST"
+				action="?/update"
+				use:enhance
+				disabled={!isEditing}
+				class="border-2 flex-1 p-1 px-2 rounded-2xl bg-gray-300"
 				style:background="linear-gradient(90deg, var(--color-gray-300) {chancePercentage}%,
 				var(--color-white) {chance}%)"
 			>
-				<div style:width="{chance}%" class="h-2 bg-500 relative" />
-				<div class="font-semibold text-lg flex justify-between">
-					<p class="overflow-ellipsis">{item.text}</p>
+				<input type="text" hidden value={item.id} name="id" />
+				<div class="flex items-center font-semibold text-lg flex justify-between">
+					{#if isEditing}
+						<input
+							type="text"
+							name="text"
+							class="bg-transparent overflow-ellipsis"
+							disabled={!isEditing}
+							required
+							value={item.text}
+						/>
+					{:else}
+						<h3 class="bg-transparent overflow-ellipsis">{item.text}</h3>
+					{/if}
 					<figure class="text-sm flex items-center gap-1">
 						<figcaption>{(chance * 100).toFixed(2)}%</figcaption>
-						<form
-							method="POST"
-							use:enhance
-							action="/lists/{data.list.id}/items/{item.id}/boosts?/create&redirect=%2Flists%2F{data
-								.list.id}%2Fitems%2F"
-						>
+						<form method="POST" use:enhance action="?/boost">
+							<input type="text" hidden value={item.id} name="id" />
 							<Button type="submit">
 								<IconArrowBigUpLine />
 							</Button>
 						</form>
 					</figure>
 				</div>
-				<div class="flex gap-1 opacity-50 text-sm">
-					<b>{uname}</b>
-					created
-					<Distance to={item.createTime} />
-				</div>
-			</div>
-			{#if editing}
+
+				<footer class="flex gap-1 text-sm items-left -mt-1">
+					{#if item.coordinates}
+						<div class="flex gap-1 items-center">
+							<IconCurrentLocation class="w-4 h-4" />
+							{#if isEditing}
+								<input
+									class:text-red-700={isEditing &&
+										form?.success === false &&
+										form?.item?.id === item.id &&
+										form?.item?.coordinates === false}
+									name="coordinates"
+									disabled={!isEditing}
+									class="bg-transparent"
+									type="text"
+									value={item.coordinates ?? []}
+									placeholder="longtitude, langtitude"
+								/>
+							{:else}
+								<span>{item.coordinates}</span>
+							{/if}
+						</div>
+					{/if}
+					{#if isEditing}
+						|
+						<button type="submit" class="underline">save</button>
+					{/if}
+				</footer>
+			</form>
+
+			{#if isEditing}
 				<form
-					action="/lists/{data.list.id}/items/{item.id}?/delete&redirect={encodeURIComponent(
-						$page.url.pathname + $page.url.search
-					)}"
+					action="?/delete"
 					method="POST"
 					use:enhance={({ cancel }) => {
 						if (!confirm(`are you sure you want to delete ${item.text}?`)) {
@@ -130,6 +155,7 @@
 						}
 					}}
 				>
+					<input hidden type="text" name="id" value={item.id} />
 					<Button type="submit">
 						<IconCircleMinus class="fill-red-500 stroke-white w-8 h-8" />
 					</Button>

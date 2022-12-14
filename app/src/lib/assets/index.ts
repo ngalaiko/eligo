@@ -7,3 +7,4 @@ export { default as IconUserPlus } from './IconUserPlus.svelte';
 export { default as IconArrowBigUpLine } from './IconArrowBigUpLine.svelte';
 export { default as IconDotsCircleHorizontal } from './IconDotsCircleHorizontal.svelte';
 export { default as IconCircleMinus } from './IconCircleMinus.svelte';
+export { default as IconCurrentLocation } from './IconCurrentLocation.svelte';

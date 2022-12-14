@@ -253,6 +253,8 @@ export default async (server: HTTPServer, database: Database) => {
 				}
 			});
 		} else if (memberships.delete.match(action)) {
+			io.to([action.payload.id]).emit(action.type, action.payload);
+
 			const membership = await database.find('memberships', {
 				id: action.payload.id
 			});

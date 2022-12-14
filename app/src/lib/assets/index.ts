@@ -5,3 +5,4 @@ export { default as IconTrash } from './IconTrash.svelte';
 export { default as IconUserX } from './IconUserX.svelte';
 export { default as IconUserPlus } from './IconUserPlus.svelte';
 export { default as IconArrowBigUpLine } from './IconArrowBigUpLine.svelte';
+export { default as IconDotsCircleHorizontal } from './IconDotsCircleHorizontal.svelte';

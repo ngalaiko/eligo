@@ -14,7 +14,7 @@ export const actions: Actions = {
 		const item = await database.find('items', { id: params.itemId });
 		if (!item) throw error(404);
 
-		if (!api.items.hasAccess(user, item)) throw error(404);
+		if (!(await api.items.hasAccess(user, item))) throw error(404);
 
 		const patch = { id: item.id, deleteTime: new Date().getTime() };
 		await database.append(user.id, items.delete(patch));

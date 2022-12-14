@@ -6,9 +6,8 @@
 	import { ws } from '$lib/api';
 	import { enhance } from '$app/forms';
 	import { beforeNavigate } from '$app/navigation';
-	import { horizontalSlide, notDeleted, unique } from '$lib';
-	import { Button } from '$lib/components';
-	import { IconTrash } from '$lib/assets';
+	import { horizontalSlide, merge, notDeleted } from '$lib';
+	import { Dropdown } from '$lib/components';
 
 	export let data: LayoutData;
 
@@ -17,9 +16,12 @@
 		(lists) => lists.find((list) => list.id === data.list.id) ?? data.list
 	);
 
+	$: memberships = derived(ws.memberships.list, (memberships) =>
+		merge(memberships, data.memberships).filter(notDeleted)
+	);
+
 	$: isMapEnabled = derived(ws.items.list, (items) =>
-		[...items, ...data.items]
-			.filter(unique)
+		merge(items, data.items)
 			.filter(notDeleted)
 			.some(
 				({ coordinates }) =>
@@ -35,9 +37,32 @@
 		{ href: `/lists/${$list.id}/map`, name: 'map', disabled: !isMapEnabled }
 	]);
 
+	$: options = derived([list, memberships], ([list, memberships]) => {
+		const isOwner = list.userId === data.user.id;
+		const membership = memberships.find(({ userId }) => userId == data.user.id);
+
+		return isOwner
+			? [
+					{
+						action: `/lists/${list.id}?/delete&redirect=%2Flists%2F`,
+						confirm: `are you sure you want to delete ${list.title}?`,
+						text: 'delete'
+					}
+			  ]
+			: !!membership
+			? [
+					{
+						action: `/lists/${list.id}/members/${membership.id}?/delete&redirect=%2Flists%2F`,
+						confirm: `are you sure you want to leave ${list.title}?`,
+						text: 'leave'
+					}
+			  ]
+			: [];
+	});
+
 	let direction: 'left' | 'right' | undefined;
 	beforeNavigate(({ from, to }) => {
-		const fromIndex = $links.findIndex((link) => from.url.pathname.startsWith(link.href));
+		const fromIndex = $links.findIndex((link) => from?.url.pathname.startsWith(link.href));
 		const toIndex = $links.findIndex((link) => to?.url.pathname.startsWith(link.href));
 		if (toIndex > -1 && fromIndex > -1) direction = fromIndex - toIndex > 0 ? 'right' : 'left';
 	});
@@ -53,25 +78,23 @@
 			<IconChevronLeft class="w-4 h-4 -ml-2" />
 			<span>lists</span>
 		</a>
-		<div class="flex justify-between">
+		<div class="flex justify-between items-center">
 			<h2 class="whitespace-nowrap text-2xl font-semibold">{$list.title}</h2>
 
-			<div class="flex gap-4">
+			<Dropdown options={$options} let:option>
 				<form
 					method="POST"
-					action="/lists/{$list.id}?/delete&redirect=%2Flists%2F"
+					action={option.action}
 					use:enhance={({ cancel }) => {
-						if (!confirm(`are you sure you want to delete ${$list.title}?`)) {
+						if (!!option.confirm && !confirm(option.confirm)) {
 							cancel();
 							return;
 						}
 					}}
 				>
-					<Button type="submit">
-						<IconTrash />
-					</Button>
+					<button type="submit" class="underline whitespace-nowrap">{option.text}</button>
 				</form>
-			</div>
+			</Dropdown>
 		</div>
 	</figcaption>
 

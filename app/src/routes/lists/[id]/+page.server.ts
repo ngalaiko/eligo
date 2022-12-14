@@ -14,7 +14,7 @@ export let actions: Actions = {
 		const list = await database.find('lists', { id: params.id });
 		if (!list) throw error(404);
 
-		if (!api.lists.hasAccess(user, list)) throw error(404);
+		if (!(await api.lists.hasAccess(user, list))) throw error(404);
 
 		const data = await request.formData();
 
@@ -40,7 +40,7 @@ export let actions: Actions = {
 		const list = await database.find('lists', { id: params.id });
 		if (!list) throw error(404);
 
-		if (!api.lists.hasAccess(user, list)) throw error(404);
+		if (!(await api.lists.hasAccess(user, list))) throw error(404);
 
 		const patch = {
 			id: list.id,

@@ -11,7 +11,11 @@ export const load: PageServerLoad = async ({ parent, params, locals, url }) =>
 		const list = await database.find('lists', { invitatationId: params.id });
 		if (!list) throw error(404);
 
-		const exists = await database.find('memberships', { listId: list.id, userId: user.id });
+		const exists = await database.find('memberships', {
+			listId: list.id,
+			userId: user.id,
+			deleteTime: undefined
+		});
 		if (!exists)
 			await database.append(
 				'membership',

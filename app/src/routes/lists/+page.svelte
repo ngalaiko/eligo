@@ -10,10 +10,18 @@
 	export let data: PageData;
 
 	$: users = derived(ws.users.list, (users) => merge(users, data.users).filter(notDeleted));
+	$: memberships = derived(ws.memberships.list, (memberships) =>
+		merge(memberships, data.memberships).filter(notDeleted)
+	);
 
-	$: lists = derived(ws.lists.list, (lists) =>
+	$: lists = derived([ws.lists.list, memberships], ([lists, memberships]) =>
 		merge(lists, data.lists)
 			.filter(notDeleted)
+			.filter((list) => {
+				const isOwner = list.userId === data.user.id;
+				const isMember = memberships.some((membership) => membership.listId === list.id);
+				return isOwner || isMember;
+			})
 			.sort((a, b) => b.createTime - a.createTime)
 	);
 

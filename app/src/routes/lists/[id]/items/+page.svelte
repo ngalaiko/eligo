@@ -116,7 +116,7 @@
 				</div>
 
 				<footer class="flex gap-1 text-sm items-left -mt-1">
-					{#if item.coordinates}
+					{#if item.coordinates || isEditing}
 						<div class="flex gap-1 items-center">
 							<IconCurrentLocation class="w-4 h-4" />
 							{#if isEditing}

@@ -47,33 +47,35 @@
 	const byChance = (a: Item, b: Item) => $chances[b.id] - $chances[a.id];
 </script>
 
-<div class="flex flex-col gap-2 h-full">
+<div class="flex flex-col  h-full">
 	<div class="flex items-center gap-2">
 		<form
 			method="POST"
 			action="?/create"
-			class="flex flex-1 gap-2 border-2 px-2 py-1 rounded-2xl items-center"
+			class="flex flex-1 gap-2 py-1 rounded-2xl items-center"
 			use:enhance
 		>
 			<Button type="submit">
-				<IconPlus />
+				<IconPlus class="w-5 h-5" />
 			</Button>
 
 			<fieldset class="w-full">
 				<input
 					type="text"
 					name="text"
-					class="bg-inherit placeholder:text-foreground-4 font-semibold whitespace-nowrap text-lg text-ellipsis overflow-hidden w-full focus:ring-none focus:outline-none"
+					class="bg-inherit placeholder:text-foreground-4 whitespace-nowrap text-ellipsis overflow-hidden w-full focus:ring-none focus:outline-none"
 					placeholder="new item"
 					required
 				/>
 			</fieldset>
 		</form>
 
-		{#if isEditing}
-			<a href="?" class="underline w-[5ch] text-center">done</a>
-		{:else}
-			<a href="?editing=true" class="underline w-[5ch] text-center">edit</a>
+		{#if $items.length > 0}
+			{#if isEditing}
+				<a href="?" class="underline w-[5ch] text-center">done</a>
+			{:else}
+				<a href="?editing=true" class="underline w-[5ch] text-center">edit</a>
+			{/if}
 		{/if}
 	</div>
 
@@ -88,9 +90,9 @@
 					({ update }) =>
 						update({ reset: false })}
 				disabled={!isEditing}
-				class="border-2 flex-1 p-1 px-2 rounded-2xl bg-gray-300"
-				style:background="linear-gradient(90deg, var(--color-gray-300) {chancePercentage}%,
-				var(--color-white) {chance}%)"
+				class="flex-1 p-1 px-2 rounded-2xl bg-gray-300"
+				style:background="linear-gradient(90deg, var(--background-2) {chancePercentage}%,
+				var(--background-soft) {chancePercentage}%)"
 			>
 				<input type="text" hidden value={item.id} name="id" />
 				<div class="flex items-center font-semibold text-lg flex justify-between">
@@ -106,7 +108,7 @@
 					{:else}
 						<h3 class="bg-transparent overflow-ellipsis">{item.text}</h3>
 					{/if}
-					<figure class="text-sm flex items-center gap-1">
+					<figure class="text-sm flex items-center gap-2">
 						<figcaption>{(chance * 100).toFixed(2)}%</figcaption>
 						<form method="POST" use:enhance action="?/boost">
 							<input type="text" hidden value={item.id} name="id" />

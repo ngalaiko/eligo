@@ -23,6 +23,7 @@
 	$: isMapEnabled = derived(ws.items.list, (items) =>
 		merge(items, data.items)
 			.filter(notDeleted)
+			.filter(({ listId }) => listId === data.list.id)
 			.some(
 				({ coordinates }) =>
 					coordinates !== undefined && Array.isArray(coordinates) && coordinates.length > 0

@@ -23,7 +23,8 @@
 		"polka": "1.0.0-next.22",
 		"socket.io-client": "^4.5.2",
 		"svelte": "^3.55.0",
-		"workbox-precaching": "^6.5.4"
+		"workbox-precaching": "^6.5.4",
+		"workbox-window": "^6.5.4"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-node": "1.0.0-next.102",

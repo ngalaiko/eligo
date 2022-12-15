@@ -58,8 +58,8 @@
 	}
 
 	.dropdown > ul {
-		background-color: #ffffff;
-		border: 1px solid #cecece;
+		background-color: var(--background-1);
+		border: 1px solid var(--foreground-3);
 		border-radius: 0.25em;
 		list-style: none;
 		margin: 0;
@@ -83,7 +83,7 @@
 	}
 
 	.dropdown > ul > li > a:hover {
-		background-color: #f7f7f7;
+		background-color: var(--background-2);
 	}
 
 	/**

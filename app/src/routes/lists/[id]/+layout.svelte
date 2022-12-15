@@ -46,7 +46,7 @@
 					{
 						action: `/lists/${list.id}?/delete&redirect=%2Flists%2F`,
 						confirm: `are you sure you want to delete ${list.title}?`,
-						text: 'delete'
+						text: 'delete list'
 					}
 			  ]
 			: !!membership

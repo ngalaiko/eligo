@@ -4,10 +4,14 @@
 	import { ws } from '$lib/api';
 	import { derived } from 'svelte/store';
 	import { enhance } from '$app/forms';
-	import type { PageData } from './$types';
+	import { page } from '$app/stores';
+	import type { PageData, ActionData } from './$types';
 	import { notDeleted, merge } from '$lib';
 
 	export let data: PageData;
+	export let form: ActionData;
+
+	$: isCreating = !form?.list && $page.url.searchParams.get('creating') === 'true';
 
 	$: users = derived(ws.users.list, (users) => merge(users, data.users).filter(notDeleted));
 	$: memberships = derived(ws.memberships.list, (memberships) =>
@@ -38,23 +42,28 @@
 <figure class="flex flex-col gap-1">
 	<figcaption class="flex justify-between items-center">
 		<span class="font-semibold text-xl">lists</span>
+		<a href="?creating={!isCreating}">
+			<Button highlight={isCreating}>
+				<IconPlus />
+			</Button>
+		</a>
 	</figcaption>
 
-	<form method="POST" action="?/create" class="flex items-center gap-1 -ml-2" use:enhance>
-		<Button type="submit">
-			<IconPlus class="w-5 h-5" />
-		</Button>
+	{#if isCreating}
+		<form method="POST" action="?/create" class="flex items-center gap-1" use:enhance>
+			<fieldset class="w-full">
+				<input
+					type="text"
+					placeholder="new list"
+					class="bg-inherit placeholder:text-foreground-4 whitespace-nowrap text-ellipsis overflow-hidden w-full focus:ring-none focus:outline-none"
+					name="title"
+					required
+				/>
+			</fieldset>
 
-		<fieldset class="w-full">
-			<input
-				type="text"
-				placeholder="new list"
-				class="bg-inherit placeholder:text-foreground-4 whitespace-nowrap text-ellipsis overflow-hidden w-full focus:ring-none focus:outline-none"
-				name="title"
-				required
-			/>
-		</fieldset>
-	</form>
+			<input type="submit" class="underline" value="create" />
+		</form>
+	{/if}
 
 	<List items={$lists} let:item={list}>
 		<a href="/lists/{list.id}/pick/" data-sveltekit-preload-data="hover">

@@ -38,7 +38,7 @@ const config = {
             'orange-dim': 'var(--orange-dim)',
             'gray-dim': 'var(--gray-dim)'
         }
-    }
+    },
 };
 
 module.exports = config;

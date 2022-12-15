@@ -2,9 +2,9 @@
 	export let items = [];
 </script>
 
-<ul class="overflow-y-scroll flex flex-col gap-2 -mr-3 h-full">
+<ul class="overflow-y-scroll flex flex-col gap-2 -mr-3 pt-2 h-full -mx-4">
 	{#each items as item (item.id)}
-		<li class="mr-3">
+		<li class="mr-3 ml-4">
 			<slot {item} />
 		</li>
 	{:else}

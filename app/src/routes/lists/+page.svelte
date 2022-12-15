@@ -35,26 +35,21 @@
 	<title>lists</title>
 </svelte:head>
 
-<figure class="flex flex-col min-h-0 flex-1 gap-2">
+<figure class="flex flex-col gap-1">
 	<figcaption class="flex justify-between items-center">
-		<span class="font-semibold text-2xl">lists</span>
+		<span class="font-semibold text-xl">lists</span>
 	</figcaption>
 
-	<form
-		method="POST"
-		action="?/create"
-		class="flex items-center gap-1 border-2 px-2 py-1 rounded-2xl"
-		use:enhance
-	>
+	<form method="POST" action="?/create" class="flex items-center gap-1 -ml-2" use:enhance>
 		<Button type="submit">
-			<IconPlus />
+			<IconPlus class="w-5 h-5" />
 		</Button>
 
 		<fieldset class="w-full">
 			<input
 				type="text"
 				placeholder="new list"
-				class="bg-inherit placeholder:text-foreground-4 font-semibold whitespace-nowrap text-lg text-ellipsis overflow-hidden w-full focus:ring-none focus:outline-none"
+				class="bg-inherit placeholder:text-foreground-4 whitespace-nowrap text-ellipsis overflow-hidden w-full focus:ring-none focus:outline-none"
 				name="title"
 				required
 			/>
@@ -62,8 +57,8 @@
 	</form>
 
 	<List items={$lists} let:item={list}>
-		<a href="/lists/{list.id}/pick/">
-			<figure id={list.id} class="border-2 px-2 py-1 rounded-2xl hover:bg-gray-100">
+		<a href="/lists/{list.id}/pick/" data-sveltekit-preload-data="hover">
+			<figure id={list.id} class="my-1 transition hover:scale-105">
 				<h3 class="font-semibold whitespace-nowrap text-lg text-ellipsis overflow-hidden">
 					{list.title}
 				</h3>

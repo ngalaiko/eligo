@@ -74,7 +74,11 @@
 
 <figure class="flex flex-col min-h-0 flex-1 gap-2">
 	<figcaption>
-		<a href="/lists/" class="hover:opacity-70 flex items-center">
+		<a
+			href="/lists/"
+			class="hover:opacity-70 flex items-center"
+			data-sveltekit-preload-data="hover"
+		>
 			<IconChevronLeft class="w-4 h-4 -ml-2" />
 			<span>lists</span>
 		</a>
@@ -105,6 +109,7 @@
 				class:cursor-not-allowed={disabled}
 				class:opacity-50={disabled}
 				class:font-bold={$page.url.pathname.startsWith(href)}
+				data-sveltekit-preload-data="hover"
 				{href}>{name}</a
 			>
 		{/each}

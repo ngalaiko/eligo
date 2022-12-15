@@ -63,7 +63,7 @@
 				<input
 					type="text"
 					name="text"
-					class="font-semibold whitespace-nowrap text-lg text-ellipsis overflow-hidden w-full focus:ring-none focus:outline-none"
+					class="bg-inherit placeholder:text-foreground-4 font-semibold whitespace-nowrap text-lg text-ellipsis overflow-hidden w-full focus:ring-none focus:outline-none"
 					placeholder="new item"
 					required
 				/>
@@ -123,13 +123,13 @@
 							<IconCurrentLocation class="w-4 h-4" />
 							{#if isEditing}
 								<input
-									class:text-red-700={isEditing &&
+									class:text-red={isEditing &&
 										form?.success === false &&
 										form?.item?.id === item.id &&
 										form?.item?.coordinates === false}
 									name="coordinates"
 									disabled={!isEditing}
-									class="bg-transparent"
+									class="bg-inherit placeholder:text-foreground-4"
 									type="text"
 									value={item.coordinates ?? []}
 									placeholder="longtitude, langtitude"
@@ -159,7 +159,7 @@
 				>
 					<input hidden type="text" name="id" value={item.id} />
 					<Button type="submit">
-						<IconCircleMinus class="fill-red-500 stroke-white w-8 h-8" />
+						<IconCircleMinus class="fill-red stroke-background-soft w-8 h-8" />
 					</Button>
 				</form>
 			{/if}

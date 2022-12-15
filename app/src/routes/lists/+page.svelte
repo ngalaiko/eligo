@@ -54,7 +54,7 @@
 			<input
 				type="text"
 				placeholder="new list"
-				class="font-semibold whitespace-nowrap text-lg text-ellipsis overflow-hidden w-full focus:ring-none focus:outline-none"
+				class="bg-inherit placeholder:text-foreground-4 font-semibold whitespace-nowrap text-lg text-ellipsis overflow-hidden w-full focus:ring-none focus:outline-none"
 				name="title"
 				required
 			/>

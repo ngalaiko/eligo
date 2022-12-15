@@ -4,44 +4,55 @@ import { users } from '@eligo/state';
 import { hash } from 'bcrypt';
 import Api from '$lib/server/api';
 import { redirect } from '@sveltejs/kit';
+import { addYears } from 'date-fns';
 
 export const load: PageServerLoad = async ({ parent, url }) => {
-	const { user } = await parent();
-	if (!user) throw redirect(303, `/?redirect=${encodeURIComponent(url.pathname)}`);
-	return { user };
+    const { user, theme } = await parent();
+    if (!user) throw redirect(303, `/?redirect=${encodeURIComponent(url.pathname)}`);
+    return { user, theme };
 };
 
 export const actions: Actions = {
-	default: async ({ request, cookies, locals }) => {
-		const { database } = locals;
-		const data = await request.formData();
+    theme: async ({ request, cookies }) => {
+        const data = await request.formData();
+        cookies.set('theme', data.get('theme') as string, {
+            path: '/',
+            httpOnly: true,
+            expires: addYears(new Date(), 999)
+        });
+        return {};
+    },
 
-		const user = await Api(locals).users.fromCookies(cookies);
-		if (!user) throw error(404);
+    update: async ({ request, cookies, locals }) => {
+        const { database } = locals;
+        const data = await request.formData();
 
-		let patch: { displayName?: string; hash?: string } = {};
+        const user = await Api(locals).users.fromCookies(cookies);
+        if (!user) throw error(404);
 
-		const displayName = data.get('display-name') as string;
-		if (displayName.length > 0) {
-			patch.displayName = displayName;
-		}
+        let patch: { displayName?: string; hash?: string } = {};
 
-		const password = data.get('password') as string;
-		if (password.length > 0) {
-			patch.hash = await hash(password, 10);
-		}
+        const displayName = data.get('display-name') as string;
+        if (displayName.length > 0) {
+            patch.displayName = displayName;
+        }
 
-		if (Object.keys(patch).length > 0) {
-			await database.append(
-				user.id,
-				users.update({
-					id: user.id,
-					updateTime: new Date().getTime(),
-					...patch
-				})
-			);
-		}
+        const password = data.get('password') as string;
+        if (password.length > 0) {
+            patch.hash = await hash(password, 10);
+        }
 
-		return {};
-	}
+        if (Object.keys(patch).length > 0) {
+            await database.append(
+                user.id,
+                users.update({
+                    id: user.id,
+                    updateTime: new Date().getTime(),
+                    ...patch
+                })
+            );
+        }
+
+        return {};
+    }
 };

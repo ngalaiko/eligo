@@ -12,8 +12,8 @@
 	fill="none"
 	stroke-linecap="round"
 	stroke-linejoin="round"
-	class:fill-green-400={$connected}
-	class:fill-red-400={!$connected}
+	class:fill-green={$connected}
+	class:fill-red={!$connected}
 >
 	<circle cx="12" cy="12" r="11" />
 </svg>

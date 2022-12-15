@@ -25,13 +25,28 @@
 		{/if}
 
 		<fieldset class="flex flex-col gap-1">
-			<input id="username" name="username" type="text" placeholder="username" required />
-			<input id="password" name="password" type="password" placeholder="password" required />
+			<input
+				id="username"
+				name="username"
+				type="text"
+				placeholder="username"
+				class="bg-inherit placeholder:text-foreground-4"
+				required
+			/>
+			<input
+				id="password"
+				name="password"
+				type="password"
+				placeholder="password"
+				class="bg-inherit placeholder:text-foreground-4"
+				required
+			/>
 			<input
 				id="password-repeat"
 				name="password-repeat"
 				type="password-repeat"
 				placeholder="repeat password"
+				class="bg-inherit placeholder:text-foreground-4"
 				required
 			/>
 			<input type="submit" class="underline text-left" value="signup" />

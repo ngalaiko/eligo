@@ -95,7 +95,7 @@
 <List items={$entries} let:item={entry}>
 	{@const uname = userName(entry.userId)}
 	<div class="flex gap-1">
-		<b>{uname} </b>
+		<b class="whitespace-nowrap">{uname}</b>
 		{#if entry.type === 'picks/created'}
 			<span>picked</span>
 			<span class="whitespace-nowrap overflow-ellipsis overflow-hidden">

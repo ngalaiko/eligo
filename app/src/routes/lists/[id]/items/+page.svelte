@@ -12,7 +12,10 @@
 	export let data: PageData;
 	export let form: ActionData;
 
-	$: isEditing = $page.url.searchParams.get('editing') === 'true';
+	$: isEditing = derived(
+		page,
+		({ url }) => url.searchParams.get('editing') === 'true' || data.isEditing
+	);
 
 	$: items = derived(ws.items.list, (items) =>
 		merge(items, data.items)
@@ -71,7 +74,7 @@
 		</form>
 
 		{#if $items.length > 0}
-			{#if isEditing}
+			{#if $isEditing}
 				<a href="?" class="underline w-[5ch] text-center">done</a>
 			{:else}
 				<a href="?editing=true" class="underline w-[5ch] text-center">edit</a>
@@ -82,73 +85,69 @@
 	<List items={$items.sort(byAlphabet).sort(byChance)} let:item>
 		{@const chance = $chances[item.id]}
 		{@const chancePercentage = (chance * 100).toFixed(0)}
-		<div class="flex w-full items-center gap-1">
+		<div
+			class="flex items-center gap-1 rounded-2xl p-1 px-2"
+			style:background="linear-gradient(90deg, var(--background-2) {chancePercentage}%,
+			var(--background-soft) {chancePercentage}%)"
+		>
 			<form
 				method="POST"
 				action="?/update"
 				use:enhance={() =>
 					({ update }) =>
 						update({ reset: false })}
-				disabled={!isEditing}
-				class="flex-1 p-1 px-2 rounded-2xl bg-gray-300"
-				style:background="linear-gradient(90deg, var(--background-2) {chancePercentage}%,
-				var(--background-soft) {chancePercentage}%)"
+				disabled={!$isEditing}
+				class="flex-1 w-full flex gap-2 flex-col"
 			>
 				<input type="text" hidden value={item.id} name="id" />
-				<div class="flex items-center font-semibold text-lg flex justify-between">
-					{#if isEditing}
+				<div class="flex items-center justify-between">
+					{#if $isEditing}
 						<input
 							type="text"
 							name="text"
 							class="bg-transparent overflow-ellipsis"
-							disabled={!isEditing}
 							required
 							value={item.text}
 						/>
 					{:else}
 						<h3 class="bg-transparent overflow-ellipsis">{item.text}</h3>
 					{/if}
-					<figure class="text-sm flex items-center gap-2">
-						<figcaption>{(chance * 100).toFixed(2)}%</figcaption>
-						<form method="POST" use:enhance action="?/boost">
-							<input type="text" hidden value={item.id} name="id" />
-							<Button type="submit">
-								<IconArrowBigUpLine />
-							</Button>
-						</form>
-					</figure>
 				</div>
 
-				<footer class="flex gap-1 text-sm items-left -mt-1">
-					{#if item.coordinates || isEditing}
-						<div class="flex gap-1 items-center">
-							<IconCurrentLocation class="w-4 h-4" />
-							{#if isEditing}
-								<input
-									class:text-red={isEditing &&
-										form?.success === false &&
-										form?.item?.id === item.id &&
-										form?.item?.coordinates === false}
-									name="coordinates"
-									disabled={!isEditing}
-									class="bg-inherit placeholder:text-foreground-4"
-									type="text"
-									value={item.coordinates ?? []}
-									placeholder="longtitude, langtitude"
-								/>
-							{:else}
-								<span>{item.coordinates}</span>
-							{/if}
-						</div>
-					{/if}
-					{#if isEditing}
+				<div class="flex items-center gap-1 text-sm items-left -mt-1">
+					{#if $isEditing}
+						<IconCurrentLocation class="w-4 h-4" />
+						<input
+							class:text-red={$isEditing &&
+								form?.success === false &&
+								form?.item?.id === item.id &&
+								form?.item?.coordinates === false}
+							name="coordinates"
+							class="bg-inherit placeholder:text-foreground-4"
+							type="text"
+							value={item.coordinates ?? []}
+							placeholder="longtitude, langtitude"
+						/>
 						|
 						<button type="submit" class="underline">save</button>
+					{:else if item.coordinates}
+						<IconCurrentLocation class="w-4 h-4" />
+						<span>{item.coordinates}</span>
 					{/if}
-				</footer>
+				</div>
 			</form>
 
-			{#if isEditing}
+			<figure class="text-sm flex items-center gap-2">
+				<figcaption>{(chance * 100).toFixed(2)}%</figcaption>
+				<form method="POST" use:enhance action="?/boost">
+					<input type="text" hidden value={item.id} name="id" />
+					<Button type="submit">
+						<IconArrowBigUpLine />
+					</Button>
+				</form>
+			</figure>
+
+			{#if $isEditing}
 				<form
 					action="?/delete"
 					method="POST"

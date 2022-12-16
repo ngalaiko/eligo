@@ -5,10 +5,11 @@ import { nanoid } from 'nanoid';
 import { boosts, items } from '@eligo/state';
 import type { Item } from '@eligo/protocol';
 
-export const load: PageServerLoad = async ({ params, locals: { database } }) => ({
+export const load: PageServerLoad = async ({ url, params, locals: { database } }) => ({
     items: database.filter('items', { listId: params.id }),
     boosts: database.filter('boosts', { listId: params.id }),
-    picks: database.filter('picks', { listId: params.id })
+    picks: database.filter('picks', { listId: params.id }),
+    isEditing: url.searchParams.get('editing') === 'true'
 });
 
 export const actions: Actions = {

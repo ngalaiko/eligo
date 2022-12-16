@@ -74,14 +74,7 @@
 	<div class="flex flex-col gap-1">
 		<span>this browser:</span>
 
-		<form
-			method="POST"
-			action="?/theme"
-			class="flex flex-col items-end gap-2"
-			use:enhance={() =>
-				({ update }) =>
-					update({ reset: false })}
-		>
+		<form method="POST" action="?/theme" class="flex flex-col items-end gap-2">
 			<fieldset class="flex flex-col gap-2 w-full pl-20">
 				<div class="flex justify-between items-center">
 					<span>push notifications:</span>

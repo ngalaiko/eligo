@@ -16,8 +16,8 @@
 
 	$: items = derived(ws.items.list, (items) =>
 		merge(items, data.items)
-			.filter(({ listId }) => listId === data.list.id)
 			.filter(notDeleted)
+			.filter(({ listId }) => listId === data.list.id)
 			.sort((a, b) => b.createTime - a.createTime)
 	);
 

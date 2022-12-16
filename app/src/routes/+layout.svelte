@@ -1,8 +1,7 @@
 <script lang="ts">
 	import '../app.css';
 	import { browser } from '$app/environment';
-	import { ConnectedIndicator } from '$lib/components';
-	import { ReloadServiceWorker } from '$lib/components';
+	import { ConnectedIndicator, ReloadServiceWorker } from '$lib/components';
 	import type { LayoutData } from './$types';
 	import { enhance } from '$app/forms';
 	import { connect } from '$lib/api';

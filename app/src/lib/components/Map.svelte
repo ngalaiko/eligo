@@ -92,7 +92,6 @@
 					syncMarkers(items);
 					map.setView(center, undefined, { animate: false });
 				}),
-			destroy: () => map.remove()
 		};
 	};
 </script>

@@ -100,7 +100,7 @@
 				class="flex-1 w-full flex gap-2 flex-col"
 			>
 				<input type="text" hidden value={item.id} name="id" />
-				<div class="flex items-center justify-between">
+				<div class="flex items-center justify-between font-semibold ">
 					{#if $isEditing}
 						<input
 							type="text"
@@ -110,7 +110,7 @@
 							value={item.text}
 						/>
 					{:else}
-						<h3 class="bg-transparent font-semibold overflow-ellipsis">{item.text}</h3>
+						<h3 class="bg-transparent overflow-ellipsis">{item.text}</h3>
 					{/if}
 				</div>
 

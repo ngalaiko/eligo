@@ -84,7 +84,9 @@
 			<span>lists</span>
 		</a>
 		<div class="flex justify-between items-center">
-			<h2 class="whitespace-nowrap text-2xl font-semibold">{$list.title}</h2>
+			<h2 class="whitespace-nowrap overflow-ellipsis overflow-hidden text-2xl font-semibold">
+				{$list.title}
+			</h2>
 
 			<Dropdown options={$options} let:option>
 				<form

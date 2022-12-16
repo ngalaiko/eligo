@@ -1,6 +1,14 @@
 const config = {
     content: ['./src/**/*.{html,js,svelte,ts}'],
     theme: {
+        fontSize: {
+            sm: '1rem',
+            base: '1.25rem',
+            xl: '1.563rem',
+            '2xl': '1.953rem',
+            '3xl': '2.441rem',
+            '4xl': '3.052rem'
+        },
         colors: {
             transparent: 'transparent',
             current: 'currentColor',
@@ -38,7 +46,7 @@ const config = {
             'orange-dim': 'var(--orange-dim)',
             'gray-dim': 'var(--gray-dim)'
         }
-    },
+    }
 };
 
 module.exports = config;

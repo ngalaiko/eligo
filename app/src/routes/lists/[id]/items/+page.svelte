@@ -110,11 +110,13 @@
 							value={item.text}
 						/>
 					{:else}
-						<h3 class="bg-transparent overflow-ellipsis">{item.text}</h3>
+						<h3 class="bg-transparent font-semibold overflow-ellipsis">{item.text}</h3>
 					{/if}
 				</div>
 
-				<div class="flex items-center gap-1 text-sm items-left -mt-1">
+				<div
+					class="flex items-center gap-1 text-sm items-left -mt-1 whitespace-nowrap overflow-ellipsis overflow-hiddenwhitespace-nowrap overflow-ellipsis overflow-hidden"
+				>
 					{#if $isEditing}
 						<IconCurrentLocation class="w-4 h-4" />
 						<input

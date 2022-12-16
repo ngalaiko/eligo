@@ -39,7 +39,7 @@
 	<title>lists</title>
 </svelte:head>
 
-<figure class="flex flex-col gap-1">
+<figure class="flex flex-col gap-1 h-full">
 	<figcaption class="flex justify-between items-center">
 		<span class="font-semibold text-xl">lists</span>
 		<a href="?creating={!isCreating}">

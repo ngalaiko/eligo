@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { PageData } from './$types';
+	import type { ActionData, PageData } from './$types';
 	import { Button, Distance } from '$lib/components';
 	import { enhance } from '$app/forms';
 	import { scale } from 'svelte/transition';
@@ -10,22 +10,28 @@
 	import { merge } from '$lib';
 
 	export let data: PageData;
+	export let form: ActionData;
 
-	$: pick = derived(ws.picks.list, (picks) => {
-		picks = merge(picks, data.pick ? [data.pick] : []).filter(
-			({ listId }) => listId === data.list.id
-		);
-		return picks.reduce(
-			(latest, pick) => (pick.createTime <= latest?.createTime ? latest : pick),
-			picks[0]
-		);
-	});
-
-	$: items = derived(ws.items.list, (items) =>
-		merge(items, data.item ? [data.item] : []).filter(({ listId }) => listId === data.list.id)
+	$: pick = derived(
+		ws.picks.list,
+		(picks) =>
+			merge(picks, data.pick ? [data.pick] : [], form?.pick ? [form.pick] : [])
+				.filter((pick) => pick?.listId === data.list.id)
+				.reduce(
+					(latest, pick) => (pick.createTime <= latest?.createTime ? latest : pick),
+					picks[0]
+				),
+		form?.pick ?? data.pick
 	);
 
-	$: item = derived([items, pick], ([items, pick]) => items.find(({ id }) => id === pick?.itemId));
+	$: item = derived(
+		[ws.items.list, pick],
+		([items, pick]) =>
+			merge(items, data.item ? [data.item] : [], form?.item ? [form.item] : [])
+				.filter(({ listId }) => listId === data.list.id)
+				.find(({ id }) => id === pick?.itemId),
+		form?.item ?? data.item
+	);
 </script>
 
 <div class="flex flex-col gap-2 items-center">

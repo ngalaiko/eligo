@@ -31,11 +31,11 @@
 	);
 
 	$: links = derived(isMapEnabled, (isMapEnabled) => [
-		{ href: `/lists/${$list.id}/pick`, name: 'pick' },
-		{ href: `/lists/${$list.id}/items`, name: 'items' },
-		{ href: `/lists/${$list.id}/history`, name: 'history' },
-		{ href: `/lists/${$list.id}/members`, name: 'members' },
-		{ href: `/lists/${$list.id}/map`, name: 'map', disabled: !isMapEnabled }
+		{ href: `/lists/${$list.id}/pick/`, name: 'pick' },
+		{ href: `/lists/${$list.id}/items/`, name: 'items' },
+		{ href: `/lists/${$list.id}/history/`, name: 'history' },
+		{ href: `/lists/${$list.id}/members/`, name: 'members' },
+		{ href: `/lists/${$list.id}/map/`, name: 'map', disabled: !isMapEnabled }
 	]);
 
 	$: options = derived([list, memberships], ([list, memberships]) => {

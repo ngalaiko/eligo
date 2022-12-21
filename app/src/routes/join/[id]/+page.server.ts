@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
-import { memberships } from '@eligo/state';
+import { memberships } from '@eligo/protocol';
 import { nanoid } from 'nanoid';
 
 export const load: PageServerLoad = async ({ parent, params, locals, url }) =>

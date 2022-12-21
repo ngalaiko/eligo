@@ -1,7 +1,7 @@
 import type { Database } from './database.js';
 import { SignJWT, generateKeyPair, jwtVerify, exportSPKI, importSPKI } from 'jose';
 import { nanoid } from 'nanoid';
-import { jwtKeys } from '@eligo/state';
+import { jwtKeys } from '@eligo/protocol';
 
 export const signer = async (database: Database) =>
 	generateKeyPair('ES256')

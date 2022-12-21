@@ -91,7 +91,7 @@
 				init.then(() => {
 					syncMarkers(items);
 					map.setView(center, undefined, { animate: false });
-				}),
+				})
 		};
 	};
 </script>

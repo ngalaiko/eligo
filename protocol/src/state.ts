@@ -19,7 +19,7 @@ import type {
 	Membership,
 	User,
 	WebPushSubscription
-} from '@eligo/protocol';
+} from './types';
 
 export const emptyState = {
 	jwtKeys: {} as Record<string, JWTPublicKey>,

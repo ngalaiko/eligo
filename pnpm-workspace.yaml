@@ -2,4 +2,3 @@ packages:
   - 'app'
   - 'protocol'
   - 'server'
-  - 'state'

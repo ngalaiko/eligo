@@ -10,7 +10,7 @@ import type {
 	Membership,
 	WebPushSubscription,
 	JWTPublicKey
-} from '@eligo/protocol';
+} from './types';
 
 const c_ud = <
 	T extends {

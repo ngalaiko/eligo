@@ -1,5 +1,5 @@
 import Api from '$lib/server/api';
-import { lists } from '@eligo/state';
+import { lists } from '@eligo/protocol';
 import { error, redirect } from '@sveltejs/kit';
 import type { Actions } from './$types';
 

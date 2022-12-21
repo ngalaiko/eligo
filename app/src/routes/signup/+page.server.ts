@@ -3,7 +3,7 @@ import { addDays } from 'date-fns';
 import { invalid, redirect } from '@sveltejs/kit';
 import { hash } from 'bcrypt';
 import { nanoid } from 'nanoid';
-import { users } from '@eligo/state';
+import { users } from '@eligo/protocol';
 
 export const actions: Actions = {
 	default: async ({ request, cookies, url, locals }) => {

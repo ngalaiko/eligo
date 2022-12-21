@@ -1,4 +1,4 @@
-import { webPushSuscriptions } from '@eligo/state';
+import { webPushSuscriptions } from '@eligo/protocol';
 import type { Server, Socket } from 'socket.io';
 import type { Database } from '../database.js';
 import type { Notifications } from '../notifications.js';

@@ -1,13 +1,15 @@
-import { type Action, reduce, emptyState } from '@eligo/state';
-import type {
-	Item,
-	JWTPublicKey,
-	List,
-	Membership,
-	User,
-	Pick,
-	Boost,
-	WebPushSubscription
+import {
+	reduce,
+	emptyState,
+	type Action,
+	type Item,
+	type JWTPublicKey,
+	type List,
+	type Membership,
+	type User,
+	type Pick,
+	type Boost,
+	type WebPushSubscription
 } from '@eligo/protocol';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { Tail } from 'tail';

@@ -1,9 +1,18 @@
-import type { List, User, WebNotification } from '@eligo/protocol';
+import {
+	type List,
+	type User,
+	type WebNotification,
+	boosts,
+	items,
+	lists,
+	memberships,
+	picks,
+	users
+} from '@eligo/protocol';
 import type { Server as HTTPServer } from 'node:http';
 import { Server } from 'socket.io';
 import type { Database } from '../database.js';
 import { verifier } from '../tokens.js';
-import { boosts, items, lists, memberships, picks, users } from '@eligo/state';
 import Notifications from '../notifications.js';
 import registerWebPushSubscriptions from './webPushSubscriptions.js';
 import { parse } from 'cookie';

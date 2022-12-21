@@ -4,6 +4,8 @@ import { derived, writable } from 'svelte/store';
 import { deleteDB, openDB } from 'idb';
 import {
 	type Action,
+	type Error,
+	type User,
 	emptyState,
 	reduce,
 	lists,
@@ -13,8 +15,7 @@ import {
 	boosts,
 	memberships,
 	webPushSuscriptions
-} from '@eligo/state';
-import type { Error, User } from '@eligo/protocol';
+} from '@eligo/protocol';
 
 export const state = writable(emptyState);
 

@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { getWeights, type Item } from '@eligo/protocol';
+	import type { Item } from '@eligo/protocol';
 	import { enhance } from '$app/forms';
 	import { derived } from 'svelte/store';
 	import type { PageData, ActionData } from './$types';
 	import { ws } from '$lib/api';
-	import { merge, notDeleted } from '$lib';
+	import { merge, notDeleted, getWeights } from '$lib';
 	import { Button, List } from '$lib/components';
 	import { IconArrowBigUpLine, IconPlus, IconCircleMinus, IconCurrentLocation } from '$lib/assets';
 	import { page } from '$app/stores';

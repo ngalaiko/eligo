@@ -1,4 +1,4 @@
-import { reducerWithInitialState } from './vendor/typescript-fsa-reducers/index.js';
+import { reducerWithInitialState } from 'typescript-fsa-reducers';
 import {
 	jwtKeys,
 	users,

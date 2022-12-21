@@ -1,5 +1,5 @@
-import { actionCreatorFactory } from './vendor/typescript-fsa/index.js';
-import { reducerWithInitialState } from './vendor/typescript-fsa-reducers/index.js';
+import { actionCreatorFactory } from 'typescript-fsa';
+import { reducerWithInitialState } from 'typescript-fsa-reducers';
 
 import type {
 	User,

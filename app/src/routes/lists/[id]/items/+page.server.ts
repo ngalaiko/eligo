@@ -1,6 +1,6 @@
 import type { Actions, PageServerLoad } from './$types';
 import Api from '$lib/server/api';
-import { error, invalid } from '@sveltejs/kit';
+import { error, fail } from '@sveltejs/kit';
 import { nanoid } from 'nanoid';
 import { type Item, boosts, items } from '@eligo/protocol';
 
@@ -22,7 +22,7 @@ export const actions: Actions = {
 
 		const text = data.get('text') as string;
 		if (!text)
-			return invalid(400, {
+			return fail(400, {
 				success: false,
 				item: { id: undefined, coordinates: undefined, text: false },
 				boost: undefined
@@ -67,14 +67,14 @@ export const actions: Actions = {
 		if (coordinates) {
 			const [long, lat] = coordinates.split(',');
 			if (!long || !lat)
-				return invalid(400, {
+				return fail(400, {
 					success: false,
 					item: { id: item.id, coordinates: false },
 					boost: undefined
 				});
 			const longitude = parseFloat(long.trim());
 			if (isNaN(longitude))
-				return invalid(400, {
+				return fail(400, {
 					success: false,
 					item: { id: item.id, coordinates: false },
 					boost: undefined
@@ -82,7 +82,7 @@ export const actions: Actions = {
 
 			const latitude = parseFloat(lat.trim());
 			if (isNaN(latitude))
-				return invalid(400, {
+				return fail(400, {
 					success: false,
 					item: { id: item.id, coordinates: false },
 					boost: undefined

@@ -1,5 +1,5 @@
 import type { Actions, PageServerLoad } from './$types';
-import { invalid, redirect } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import { compare } from 'bcrypt';
 import { addDays } from 'date-fns';
 
@@ -17,16 +17,16 @@ export const actions: Actions = {
 		const data = await request.formData();
 
 		const username = data.get('username') as string;
-		if (!username) return invalid(400, { error: 'username is required' });
+		if (!username) return fail(400, { error: 'username is required' });
 
 		const password = data.get('password') as string;
-		if (!password) return invalid(400, { error: 'username is required' });
+		if (!password) return fail(400, { error: 'username is required' });
 
 		const user = await database.find('users', { name: username });
-		if (!user) return invalid(400, { error: 'user does not exist' });
+		if (!user) return fail(400, { error: 'user does not exist' });
 
 		const isPasswordCorrect = await compare(password, user.hash!);
-		if (!isPasswordCorrect) return invalid(400, { error: 'password is invalid' });
+		if (!isPasswordCorrect) return fail(400, { error: 'password is invalid' });
 
 		const token = await tokens.sign({ sub: user.id });
 		cookies.set('token', token, {

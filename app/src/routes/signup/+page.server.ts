@@ -1,6 +1,6 @@
 import type { Actions } from './$types';
 import { addDays } from 'date-fns';
-import { invalid, redirect } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import { hash } from 'bcrypt';
 import { nanoid } from 'nanoid';
 import { users } from '@eligo/protocol';
@@ -11,16 +11,16 @@ export const actions: Actions = {
 		const data = await request.formData();
 
 		const username = data.get('username') as string;
-		if (!username) return invalid(400, { error: 'username is required' });
+		if (!username) return fail(400, { error: 'username is required' });
 
 		const password = data.get('password') as string;
-		if (!password) return invalid(400, { error: 'username is required' });
+		if (!password) return fail(400, { error: 'username is required' });
 
 		const passwordRepeat = data.get('password-repeat');
-		if (password !== passwordRepeat) return invalid(400, { error: 'passwords did not match' });
+		if (password !== passwordRepeat) return fail(400, { error: 'passwords did not match' });
 
 		const existing = await database.find('users', { name: username });
-		if (existing) return invalid(400, { error: `${username} is taken` });
+		if (existing) return fail(400, { error: `${username} is taken` });
 
 		const passwordHash = await hash(password, 10);
 		const user = {

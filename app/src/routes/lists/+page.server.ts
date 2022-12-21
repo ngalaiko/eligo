@@ -1,5 +1,5 @@
 import { lists } from '@eligo/protocol';
-import { error, invalid } from '@sveltejs/kit';
+import { error, fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { nanoid } from 'nanoid';
 import Api from '$lib/server/api';
@@ -24,7 +24,7 @@ export const actions: Actions = {
 		const data = await request.formData();
 
 		const title = data.get('title') as string;
-		if (!title) return invalid(400, { error: 'title is empty' });
+		if (!title) return fail(400, { error: 'title is empty' });
 
 		const list = {
 			id: nanoid(),

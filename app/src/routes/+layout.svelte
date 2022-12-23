@@ -30,7 +30,7 @@
 				</div>
 				<div class="flex gap-6 w-full justify-end">
 					<a class="underline" href="/settings/" data-sveltekit-preload-data="hover">settings</a>
-					<form method="POST" action="/logout" use:enhance>
+					<form method="POST" action="/logout/" use:enhance>
 						<input class="underline cursor-pointer" value="logout" type="submit" />
 					</form>
 				</div>

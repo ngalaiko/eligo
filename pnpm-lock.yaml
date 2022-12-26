@@ -14,7 +14,7 @@ importers:
       '@types/bcrypt': ^5.0.0
       '@types/leaflet': ^1.9.0
       '@types/workbox-build': ^5.0.1
-      '@vite-pwa/sveltekit': ^0.0.1
+      '@vite-pwa/sveltekit': ^0.1.0
       autoprefixer: ^10.4.13
       bcrypt: ^5.1.0
       compression: ^1.7.4
@@ -62,7 +62,7 @@ importers:
       '@types/bcrypt': 5.0.0
       '@types/leaflet': 1.9.0
       '@types/workbox-build': 5.0.1
-      '@vite-pwa/sveltekit': 0.0.1_n46hanechhcb4seycmn3d5vts4
+      '@vite-pwa/sveltekit': 0.1.0_g44reapwivs7njcwlqiaafvh4a
       autoprefixer: 10.4.13_postcss@8.4.20
       postcss: 8.4.20
       postcss-load-config: 4.0.1_postcss@8.4.20
@@ -1970,14 +1970,14 @@ packages:
     resolution: {integrity: sha512-2TYTiMcF6lMdMU36zUZPyQurpM8xso3Ad6XnFDdlSZowukoFy6pwZV+oT27z/jU1eaa+QgtPkdYFrS5KsJDMOQ==}
     dev: true
 
-  /@vite-pwa/sveltekit/0.0.1_n46hanechhcb4seycmn3d5vts4:
-    resolution: {integrity: sha512-ybdYNM9Qq21RwvMiYflBfwm5QaT8SRyh1e5HwBEcZEfglIjPGhY3p7TCPHKtZMpbjLtwLcTJcrJiQjfu3jn1gg==}
+  /@vite-pwa/sveltekit/0.1.0_g44reapwivs7njcwlqiaafvh4a:
+    resolution: {integrity: sha512-IHn5iFuYpxhevKFr7W5zwu6sQoKD28TwToJIewCEiToVzQPNEnHsv63Cm+3Q+FwOtPJTuQer9uToJHaCiot3Rg==}
     engines: {node: '>=16.14'}
     peerDependencies:
-      '@types/workbox-build': ^5.0.1
-      vite-plugin-pwa: ^0.13.3
+      '@sveltejs/kit': ^1.0.0
+      vite-plugin-pwa: ^0.14.0
     dependencies:
-      '@types/workbox-build': 5.0.1
+      '@sveltejs/kit': 1.0.1_svelte@3.55.0+vite@4.0.3
       vite-plugin-pwa: 0.14.0_kd2yym7bvosszn2volak4ngp5q
     dev: true
 

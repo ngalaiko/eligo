@@ -1,12 +1,13 @@
+//@ts-ignore
 import { SvelteKitPWA } from '@vite-pwa/sveltekit';
 import { sveltekit } from '@sveltejs/kit/vite';
 import mkcert from 'vite-plugin-mkcert';
 import { setupSocketIO, openDatabase } from '@eligo/server';
+import type { UserConfig } from 'vite';
 
 const dev = process.env.NODE_ENV === 'development';
 
-/** @type {import('vite').UserConfig} */
-const config = {
+const config: UserConfig = {
 	server: { https: true },
 	plugins: [
 		sveltekit(),
@@ -14,7 +15,7 @@ const config = {
 			name: 'inject-socket-io',
 			configureServer(server) {
 				const database = openDatabase(dev ? 'database.dev.jsonl' : '/data/database.jsonl');
-				setupSocketIO(server.httpServer, database);
+				setupSocketIO(server.httpServer!, database);
 				console.log('socket.io injected');
 			}
 		},

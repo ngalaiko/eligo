@@ -2,7 +2,19 @@
 	"name": "@eligo/server",
 	"private": true,
 	"main": "build/index.js",
-	"typings": "build/index.d.ts",
+	"types": "build/index.d.ts",
+	"license": "AGPL-3.0-only",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ngalaiko/eligo",
+		"directory": "server"
+	},
+	"exports": {
+		".": {
+			"types": "./build/index.d.ts",
+			"import": "./build/index.js"
+		}
+	},
 	"scripts": {
 		"build": "rm -rf build && tsc",
 		"lint": "prettier --check . --config ../.prettierrc --ignore-path ./.gitignore --ignore-path .gitignore",
@@ -14,12 +26,12 @@
 		"@types/cookie": "^0.5.1",
 		"@types/node": "^18.11.17",
 		"prettier": "^2.8.1",
-		"typescript": "^4.9.4"
+		"typescript": "^4.9.4",
+		"@types/tail": "^2.2.1",
+		"@types/web-push": "^3.3.2"
 	},
 	"dependencies": {
 		"@eligo/protocol": "workspace:*",
-		"@types/tail": "^2.2.1",
-		"@types/web-push": "^3.3.2",
 		"cookie": "^0.5.0",
 		"jose": "^4.11.1",
 		"nanoid": "^4.0.0",

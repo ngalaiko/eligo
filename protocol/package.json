@@ -2,7 +2,19 @@
 	"name": "@eligo/protocol",
 	"private": true,
 	"main": "build/index.js",
-	"typings": "build/index.d.ts",
+	"types": "build/index.d.ts",
+	"license": "AGPL-3.0-only",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ngalaiko/eligo",
+		"directory": "protocol"
+	},
+	"exports": {
+		".": {
+			"types": "./build/index.d.ts",
+			"import": "./build/index.js"
+		}
+	},
 	"scripts": {
 		"dev": "tsc-watch -p ./tsconfig.json",
 		"build": "rm -rf build && tsc",

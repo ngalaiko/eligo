@@ -105,8 +105,6 @@ importers:
       web-push: ^3.5.0
     dependencies:
       '@eligo/protocol': link:../protocol
-      '@types/tail': 2.2.1
-      '@types/web-push': 3.3.2
       cookie: 0.5.0
       jose: 4.11.1
       nanoid: 4.0.0
@@ -116,6 +114,8 @@ importers:
     devDependencies:
       '@types/cookie': 0.5.1
       '@types/node': 18.11.17
+      '@types/tail': 2.2.1
+      '@types/web-push': 3.3.2
       prettier: 2.8.1
       typescript: 4.9.4
 
@@ -1949,7 +1949,7 @@ packages:
 
   /@types/tail/2.2.1:
     resolution: {integrity: sha512-j75Gs5MiIpNR14wztQ4vtViUqxZi+lcgflyXC7P9iMgNnMab7XcV5p+2590IO3njsWWn5l8C+55ILk2CDDyaHg==}
-    dev: false
+    dev: true
 
   /@types/trusted-types/2.0.2:
     resolution: {integrity: sha512-F5DIZ36YVLE+PN+Zwws4kJogq47hNgX3Nx6WyDJ3kcplxyke3XIzB8uK5n/Lpm1HBsbGzd6nmGehL8cPekP+Tg==}
@@ -1958,7 +1958,7 @@ packages:
     resolution: {integrity: sha512-JxWGVL/m7mWTIg4mRYO+A6s0jPmBkr4iJr39DqJpRJAc+jrPiEe1/asmkwerzRon8ZZDxaZJpsxpv0Z18Wo9gw==}
     dependencies:
       '@types/node': 18.11.17
-    dev: false
+    dev: true
 
   /@types/workbox-build/5.0.1:
     resolution: {integrity: sha512-lJrGzEHX/QT3E4F5ABBNvCb8ObOr2LfHNAqAGfRuBPncWlU/d3iIUorECKNXmnZnLbLsgpgvhJWPMgByzR+L+A==}

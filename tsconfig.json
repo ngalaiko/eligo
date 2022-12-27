@@ -3,6 +3,7 @@
     "sourceMap": true,
     "removeComments": true,
     "strict": true,
+    "allowSyntheticDefaultImports": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,

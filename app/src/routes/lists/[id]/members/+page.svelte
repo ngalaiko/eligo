@@ -5,7 +5,7 @@
 	import { ws } from '$lib/api';
 	import { derived } from 'svelte/store';
 	import type { PageData } from './$types';
-	import { List } from '$lib/components';
+	import { ConnectedIndicator, List } from '$lib/components';
 	import { nanoid } from 'nanoid';
 
 	export let data: PageData;
@@ -34,7 +34,10 @@
 
 <figure class="flex flex-col gap-2">
 	<List items={$memberships} let:item={membership}>
-		<b>{userName(membership.userId)}</b>
+		<span class="flex gap-1 items-center">
+			<ConnectedIndicator userId={membership.userId} />
+			<b>{userName(membership.userId)}</b>
+		</span>
 	</List>
 
 	<figcaption class="pt-2">

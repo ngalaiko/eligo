@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Distance, List } from '$lib/components';
+	import { ConnectedIndicator, Distance, List } from '$lib/components';
 	import { derived } from 'svelte/store';
 	import type { PageData } from './$types';
 	import { ws } from '$lib/api';
@@ -93,9 +93,9 @@
 </script>
 
 <List items={$entries} let:item={entry}>
-	{@const uname = userName(entry.userId)}
 	<div class="flex gap-1">
-		<b class="whitespace-nowrap">{uname}</b>
+		<b class="whitespace-nowrap">{userName(entry.userId)}</b>
+
 		{#if entry.type === 'picks/created'}
 			<span>picked</span>
 			<span class="whitespace-nowrap overflow-ellipsis overflow-hidden">

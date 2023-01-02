@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '../app.css';
 	import { browser } from '$app/environment';
-	import { ConnectedIndicator, ReloadServiceWorker } from '$lib/components';
+	import { ReloadServiceWorker } from '$lib/components';
 	import type { LayoutData } from './$types';
 	import { enhance } from '$app/forms';
 	import { connect } from '$lib/api';
@@ -23,11 +23,11 @@
 >
 	<main class="flex flex-col max-w-lg h-screen p-5 mx-auto">
 		<header class="flex justify-between pb-3 w-full">
+			<h2 class="text-lg font-semibold">
+				<a class="underline" href="/">eligo</a>
+			</h2>
+
 			{#if data.user}
-				<div class="flex gap-1 w-full items-center justify-start">
-					<ConnectedIndicator />
-					<span>{data.user.displayName ?? data.user.name}</span>
-				</div>
 				<div class="flex gap-6 w-full justify-end">
 					<a class="underline" href="/settings/" data-sveltekit-preload-data="hover">settings</a>
 					<form method="POST" action="/logout/" use:enhance>

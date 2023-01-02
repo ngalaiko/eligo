@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button, Distance, List } from '$lib/components';
+	import { Button, ConnectedIndicator, Distance, List } from '$lib/components';
 	import IconPlus from '$lib/assets/IconPlus.svelte';
 	import { ws } from '$lib/api';
 	import { derived } from 'svelte/store';
@@ -73,7 +73,10 @@
 				</h3>
 
 				<figcaption class="flex gap-1 opacity-50 text-sm">
-					<b>{userName(list.userId)}</b>
+					<div class="flex gap-1 items-center">
+						<ConnectedIndicator userId={list.userId} />
+						<b>{userName(list.userId)}</b>
+					</div>
 					created
 					<Distance to={list.createTime} />
 				</figcaption>

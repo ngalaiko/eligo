@@ -23,11 +23,13 @@
 >
 	<main class="flex flex-col max-w-lg h-screen p-5 mx-auto">
 		<header class="flex justify-between pb-3 w-full">
-			<h2 class="text-lg font-semibold">
-				<a class="underline" href="/">eligo</a>
-			</h2>
-
 			{#if data.user}
+				<h2>
+					<a class="whitespace-nowrap flex gap-1" href="/">
+						🎲<span class="text-lg font-semibold underline">eligo</span></a
+					>
+				</h2>
+
 				<div class="flex gap-6 w-full justify-end">
 					<a class="underline" href="/settings/" data-sveltekit-preload-data="hover">settings</a>
 					<form method="POST" action="/logout/" use:enhance>

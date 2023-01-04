@@ -75,9 +75,9 @@
 	{:else if isUnsubscribing}
 		<span>disabling...</span>
 	{:else if isEnabled}
-		<button class="underline" on:click={() => unsubscribe()}>disable</button>
+		<input checked type="checkbox" on:click={() => unsubscribe()} />
 	{:else}
-		<button class="underline" on:click={() => subscribe()}>enable</button>
+		<input type="checkbox" on:click={() => subscribe()} />
 	{/if}
 {:else}
 	not supported

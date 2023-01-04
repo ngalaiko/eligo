@@ -32,7 +32,7 @@
 					update({ reset: false })}
 		>
 			<fieldset class="flex flex-col gap-2 w-full pl-20">
-				<div class="flex justify-between items-center">
+				<div class="flex justify-between gap-4  items-center">
 					<label for="username">username</label>
 					<input
 						id="username"
@@ -55,7 +55,7 @@
 					/>
 				</div>
 
-				<div class="flex justify-between items-center">
+				<div class="flex justify-between gap-4 items-center">
 					<label for="password">password</label>
 					<input
 						id="password"

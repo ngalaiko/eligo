@@ -82,8 +82,11 @@ export default ({ database, tokens }: { database: Database; tokens: Tokens }) =>
 			hasAccess: (user: User, item: Item) =>
 				item.userId === user.id ||
 				database
+					.find('lists', { id: item.listId, userId: user.id })
+					.then((list) => list !== undefined) ||
+				database
 					.find('memberships', { listId: item.listId, userId: user.id })
-					.then((list) => list !== undefined)
+					.then((membership) => membership !== undefined)
 		}
 	};
 };

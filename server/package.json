@@ -19,7 +19,7 @@
 		"build": "rm -rf build && tsc",
 		"lint": "prettier --check . --config ../.prettierrc --ignore-path ./.gitignore --ignore-path .gitignore",
 		"format": "prettier --write . --config ../.prettierrc --ignore-path ./.gitignore --ignore-path .gitignore",
-        "dev": "tsc --watch"
+		"dev": "tsc --watch"
 	},
 	"type": "module",
 	"devDependencies": {

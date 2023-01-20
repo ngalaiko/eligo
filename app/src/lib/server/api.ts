@@ -79,14 +79,16 @@ export default ({ database, tokens }: { database: Database; tokens: Tokens }) =>
 			}
 		},
 		items: {
-			hasAccess: (user: User, item: Item) =>
-				item.userId === user.id ||
-				database
+			hasAccess: async (user: User, item: Item): Promise<boolean> => {
+				const isItemOwner = item.userId === user.id;
+				const isListOwner = await database
 					.find('lists', { id: item.listId, userId: user.id })
-					.then((list) => list !== undefined) ||
-				database
+					.then((list) => list !== undefined);
+				const isListMember = await database
 					.find('memberships', { listId: item.listId, userId: user.id })
-					.then((membership) => membership !== undefined)
+					.then((membership) => membership !== undefined);
+				return isItemOwner || isListOwner || isListMember;
+			}
 		}
 	};
 };

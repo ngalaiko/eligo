@@ -73,7 +73,7 @@
 	<title>{$list.title}</title>
 </svelte:head>
 
-<figure class="flex flex-col min-h-0 flex-1 gap-2">
+<figure class="flex flex-col h-full flex-1 gap-2">
 	<figcaption>
 		<a
 			href="/lists/"
@@ -83,6 +83,7 @@
 			<IconChevronLeft class="w-4 h-4 -ml-2" />
 			<span>lists</span>
 		</a>
+
 		<div class="flex justify-between items-center">
 			<h2 class="whitespace-nowrap overflow-ellipsis overflow-hidden text-2xl font-semibold">
 				{$list.title}
@@ -118,7 +119,7 @@
 		{/each}
 	</nav>
 
-	<div class="flex flex-col relative w-full h-full">
+	<div class="flex-auto overflow-auto flex-col relative">
 		{#if direction}
 			{#key data.key}
 				<div
@@ -128,7 +129,7 @@
 						direction: direction === 'right' ? 'left' : 'right'
 					}}
 					out:horizontalSlide|local={{ duration: 150, direction }}
-					class="flex flex-col absolute w-full h-full"
+					class="flex flex-col absolute w-full"
 				>
 					<slot />
 				</div>

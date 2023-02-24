@@ -39,6 +39,8 @@
 			{/if}
 		</header>
 
-		<slot />
+		<div class="flex-auto overflow-auto px-3">
+			<slot />
+		</div>
 	</main>
 </div>

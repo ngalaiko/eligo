@@ -39,7 +39,7 @@
 			{/if}
 		</header>
 
-		<div class="flex-auto overflow-auto px-3">
+		<div class="flex-auto overflow-auto px-3 -mx-3">
 			<slot />
 		</div>
 	</main>

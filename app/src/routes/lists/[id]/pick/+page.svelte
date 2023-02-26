@@ -63,5 +63,5 @@
 </div>
 
 {#if $item && $item?.coordinates}
-	<Map items={[{ title: $item.text, coordinates: $item.coordinates }]} />
+	<Map items={[{ title: $item.text, coordinates: $item.coordinates, count: 1 }]} />
 {/if}

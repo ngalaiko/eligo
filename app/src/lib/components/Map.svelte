@@ -1,7 +1,11 @@
 <script lang="ts">
 	import type { Map, Marker } from 'leaflet';
 
-	type Item = { coordinates: [number, number]; title: string };
+	type Item = {
+		coordinates: [number, number];
+		title: string;
+		count: number;
+	};
 
 	export let items: Item[];
 
@@ -24,15 +28,26 @@
 
 		const l = import('leaflet');
 
-		const marker = async ({ title, coordinates }: Item) => {
+		const marker = async ({ title, coordinates, count }: Item, maxCount: number) => {
 			const L = await l;
 
 			const markerIcon = () =>
 				L.divIcon({
-					html: `<svg xmlns="http://www.w3.org/2000/svg" class="fill-orange" width="20" height="20" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-  <path d="M5 14h14l-4.5 -4.5l4.5 -4.5h-14v16" />
-</svg>`,
+					html: `<svg 
+                                xmlns="http://www.w3.org/2000/svg" 
+                                class="fill-orange" 
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                stroke-width="1.5"
+                                stroke="#2c3e50"
+                                fill="none" 
+                                stroke-linecap="round" 
+                                stroke-linejoin="round"
+                            >
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M7 3.34a10 10 0 1 1 -4.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 4.995 -8.336z" stroke-width="0"></path>
+                            </svg>`,
 					className: 'map-marker'
 				});
 
@@ -41,7 +56,9 @@
 				title,
 				alt: title,
 				riseOnHover: true
-			}).bindPopup([`<b>${title}</b>`].join('<br/>'));
+			})
+				.setOpacity(0.2 + (count / maxCount) * 0.8)
+				.bindPopup([`<b>${title}</b><br/><span>${count} picks</span>`].join('<br/>'));
 		};
 
 		const markers: Record<string, Marker> = {};
@@ -59,11 +76,13 @@
 				}
 			});
 
+			const maxCount = Math.max(...items.map(({ count }) => count));
+
 			// add new markers
 			items.forEach(async (item) => {
 				const id = itemId(item);
 				if (markers[id]) return;
-				const m = await marker(item);
+				const m = await marker(item, maxCount);
 				m.addTo(map);
 				markers[id] = m;
 			});

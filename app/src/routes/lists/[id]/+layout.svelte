@@ -129,7 +129,7 @@
 						direction: direction === 'right' ? 'left' : 'right'
 					}}
 					out:horizontalSlide|local={{ duration: 150, direction }}
-					class="flex flex-col absolute w-full"
+					class="flex flex-col absolute w-full h-full"
 				>
 					<slot />
 				</div>

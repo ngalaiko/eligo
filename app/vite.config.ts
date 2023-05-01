@@ -15,6 +15,9 @@ const config: UserConfig = {
 			include: ['@eligo/server']
 		}
 	},
+	define: {
+		'process.env.NODE_ENV': process.env.NODE_ENV === 'production' ? '"production"' : '"development"'
+	},
 	plugins: [
 		sveltekit(),
 		{
@@ -35,13 +38,13 @@ const config: UserConfig = {
 			scope: '/',
 			base: '/',
 			manifest: {
+				id: '/',
 				short_name: 'eligo',
+				description: 'The Paradox of Choice, solved.',
 				name: 'eligo',
 				start_url: '/',
 				scope: '/',
 				display: 'standalone',
-				theme_color: '#ffffff',
-				background_color: '#ffffff',
 				icons: [
 					{
 						src: '/android-chrome-192x192.png',

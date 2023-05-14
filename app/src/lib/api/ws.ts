@@ -1,10 +1,8 @@
 import io from 'socket.io-client';
 import { dev } from '$app/environment';
-import { derived, readable, writable } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
 import { deleteDB, openDB } from 'idb';
 import {
-	type Action,
-	type Error,
 	type User,
 	emptyState,
 	reduce,
@@ -13,8 +11,7 @@ import {
 	picks,
 	items,
 	boosts,
-	memberships,
-	webPushSuscriptions
+	memberships
 } from '@eligo/protocol';
 
 export const state = writable(emptyState);
@@ -25,17 +22,6 @@ const socket = io({
 });
 
 export const connected = writable(true);
-
-const send = async (action: Action) =>
-	new Promise<void>((resolve, reject) =>
-		socket.emit(action.type, action.payload, (error: Error) => {
-			if (error) {
-				reject(new Error(error.message));
-			} else {
-				resolve();
-			}
-		})
-	);
 
 // debug logs for development
 if (dev) {
@@ -67,11 +53,7 @@ const eventTypes = [
 
 	memberships.create.type,
 	memberships.update.type,
-	memberships.delete.type,
-
-	webPushSuscriptions.create.type,
-	webPushSuscriptions.update.type,
-	webPushSuscriptions.delete.type
+	memberships.delete.type
 ];
 
 socket.on('connect', () => connected.set(socket.connected));
@@ -140,31 +122,5 @@ export default {
 	},
 	users: {
 		list: derived(state, (state) => Object.values(state.users))
-	},
-	webPushSuscriptions: {
-		create: (params: {
-			userId: string;
-			endpoint: string;
-			expirationTime: number;
-			keys: {
-				auth: string;
-				p256dh: string;
-			};
-		}) =>
-			send(
-				webPushSuscriptions.create({
-					...params,
-					id: params.endpoint,
-					createTime: new Date().getTime()
-				})
-			),
-
-		delete: (params: { id: string }) =>
-			send(
-				webPushSuscriptions.delete({
-					...params,
-					deleteTime: new Date().getTime()
-				})
-			)
 	}
 };

@@ -1,8 +1,5 @@
 <script lang="ts">
-	import { ws } from '$lib/api';
 	import { onMount } from 'svelte';
-
-	export let userId: string;
 
 	let isSupported = false;
 	let isEnabled = false;
@@ -16,27 +13,27 @@
 				if (result !== 'granted') return;
 				return navigator.serviceWorker
 					.getRegistration()
-					.then((registration) =>
-						registration.pushManager.subscribe({
+					.then((registration) => {
+						if (!registration) return;
+						return registration.pushManager.subscribe({
 							userVisibleOnly: true,
 							applicationServerKey:
 								'BOf5qTvP_zovZipWAEL9lKsiGJC7nMs6qeTIvWoef05EQdSpGksLXCwVJ147qbAM4DO9tOrs8dAQEkQJCxXV0kc'
-						})
-					)
-					.then((s) => {
-						const sj = s.toJSON();
-						ws.webPushSuscriptions.create({
-							userId,
-							endpoint: sj.endpoint,
-							expirationTime: sj.expirationTime,
-							keys: {
-								auth: sj.keys.auth,
-								p256dh: sj.keys.p256dh
-							}
+						});
+					})
+					.then((subscription) => {
+						if (!subscription) return;
+						fetch('/web-push', {
+							method: 'POST',
+							headers: {
+								'Content-Type': 'application/json'
+							},
+							body: JSON.stringify(subscription.toJSON())
 						});
 					});
 			})
-			.finally(() => ((isEnabled = true), (isSubscribing = false)))
+			.then(() => (isEnabled = true))
+			.finally(() => (isSubscribing = false))
 			.catch(console.error);
 	};
 
@@ -44,22 +41,32 @@
 		isUnsubscribing = true;
 		return navigator.serviceWorker
 			.getRegistration()
-			.then((registration) => registration.pushManager.getSubscription())
-			.then((subscription) =>
+			.then((registration) => {
+				if (!registration) return;
+				return registration.pushManager.getSubscription();
+			})
+			.then((subscription) => {
+				if (!subscription) return;
 				Promise.all([
-					ws.webPushSuscriptions.delete({ id: subscription.endpoint }),
+					fetch('/web-push', {
+						method: 'DELETE',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify(subscription.toJSON())
+					}),
 					subscription.unsubscribe().then(() => (isEnabled = false))
 				])
 					.finally(() => (isUnsubscribing = false))
-					.catch(console.error)
-			);
+					.catch(console.error);
+			});
 	};
 
 	onMount(() =>
-		navigator.serviceWorker.getRegistration().then(async (registration) => {
-			if (registration.pushManager) {
+		navigator.serviceWorker.getRegistration().then((registration) => {
+			if (registration?.pushManager) {
 				isSupported = true;
-				return registration.pushManager
+				registration.pushManager
 					.getSubscription()
 					.then((subscription) => (isEnabled = !!subscription));
 			} else {
@@ -71,9 +78,9 @@
 
 {#if isSupported}
 	{#if isSubscribing}
-		<span>enabling...</span>
+		<span>subscribing...</span>
 	{:else if isUnsubscribing}
-		<span>disabling...</span>
+		<span>unsubscribing...</span>
 	{:else if isEnabled}
 		<input checked type="checkbox" on:click={() => unsubscribe()} />
 	{:else}

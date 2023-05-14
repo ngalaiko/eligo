@@ -1,5 +1,5 @@
 import type { Database } from './database.js';
-import { SignJWT, generateKeyPair, jwtVerify, exportSPKI, importSPKI } from 'jose';
+import { SignJWT, generateKeyPair, jwtVerify, exportSPKI, importSPKI, JWTVerifyResult } from 'jose';
 import { nanoid } from 'nanoid';
 import { jwtKeys } from '@eligo/protocol';
 
@@ -36,3 +36,8 @@ export const verifier = (database: Database) => ({
 			});
 		})
 });
+
+export type Tokens = {
+	sign: (payload: { sub: string }) => Promise<string>;
+	verify: (token: string) => Promise<JWTVerifyResult>;
+};

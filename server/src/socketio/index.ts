@@ -14,7 +14,6 @@ import { Server } from 'socket.io';
 import type { Database } from '../database.js';
 import { verifier } from '../tokens.js';
 import Notifications from '../notifications.js';
-import registerWebPushSubscriptions from './webPushSubscriptions.js';
 import { parse } from 'cookie';
 
 export const notDeleted = <T extends { deleteTime?: number }>({ deleteTime }: T) =>
@@ -166,8 +165,6 @@ export default async (server: HTTPServer, database: Database) => {
 			.filter((action) => action.payload.updateTime > lastSynched)
 			.sort((a, b) => a.payload.updateTime - b.payload.updateTime) // ensure earlier events are sent first
 			.forEach((action) => socket.emit(action.type, action.payload));
-
-		registerWebPushSubscriptions(io, socket, database, notifications);
 	});
 
 	const notifyListMembers = async (listId: string, sender: User, notification: WebNotification) => {

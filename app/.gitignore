@@ -2,3 +2,4 @@ node_modules
 database.dev.jsonl
 .svelte-kit
 build
+vite.config.ts.timestamp-*

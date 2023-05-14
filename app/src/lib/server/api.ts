@@ -1,10 +1,7 @@
 import { flatten, merge, notDeleted, notNull, unique } from '../utils';
 import type { Item, Membership, User, List } from '@eligo/protocol';
 import type { Cookies } from '@sveltejs/kit';
-import type { signer, verifier } from '@eligo/server';
-import type { Database } from '@eligo/server';
-
-type Tokens = ReturnType<typeof signer> & ReturnType<typeof verifier>;
+import type { Database, Tokens } from '@eligo/server';
 
 export default ({ database, tokens }: { database: Database; tokens: Tokens }) => {
 	const lists = {

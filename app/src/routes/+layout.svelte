@@ -15,7 +15,7 @@
 	<ReloadServiceWorker />
 {/if}
 
-<div
+<body
 	id="root"
 	class="bg-background-soft text-foreground-2"
 	class:is-light={data.theme === 'light'}
@@ -43,4 +43,4 @@
 			<slot />
 		</div>
 	</main>
-</div>
+</body>
